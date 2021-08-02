@@ -21,10 +21,16 @@ from cirq_superstaq.superstaq_exceptions import (
     SuperstaQUnsuccessfulJobException,
 )
 
+from . import finance
+from . import logistics
+
+
 __all__ = [
     "API_URL",
     "API_VERSION",
+    "finance",
     "Job",
+    "logistics",
     "Service",
     "SuperstaQException",
     "SuperstaQNotFoundException",
