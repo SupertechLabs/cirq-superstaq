@@ -42,7 +42,7 @@ def tsp(locs: List[str]) -> Dict:
     superstaq_json = {"locs": json.loads(cirq.to_json(locs))}
 
     result = requests.post(
-        _get_api_url() + "/" + API_VERSION + "/aqt_compile",
+        _get_api_url() + "/" + API_VERSION + "/tsp",
         json=superstaq_json,
         headers=_get_headers(),
         verify=_should_verify_requests(),
@@ -85,7 +85,7 @@ def warehouse(k: int, possible_warehouses: List[str], customers: List[str]) -> D
     }
 
     result = requests.post(
-        _get_api_url() + "/" + API_VERSION + "/aqt_compile",
+        _get_api_url() + "/" + API_VERSION + "/warehouse",
         json=superstaq_json,
         headers=_get_headers(),
         verify=_should_verify_requests(),

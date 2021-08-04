@@ -50,7 +50,7 @@ def find_min_vol_portfolio(stock_symbols: List[str], desired_return: float) -> D
     }
 
     result = requests.post(
-        _get_api_url() + "/" + API_VERSION + "/aqt_compile",
+        _get_api_url() + "/" + API_VERSION + "/minvol",
         json=superstaq_json,
         headers=_get_headers(),
         verify=_should_verify_requests(),
@@ -94,7 +94,7 @@ def find_max_sharpe_ratio(stock_symbols: List[str], k: float) -> Dict:
     }
 
     result = requests.post(
-        _get_api_url() + "/" + API_VERSION + "/aqt_compile",
+        _get_api_url() + "/" + API_VERSION + "/maxsharpe",
         json=superstaq_json,
         headers=_get_headers(),
         verify=_should_verify_requests(),
