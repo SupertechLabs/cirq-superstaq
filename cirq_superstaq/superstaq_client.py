@@ -257,7 +257,7 @@ class _SuperstaQClient:
         )
         return cast(str, target or self.default_target)
 
-    def _handle_status_codes(self, response) -> None:
+    def _handle_status_codes(self, response: requests.Response) -> None:
         print(type(response))
         if response.status_code == requests.codes.unauthorized:
             raise cirq_superstaq.superstaq_exceptions.SuperstaQException(
