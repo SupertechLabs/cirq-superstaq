@@ -33,7 +33,7 @@ def test_read_json_with_qtrl() -> None:  # pragma: no cover, b/c test requires q
 
     circuit = cirq.Circuit(cirq.H(cirq.LineQubit(4)))
     state_str = codecs.encode(pickle.dumps(seq.__getstate__()), "base64").decode()
-    pulse_list_str = codecs.encode(pickle.dumps([]), "base64").decode()
+    pulse_list_str = codecs.encode(pickle.dumps([[]]), "base64").decode()
 
     json_dict = {
         "compiled_circuit": cirq.to_json(circuit),
@@ -44,3 +44,4 @@ def test_read_json_with_qtrl() -> None:  # pragma: no cover, b/c test requires q
 
     assert compiler_output.circuit == circuit
     assert pickle.dumps(compiler_output.seq) == pickle.dumps(seq)
+    assert compiler_output.pulse_list == [[]]

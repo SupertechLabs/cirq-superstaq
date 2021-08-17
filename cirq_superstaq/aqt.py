@@ -2,7 +2,7 @@ import codecs
 import importlib
 import pickle
 from dataclasses import dataclass
-from typing import Optional
+from typing import Callable, List, Optional, Union
 
 import cirq
 
@@ -11,11 +11,15 @@ try:
 except ModuleNotFoundError:
     pass
 
+PulseFnType = Callable[[cirq.Operation], "qtrl.sequencer.Sequence"]
+PulseType = Union[List["qtrl.sequencer.UniquePulse"], PulseFnType, "qtrl.sequencer.Sequence"]
+
 
 @dataclass
 class AQTCompilerOutput:
     circuit: cirq.Circuit
     seq: Optional["qtrl.sequencer.Sequence"] = None
+    pulse_list: Optional[List[List[PulseType]]] = None
 
 
 def read_json(json_dict: dict) -> AQTCompilerOutput:
@@ -25,7 +29,8 @@ def read_json(json_dict: dict) -> AQTCompilerOutput:
         json_dict: a JSON dictionary matching the format returned by /aqt_compile endpoint
     Returns:
         a AQTCompilerOutput object with the compiled circuit. If qtrl is available locally,
-        the object also stores the pulse sequence in the .seq attribute.
+        the object also stores the pulse sequence in the .seq attribute and the pulse list
+        in the .pulse_list attribute.
     """
     compiled_circuit = cirq.read_json(json_text=json_dict["compiled_circuit"])
 
@@ -36,7 +41,11 @@ def read_json(json_dict: dict) -> AQTCompilerOutput:
         state_str = json_dict["state_jp"]
         state = pickle.loads(codecs.decode(state_str.encode(), "base64"))
 
+        pulse_list_str = json_dict["pulse_list_jp"]
+        pulse_list = pickle.loads(codecs.decode(pulse_list_str.encode(), "base64"))
+
         seq = qtrl.sequencer.Sequence(n_elements=1)
         seq.__setstate__(state)
         seq.compile()
-        return AQTCompilerOutput(compiled_circuit, seq)
+
+        return AQTCompilerOutput(compiled_circuit, seq, pulse_list)
