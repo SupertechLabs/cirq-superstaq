@@ -11,8 +11,11 @@ try:
 except ModuleNotFoundError:
     pass
 
-PulseFnType = Callable[[cirq.Operation], "qtrl.sequencer.Sequence"]
-PulseType = Union[List["qtrl.sequencer.UniquePulse"], PulseFnType, "qtrl.sequencer.Sequence"]
+PulseType = Union[
+    List["qtrl.sequencer.UniquePulse"],
+    Callable[[cirq.Operation], "qtrl.sequencer.Sequence"],
+    "qtrl.sequencer.Sequence",
+]
 
 
 @dataclass
