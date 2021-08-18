@@ -274,7 +274,7 @@ class _SuperstaQClient:
             if response.status_code == 400:
                 message = str(response.text)
             raise cirq_superstaq.superstaq_exceptions.SuperstaQException(
-                "Non-retry-able error making request to SuperstaQ API. "
+                "Non-retriable error making request to SuperstaQ API. "
                 f"Status: {response.status_code} "
                 f"Error : {message}",
                 response.status_code,
