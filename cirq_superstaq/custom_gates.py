@@ -128,6 +128,47 @@ CR45P = CR ** 0.25
 CR45N = CR ** -0.25
 
 
+class aceCR(cirq.TwoQubitGate):
+    def __init__(self, polarity: str) -> None:
+        assert polarity in ["+-", "-+"]
+        self.polarity = polarity
+        super().__init__()
+
+    def _decompose_(self, qubits: Tuple[cirq.LineQubit, cirq.LineQubit]) -> cirq.OP_TREE:
+        yield cirq_superstaq.CR45P(*qubits) if self.polarity == "+-" else cirq_superstaq.CR45N(
+            *qubits
+        )
+        yield cirq.X(qubits[0])
+        yield cirq_superstaq.CR45N(*qubits) if self.polarity == "+-" else cirq_superstaq.CR45P(
+            *qubits
+        )
+
+    def _circuit_diagram_info_(
+        self, args: cirq.CircuitDiagramInfoArgs
+    ) -> cirq.protocols.CircuitDiagramInfo:
+        return cirq.protocols.CircuitDiagramInfo(
+            wire_symbols=(f"aceCR{self.polarity}(Z side)", f"aceCR{self.polarity}(X side)")
+        )
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, aceCR):
+            return False
+        return self.polarity == other.polarity
+
+    def __hash__(self) -> int:
+        return hash(self.polarity)
+
+    def __repr__(self) -> str:
+        return f"ss.ibm_device.aceCR('{self.polarity}')"
+
+    def __str__(self) -> str:
+        return f"aceCR{self.polarity}"
+
+
+aceCRPlusMinus = aceCR("+-")
+aceCRMinusPlus = aceCR("-+")
+
+
 class Barrier(cirq.ops.IdentityGate):
     """Barrier: temporal boundary restricting circuit compilation and pulse scheduling.
     Otherwise equivalent to the identity gate.
