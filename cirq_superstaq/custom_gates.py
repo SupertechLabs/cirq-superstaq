@@ -118,7 +118,7 @@ class ZXPowGate(cirq.ops.eigen_gate.EigenGate, cirq.ops.gate_features.TwoQubitGa
                 return "cirq_superstaq.parity_gates.ZX"
             return f"(cirq_superstaq.parity_gates.ZX**{cirq._compat.proper_repr(self._exponent)})"
         return (
-            f"ss.parity_gates.ZXPowGate(exponent={cirq._compat.proper_repr(self._exponent)},"
+            f"cirq_superstaq.parity_gates.ZXPowGate(exponent={cirq._compat.proper_repr(self._exponent)},"
             f" global_shift={self._global_shift!r})"
         )
 
