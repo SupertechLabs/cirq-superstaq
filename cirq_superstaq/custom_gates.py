@@ -1,6 +1,6 @@
 """Miscellaneous custom gates that we encounter and want to explicitly define."""
 
-from typing import Any, Callable, Dict, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, List, Sequence, Tuple, Union
 
 import cirq
 import numpy as np
@@ -65,6 +65,67 @@ class FermionicSWAPGate(
 
     def _json_dict_(self) -> Dict[str, Any]:
         return cirq.protocols.obj_to_dict_helper(self, ["theta"])
+
+
+class ZXPowGate(cirq.ops.eigen_gate.EigenGate, cirq.ops.gate_features.TwoQubitGate):
+    r"""The ZX-parity gate, possibly raised to a power.
+    Per arxiv.org/pdf/1904.06560v3 eq. 135, the ZX**t gate implements the following unitary:
+     .. math::
+        e^{-\frac{i}{2} Z \otimes X} = \begin{bmatrix}
+                                        c & -s & . & . \\
+                                        -s & c & . & . \\
+                                        . & . & c & s \\
+                                        . & . & s & c \\
+                                        \end{bmatrix}
+    where '.' means '0' and :math:`c = \cos(\frac{\pi t}{2})`
+    and :math:`s = i \sin(\frac{\pi t}{2})`.
+    """
+
+    def _eigen_components(self) -> List[Tuple[float, np.ndarray]]:
+        return [
+            (
+                0.0,
+                np.array(
+                    [[0.5, 0.5, 0, 0], [0.5, 0.5, 0, 0], [0, 0, 0.5, -0.5], [0, 0, -0.5, 0.5]]
+                ),
+            ),
+            (
+                1.0,
+                np.array(
+                    [[0.5, -0.5, 0, 0], [-0.5, 0.5, 0, 0], [0, 0, 0.5, 0.5], [0, 0, 0.5, 0.5]]
+                ),
+            ),
+        ]
+
+    def _eigen_shifts(self) -> List[float]:
+        return [0, 1]
+
+    def _circuit_diagram_info_(
+        self, args: cirq.CircuitDiagramInfoArgs
+    ) -> cirq.protocols.CircuitDiagramInfo:
+        return cirq.protocols.CircuitDiagramInfo(
+            wire_symbols=("Z", "X"), exponent=self._diagram_exponent(args)
+        )
+
+    def __str__(self) -> str:
+        if self.exponent == 1:
+            return "ZX"
+        return f"ZX**{self._exponent!r}"
+
+    def __repr__(self) -> str:
+        if self._global_shift == 0:
+            if self._exponent == 1:
+                return "ss.parity_gates.ZX"
+            return f"(ss.parity_gates.ZX**{cirq._compat.proper_repr(self._exponent)})"
+        return (
+            f"ss.parity_gates.ZXPowGate(exponent={cirq._compat.proper_repr(self._exponent)},"
+            f" global_shift={self._global_shift!r})"
+        )
+
+
+CR = ZX = ZXPowGate()  # standard CR is a full turn of ZX, i.e. theta = 180
+CR45P = CR ** 0.25
+CR45N = CR ** -0.25
 
 
 class Barrier(cirq.ops.IdentityGate):

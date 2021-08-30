@@ -30,6 +30,46 @@ def test_fermionic_swap_gate() -> None:
     assert np.allclose(cirq.unitary(gate), expected)
 
 
+def test_zx_matrix() -> None:
+    np.testing.assert_allclose(
+        cirq.unitary(cirq_superstaq.ZX),
+        np.array([[0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 0, -1], [0, 0, -1, 0]]),
+    )
+
+
+def test_zx_str() -> None:
+    assert str(cirq_superstaq.ZX) == "ZX"
+    assert str(cirq_superstaq.ZX ** 0.5) == "ZX**0.5"
+    assert str(cirq_superstaq.ZXPowGate(global_shift=0.1)) == "ZX"
+
+    iZZ = cirq_superstaq.ZXPowGate(global_shift=0.5)
+    assert str(iZZ) == "ZX"
+
+
+def test_zx_repr() -> None:
+    assert repr(cirq_superstaq.ZXPowGate()) == "ss.parity_gates.ZX"
+    assert repr(cirq_superstaq.ZXPowGate(exponent=0.5)) == "(ss.parity_gates.ZX**0.5)"
+    assert (
+        repr(cirq_superstaq.ZXPowGate(exponent=0.5, global_shift=0.123))
+        == "ss.parity_gates.ZXPowGate(exponent=0.5, global_shift=0.123)"
+    )
+
+
+def test_zx_circuit() -> None:
+    a, b = cirq.LineQubit.range(2)
+
+    c = cirq.Circuit(cirq_superstaq.CR(a, b))
+
+    cirq.testing.assert_has_diagram(
+        c,
+        """
+0: ───Z───
+      │
+1: ───X───
+    """,
+    )
+
+
 def test_barrier() -> None:
     n = 3
     gate = cirq_superstaq.Barrier(n)
