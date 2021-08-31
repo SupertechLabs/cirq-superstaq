@@ -142,12 +142,12 @@ barrier q[0],q[1],q[2];
 def test_custom_resolver() -> None:
     circuit = cirq.Circuit()
     qubits = cirq.LineQubit.range(2)
-    circuit += cirq_superstaq.FermionicSWAPGate(1.23)(*qubits)
+    circuit += cirq_superstaq.FermionicSWAPGate(1.23).on(qubits[0], qubits[1])
     circuit += cirq_superstaq.aceCRPlusMinus().on(qubits[0], qubits[1])
-    circuit += cirq_superstaq.Barrier(2)(*qubits)
+    circuit += cirq_superstaq.Barrier(2).on(qubits[0], qubits[1])
     circuit += cirq_superstaq.CR(qubits[0], qubits[1])
     circuit += cirq_superstaq.aceCRMinusPlus().on(qubits[0], qubits[1])
-    circuit += cirq.CX(*qubits)
+    circuit += cirq.CX(qubits[0], qubits[1])
 
     json_text = cirq.to_json(circuit)
     resolvers = [cirq_superstaq.custom_gates.custom_resolver, *cirq.DEFAULT_RESOLVERS]
