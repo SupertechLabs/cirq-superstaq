@@ -164,15 +164,13 @@ class aceCR(cirq.TwoQubitGate):
     def __str__(self) -> str:
         return f"aceCR{self.polarity}"
 
-
-class aceCRMinusPlus(aceCR):
-    def __init__(self) -> None:
-        super().__init__("-+")
+    def _json_dict_(self) -> Dict[str, Any]:
+        return cirq.protocols.obj_to_dict_helper(self, ["polarity"])
 
 
-class aceCRPlusMinus(aceCR):
-    def __init__(self) -> None:
-        super().__init__("+-")
+aceCRMinusPlus = aceCR("-+")
+
+aceCRPlusMinus = aceCR("+-")
 
 
 class Barrier(cirq.ops.IdentityGate):
@@ -205,8 +203,6 @@ def custom_resolver(cirq_type: str) -> Union[Callable[..., cirq.Gate], None]:
         return Barrier
     if cirq_type == "ZXPowGate":
         return ZXPowGate
-    if cirq_type == "aceCRMinusPlus":
-        return aceCRMinusPlus
-    if cirq_type == "aceCRPlusMinus":
-        return aceCRPlusMinus
+    if cirq_type == "aceCR":
+        return aceCR
     return None
