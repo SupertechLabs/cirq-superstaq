@@ -128,7 +128,7 @@ class ZXPowGate(cirq.EigenGate, cirq.TwoQubitGate):
 CR = ZX = ZXPowGate()  # standard CR is a full turn of ZX, i.e. exponent = 1
 
 
-class aceCR(cirq.TwoQubitGate):
+class AceCR(cirq.TwoQubitGate):
     def __init__(self, polarity: str) -> None:
         assert polarity in ["+-", "-+"]
         self.polarity = polarity
@@ -147,11 +147,11 @@ class aceCR(cirq.TwoQubitGate):
         self, args: cirq.CircuitDiagramInfoArgs
     ) -> cirq.protocols.CircuitDiagramInfo:
         return cirq.protocols.CircuitDiagramInfo(
-            wire_symbols=(f"aceCR{self.polarity}(Z side)", f"aceCR{self.polarity}(X side)")
+            wire_symbols=(f"AceCR{self.polarity}(Z side)", f"AceCR{self.polarity}(X side)")
         )
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, aceCR):
+        if not isinstance(other, AceCR):
             return False
         return self.polarity == other.polarity
 
@@ -159,18 +159,18 @@ class aceCR(cirq.TwoQubitGate):
         return hash(self.polarity)
 
     def __repr__(self) -> str:
-        return f"cirq_superstaq.aceCR('{self.polarity}')"
+        return f"cirq_superstaq.AceCR('{self.polarity}')"
 
     def __str__(self) -> str:
-        return f"aceCR{self.polarity}"
+        return f"AceCR{self.polarity}"
 
     def _json_dict_(self) -> Dict[str, Any]:
         return cirq.protocols.obj_to_dict_helper(self, ["polarity"])
 
 
-aceCRMinusPlus = aceCR("-+")
+AceCRMinusPlus = AceCR("-+")
 
-aceCRPlusMinus = aceCR("+-")
+AceCRPlusMinus = AceCR("+-")
 
 
 class Barrier(cirq.ops.IdentityGate):
@@ -203,6 +203,6 @@ def custom_resolver(cirq_type: str) -> Union[Callable[..., cirq.Gate], None]:
         return Barrier
     if cirq_type == "ZXPowGate":
         return ZXPowGate
-    if cirq_type == "aceCR":
-        return aceCR
+    if cirq_type == "AceCR":
+        return AceCR
     return None

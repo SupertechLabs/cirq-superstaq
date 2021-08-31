@@ -76,28 +76,28 @@ def test_zx_circuit() -> None:
 
 def test_acecr() -> None:
     qubits = cirq.LineQubit.range(2)
-    expected = "0: ───aceCR-+(Z side)───\n      │\n1: ───aceCR-+(X side)───"
-    assert str(cirq.Circuit(cirq_superstaq.aceCRMinusPlus(qubits[0], qubits[1]))) == expected
-    expected = "0: ───aceCR+-(X side)───\n      │\n1: ───aceCR+-(Z side)───"
-    assert str(cirq.Circuit(cirq_superstaq.aceCRPlusMinus(qubits[1], qubits[0]))) == expected
-    assert cirq_superstaq.aceCRPlusMinus == cirq_superstaq.aceCR("+-")
-    assert cirq_superstaq.aceCRPlusMinus != cirq_superstaq.aceCR("-+")
-    assert repr(cirq_superstaq.aceCRMinusPlus) == "cirq_superstaq.aceCR('-+')"
+    expected = "0: ───AceCR-+(Z side)───\n      │\n1: ───AceCR-+(X side)───"
+    assert str(cirq.Circuit(cirq_superstaq.AceCRMinusPlus(qubits[0], qubits[1]))) == expected
+    expected = "0: ───AceCR+-(X side)───\n      │\n1: ───AceCR+-(Z side)───"
+    assert str(cirq.Circuit(cirq_superstaq.AceCRPlusMinus(qubits[1], qubits[0]))) == expected
+    assert cirq_superstaq.AceCRPlusMinus == cirq_superstaq.AceCR("+-")
+    assert cirq_superstaq.AceCRPlusMinus != cirq_superstaq.AceCR("-+")
+    assert repr(cirq_superstaq.AceCRMinusPlus) == "cirq_superstaq.AceCR('-+')"
     cirq.testing.assert_equivalent_repr(
-        cirq_superstaq.aceCRMinusPlus, setup_code="import cirq_superstaq"
+        cirq_superstaq.AceCRMinusPlus, setup_code="import cirq_superstaq"
     )
     cirq.testing.assert_equivalent_repr(
-        cirq_superstaq.aceCRPlusMinus, setup_code="import cirq_superstaq"
+        cirq_superstaq.AceCRPlusMinus, setup_code="import cirq_superstaq"
     )
-    assert str(cirq_superstaq.aceCRMinusPlus) == "aceCR-+"
-    assert hash(cirq_superstaq.aceCRMinusPlus) == hash("-+")
-    assert cirq_superstaq.aceCRPlusMinus != cirq.CNOT
+    assert str(cirq_superstaq.AceCRMinusPlus) == "AceCR-+"
+    assert hash(cirq_superstaq.AceCRMinusPlus) == hash("-+")
+    assert cirq_superstaq.AceCRPlusMinus != cirq.CNOT
 
 
 def test_acecr_decompose() -> None:
     a = cirq.LineQubit(0)
     b = cirq.LineQubit(1)
-    assert cirq.decompose_once(cirq_superstaq.aceCRMinusPlus(a, b)) is not None
+    assert cirq.decompose_once(cirq_superstaq.AceCRMinusPlus(a, b)) is not None
 
 
 def test_barrier() -> None:
@@ -143,10 +143,10 @@ def test_custom_resolver() -> None:
     circuit = cirq.Circuit()
     qubits = cirq.LineQubit.range(2)
     circuit += cirq_superstaq.FermionicSWAPGate(1.23).on(qubits[0], qubits[1])
-    circuit += cirq_superstaq.aceCRPlusMinus(qubits[0], qubits[1])
+    circuit += cirq_superstaq.AceCRPlusMinus(qubits[0], qubits[1])
     circuit += cirq_superstaq.Barrier(2).on(qubits[0], qubits[1])
     circuit += cirq_superstaq.CR(qubits[0], qubits[1])
-    circuit += cirq_superstaq.aceCRMinusPlus(qubits[0], qubits[1])
+    circuit += cirq_superstaq.AceCRMinusPlus(qubits[0], qubits[1])
     circuit += cirq.CX(qubits[0], qubits[1])
 
     json_text = cirq.to_json(circuit)
