@@ -5,6 +5,8 @@ from typing import Any, Callable, Dict, List, Sequence, Tuple, Union
 import cirq
 import numpy as np
 
+import cirq_superstaq
+
 
 @cirq.value_equality(approximate=True)
 class FermionicSWAPGate(
@@ -67,7 +69,7 @@ class FermionicSWAPGate(
         return cirq.protocols.obj_to_dict_helper(self, ["theta"])
 
 
-class ZXPowGate(cirq.ops.eigen_gate.EigenGate, cirq.ops.gate_features.TwoQubitGate):
+class ZXPowGate(cirq.EigenGate, cirq.TwoQubitGate):
     r"""The ZX-parity gate, possibly raised to a power.
     Per arxiv.org/pdf/1904.06560v3 eq. 135, the ZX**t gate implements the following unitary:
      .. math::
@@ -115,10 +117,10 @@ class ZXPowGate(cirq.ops.eigen_gate.EigenGate, cirq.ops.gate_features.TwoQubitGa
     def __repr__(self) -> str:
         if self._global_shift == 0:
             if self._exponent == 1:
-                return "cirq_superstaq.parity_gates.ZX"
-            return f"(cirq_superstaq.parity_gates.ZX**{cirq._compat.proper_repr(self._exponent)})"
+                return "cirq_superstaq.custom_gates.ZX"
+            return f"(cirq_superstaq.custom_gates.ZX**{cirq._compat.proper_repr(self._exponent)})"
         return (
-            f"cirq_superstaq.parity_gates.ZXPowGate(exponent={cirq._compat.proper_repr(self._exponent)},"
+            f"cirq_superstaq.custom_gates.ZXPowGate(exponent={cirq._compat.proper_repr(self._exponent)},"
             f" global_shift={self._global_shift!r})"
         )
 
@@ -159,14 +161,50 @@ class aceCR(cirq.TwoQubitGate):
         return hash(self.polarity)
 
     def __repr__(self) -> str:
-        return f"ss.ibm_device.aceCR('{self.polarity}')"
+        return f"cirq_superstaq.aceCR('{self.polarity}')"
 
     def __str__(self) -> str:
         return f"aceCR{self.polarity}"
 
 
-aceCRPlusMinus = aceCR("+-")
-aceCRMinusPlus = aceCR("-+")
+class aceCRMinusPlus(aceCR):
+    def __init__(self) -> None:
+        super().__init__("-+")
+
+    # def _decompose_(self, qubits: Tuple[cirq.LineQubit, cirq.LineQubit]) -> cirq.OP_TREE:
+    #     yield cirq_superstaq.CR45N(
+    #         *qubits
+    #     )
+    #     yield cirq.X(qubits[0])
+    #     yield cirq_superstaq.CR45P(
+    #         *qubits
+    #     )
+
+    # def _circuit_diagram_info_(
+    #     self, args: cirq.CircuitDiagramInfoArgs
+    # ) -> cirq.protocols.CircuitDiagramInfo:
+    #     return cirq.protocols.CircuitDiagramInfo(
+    #         wire_symbols=(f"aceCR-+(Z side)", f"aceCR-+(X side)")
+    #     )
+
+    # def __eq__(self, other: object) -> bool:
+    #     if not isinstance(other, aceCR):
+    #         return False
+    #     return self.polarity == other.polarity
+
+    # def __hash__(self) -> int:
+    #     return hash(self.polarity)
+
+    # def __repr__(self) -> str:
+    #     return f"cirq_superstaq.custom_gates.aceCRMinusPlus()"
+
+    # def __str__(self) -> str:
+    #     return f"aceCR-+"
+
+
+class aceCRPlusMinus(aceCR):
+    def __init__(self) -> None:
+        super().__init__("+-")
 
 
 class Barrier(cirq.ops.IdentityGate):
@@ -193,8 +231,15 @@ class Barrier(cirq.ops.IdentityGate):
 
 
 def custom_resolver(cirq_type: str) -> Union[Callable[..., cirq.Gate], None]:
+    print(cirq_type)
     if cirq_type == "FermionicSWAPGate":
         return FermionicSWAPGate
     if cirq_type == "Barrier":
         return Barrier
+    if cirq_type == "ZXPowGate":
+        return ZXPowGate
+    if cirq_type == "aceCRMinusPlus":
+        return aceCRMinusPlus
+    if cirq_type == "aceCRPlusMinus":
+        return aceCRPlusMinus
     return None

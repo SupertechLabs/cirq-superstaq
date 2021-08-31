@@ -13,7 +13,18 @@
 # limitations under the License.
 
 from cirq_superstaq._init_vars import API_URL, API_VERSION
-from cirq_superstaq.custom_gates import Barrier, CR, CR45N, CR45P, FermionicSWAPGate, ZX, ZXPowGate
+from cirq_superstaq.custom_gates import (
+    aceCR,
+    aceCRMinusPlus,
+    aceCRPlusMinus,
+    Barrier,
+    CR,
+    CR45N,
+    CR45P,
+    FermionicSWAPGate,
+    ZX,
+    ZXPowGate,
+)
 from cirq_superstaq.job import Job
 from cirq_superstaq.service import Service
 from cirq_superstaq.superstaq_exceptions import (
