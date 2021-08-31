@@ -19,8 +19,6 @@ from cirq_superstaq.custom_gates import (
     aceCRPlusMinus,
     Barrier,
     CR,
-    CR45N,
-    CR45P,
     FermionicSWAPGate,
     ZX,
     ZXPowGate,

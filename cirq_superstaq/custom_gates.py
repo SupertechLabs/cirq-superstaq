@@ -135,13 +135,13 @@ class aceCR(cirq.TwoQubitGate):
         super().__init__()
 
     def _decompose_(self, qubits: Tuple[cirq.LineQubit, cirq.LineQubit]) -> cirq.OP_TREE:
-        yield cirq_superstaq.CR45P(*qubits) if self.polarity == "+-" else cirq_superstaq.CR45N(
+        yield cirq_superstaq.CR(*qubits) ** 0.25 if self.polarity == "+-" else cirq_superstaq.CR(
             *qubits
-        )
+        ) ** -0.25
         yield cirq.X(qubits[0])
-        yield cirq_superstaq.CR45N(*qubits) if self.polarity == "+-" else cirq_superstaq.CR45P(
+        yield cirq_superstaq.CR(*qubits) ** -0.25 if self.polarity == "+-" else cirq_superstaq.CR(
             *qubits
-        )
+        ) ** 0.25
 
     def _circuit_diagram_info_(
         self, args: cirq.CircuitDiagramInfoArgs
