@@ -34,6 +34,9 @@ from cirq_superstaq.superstaq_exceptions import (
 )
 
 __all__ = [
+    "aceCR",
+    "aceCRMinusPlus",
+    "aceCRPlusMinus",
     "API_URL",
     "API_VERSION",
     "Barrier",

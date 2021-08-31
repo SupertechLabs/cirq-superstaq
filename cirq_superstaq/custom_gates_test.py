@@ -47,11 +47,11 @@ def test_zx_str() -> None:
 
 
 def test_zx_repr() -> None:
-    assert repr(cirq_superstaq.ZXPowGate()) == "cirq_superstaq.custom_gates.ZX"
-    assert repr(cirq_superstaq.ZXPowGate(exponent=0.5)) == "(cirq_superstaq.custom_gates.ZX**0.5)"
+    assert repr(cirq_superstaq.ZXPowGate()) == "cirq_superstaq.ZX"
+    assert repr(cirq_superstaq.ZXPowGate(exponent=0.5)) == "(cirq_superstaq.ZX**0.5)"
     assert (
         repr(cirq_superstaq.ZXPowGate(exponent=0.5, global_shift=0.123))
-        == "cirq_superstaq.custom_gates.ZXPowGate(exponent=0.5, global_shift=0.123)"
+        == "cirq_superstaq.ZXPowGate(exponent=0.5, global_shift=0.123)"
     )
 
     cirq.testing.assert_equivalent_repr(

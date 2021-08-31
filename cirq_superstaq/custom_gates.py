@@ -117,10 +117,10 @@ class ZXPowGate(cirq.EigenGate, cirq.TwoQubitGate):
     def __repr__(self) -> str:
         if self._global_shift == 0:
             if self._exponent == 1:
-                return "cirq_superstaq.custom_gates.ZX"
-            return f"(cirq_superstaq.custom_gates.ZX**{cirq._compat.proper_repr(self._exponent)})"
+                return "cirq_superstaq.ZX"
+            return f"(cirq_superstaq.ZX**{cirq._compat.proper_repr(self._exponent)})"
         return (
-            f"cirq_superstaq.custom_gates.ZXPowGate(exponent={cirq._compat.proper_repr(self._exponent)},"
+            f"cirq_superstaq.ZXPowGate(exponent={cirq._compat.proper_repr(self._exponent)},"
             f" global_shift={self._global_shift!r})"
         )
 
