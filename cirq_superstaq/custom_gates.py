@@ -169,36 +169,6 @@ class aceCRMinusPlus(aceCR):
     def __init__(self) -> None:
         super().__init__("-+")
 
-    # def _decompose_(self, qubits: Tuple[cirq.LineQubit, cirq.LineQubit]) -> cirq.OP_TREE:
-    #     yield cirq_superstaq.CR45N(
-    #         *qubits
-    #     )
-    #     yield cirq.X(qubits[0])
-    #     yield cirq_superstaq.CR45P(
-    #         *qubits
-    #     )
-
-    # def _circuit_diagram_info_(
-    #     self, args: cirq.CircuitDiagramInfoArgs
-    # ) -> cirq.protocols.CircuitDiagramInfo:
-    #     return cirq.protocols.CircuitDiagramInfo(
-    #         wire_symbols=(f"aceCR-+(Z side)", f"aceCR-+(X side)")
-    #     )
-
-    # def __eq__(self, other: object) -> bool:
-    #     if not isinstance(other, aceCR):
-    #         return False
-    #     return self.polarity == other.polarity
-
-    # def __hash__(self) -> int:
-    #     return hash(self.polarity)
-
-    # def __repr__(self) -> str:
-    #     return f"cirq_superstaq.custom_gates.aceCRMinusPlus()"
-
-    # def __str__(self) -> str:
-    #     return f"aceCR-+"
-
 
 class aceCRPlusMinus(aceCR):
     def __init__(self) -> None:
