@@ -199,7 +199,6 @@ class Barrier(cirq.ops.IdentityGate):
 
 
 def custom_resolver(cirq_type: str) -> Union[Callable[..., cirq.Gate], None]:
-    print(cirq_type)
     if cirq_type == "FermionicSWAPGate":
         return FermionicSWAPGate
     if cirq_type == "Barrier":

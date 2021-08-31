@@ -82,7 +82,6 @@ def test_acecr() -> None:
     assert str(cirq.Circuit(cirq_superstaq.aceCRPlusMinus().on(qubits[1], qubits[0]))) == expected
     assert cirq_superstaq.aceCRPlusMinus() == cirq_superstaq.aceCR("+-")
     assert cirq_superstaq.aceCRPlusMinus != cirq_superstaq.aceCR("-+")
-    print(repr(cirq_superstaq.aceCRMinusPlus()))
     assert repr(cirq_superstaq.aceCRMinusPlus()) == "cirq_superstaq.aceCR('-+')"
     cirq.testing.assert_equivalent_repr(
         cirq_superstaq.aceCRMinusPlus(), setup_code="import cirq_superstaq"
