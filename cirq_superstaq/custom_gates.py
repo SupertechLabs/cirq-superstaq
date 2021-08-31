@@ -73,7 +73,7 @@ class ZXPowGate(cirq.EigenGate, cirq.TwoQubitGate):
     r"""The ZX-parity gate, possibly raised to a power.
     Per arxiv.org/pdf/1904.06560v3 eq. 135, the ZX**t gate implements the following unitary:
      .. math::
-        e^{-\frac{i}{2} Z \otimes X} = \begin{bmatrix}
+        e^{-\frac{i\pi}{2} t Z \otimes X} = \begin{bmatrix}
                                         c & -s & . & . \\
                                         -s & c & . & . \\
                                         . & . & c & s \\
@@ -126,8 +126,6 @@ class ZXPowGate(cirq.EigenGate, cirq.TwoQubitGate):
 
 
 CR = ZX = ZXPowGate()  # standard CR is a full turn of ZX, i.e. theta = 180
-CR45P = CR ** 0.25
-CR45N = CR ** -0.25
 
 
 class aceCR(cirq.TwoQubitGate):
