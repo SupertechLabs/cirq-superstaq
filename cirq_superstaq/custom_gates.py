@@ -125,7 +125,7 @@ class ZXPowGate(cirq.EigenGate, cirq.TwoQubitGate):
         )
 
 
-CR = ZX = ZXPowGate()  # standard CR is a full turn of ZX, i.e. theta = 180
+CR = ZX = ZXPowGate()  # standard CR is a full turn of ZX, i.e. exponent = 1
 
 
 class aceCR(cirq.TwoQubitGate):
