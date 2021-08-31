@@ -39,8 +39,6 @@ __all__ = [
     "API_VERSION",
     "Barrier",
     "CR",
-    "CR45N",
-    "CR45P",
     "FermionicSWAPGate",
     "Job",
     "Service",
