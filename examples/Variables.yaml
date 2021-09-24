@@ -1,0 +1,645 @@
+CS:
+  C5T4:
+    DRAG_alpha:
+    - 0.0
+    - 0.0
+    IZ_phase_rad: -2.194
+    L4:
+      amplitude: 1.0
+      phase: 0.0
+    L5:
+      amplitude: 0.5
+      phase: 3.34
+    L6:
+      amplitude: 0.31
+      phase: 3.05
+    L7:
+      amplitude: 0.0
+      phase: 0.0
+    ZI_phase_rad: -2.675
+    amplitude: 0.73
+    detuning: 0.0
+    envelope: cos_square_DRAGdouble
+    length: 2.01e-07
+    mod_freq: -130000000.0
+    phase: 0.0
+    ramp_fraction: 0.3
+    ramp_length: null
+    spectator_ZZ:
+      L6:
+        amplitude: 0.0
+        phase: 0.0
+      L7:
+        amplitude: 0.064
+        phase: 0.0
+      mod_freq: 20000000.0
+    spectator_phase:
+      Q6: 1.13
+      Q7: 0.334
+  C6T5:
+    DRAG_alpha:
+    - 0.0
+    - 0.0
+    IZ_phase_rad: -0.276
+    L4:
+      amplitude: 0.077
+      phase: 0.06
+    L5:
+      amplitude: 0.5
+      phase: -2.57
+    L6:
+      amplitude: 1.0
+      phase: 0.0
+    L7:
+      amplitude: 0.62
+      phase: -1.3
+    ZI_phase_rad: -1.27
+    amplitude: 0.24
+    detuning: 0.0
+    envelope: cos_square_DRAGdouble
+    length: 2.01e-07
+    mod_freq: -136269981.857756
+    phase: 0.0
+    ramp_fraction: 0.3
+    ramp_length: null
+    spectator_ZZ:
+      L7:
+        amplitude: 0.0
+        phase: 0.0
+      mod_freq: 20000000.0
+    spectator_phase:
+      Q4: 0.02
+      Q7: -0.903
+  C7T6:
+    DRAG_alpha:
+    - 0.0
+    - 0.0
+    IZ_phase_rad: -0.19
+    L4:
+      amplitude: 0.0
+      phase: -1.35
+    L5:
+      amplitude: 0.14
+      phase: -1.5
+    L6:
+      amplitude: 0.0
+      phase: 0.0
+    L7:
+      amplitude: 1.0
+      phase: 0.0
+    ZI_phase_rad: -0.74
+    amplitude: 0.213
+    detuning: 0.0
+    envelope: cos_square_DRAGdouble
+    length: 2.01e-07
+    mod_freq: 20000000.0
+    phase: 0.0
+    ramp_fraction: 0.3
+    ramp_length: null
+    spectator_ZZ:
+      L4:
+        amplitude: 0.0915
+        phase: 0.0
+      L5:
+        amplitude: 0.0
+        phase: 0.0
+      mod_freq: -340000000.0
+    spectator_phase:
+      Q4: 1.48
+      Q5: 0.14
+CSD:
+  C5T4:
+    DRAG_alpha:
+    - 0.0
+    - 0.0
+    IZ_phase_rad: 2.278
+    L4:
+      amplitude: 1.0
+      phase: 0.0
+    L5:
+      amplitude: 0.2246
+      phase: 0.2
+    L6:
+      amplitude: 0.2
+      phase: 3.1
+    L7:
+      amplitude: 0.0
+      phase: 0.0
+    ZI_phase_rad: -1.817
+    amplitude: 0.24
+    detuning: 0.0
+    envelope: cos_square_DRAGdouble
+    length: 2.01e-07
+    mod_freq: -130000000.0
+    phase: 0.0
+    ramp_fraction: 0.3
+    ramp_length: null
+    spectator_ZZ:
+      L6:
+        amplitude: 0.0
+        phase: 0.0
+      L7:
+        amplitude: 0.075
+        phase: 0.0
+      mod_freq: 20000000.0
+    spectator_phase:
+      Q6: 0.87
+      Q7: 1.751
+  C6T5:
+    DRAG_alpha:
+    - 0.0
+    - 0.0
+    IZ_phase_rad: 1.07
+    L4:
+      amplitude: 0.38
+      phase: 3.0
+    L5:
+      amplitude: 1.0
+      phase: 0.3
+    L6:
+      amplitude: 1.0
+      phase: 0.0
+    L7:
+      amplitude: 0.0
+      phase: -0.0
+    ZI_phase_rad: 0.999
+    amplitude: 0.39
+    detuning: 0.0
+    envelope: cos_square_DRAGdouble
+    length: 2.01e-07
+    mod_freq: -136269981.857756
+    phase: 0.0
+    ramp_fraction: 0.3
+    ramp_length: null
+    spectator_ZZ:
+      L7:
+        amplitude: 0.125
+        phase: 1.5
+      mod_freq: 10000000.0
+    spectator_phase:
+      Q4: -0.079
+      Q7: -2.35
+  C7T6:
+    DRAG_alpha:
+    - 0.0
+    - 0.0
+    IZ_phase_rad: 1.01
+    L4:
+      amplitude: 0.0
+      phase: -1.5
+    L5:
+      amplitude: 0.0
+      phase: -1.33
+    L6:
+      amplitude: 0.0
+      phase: 0.0
+    L7:
+      amplitude: 1.0
+      phase: 0.0
+    ZI_phase_rad: -2.21
+    amplitude: 0.28
+    detuning: 0.0
+    envelope: cos_square_DRAGdouble
+    length: 2.01e-07
+    mod_freq: 120000000.0
+    phase: 0.0
+    ramp_fraction: 0.3
+    ramp_length: null
+    spectator_ZZ:
+      L4:
+        amplitude: 0.045
+        phase: 3.0
+      L5:
+        amplitude: 0.14
+        phase: 0.0
+      L6:
+        amplitude: 0.0
+        phase: 0.0
+      mod_freq: -136270000.0
+    spectator_phase:
+      Q4: 0.17
+      Q5: -2.36
+CZ:
+  C5T4:
+    DRAG_alpha:
+    - 0.0
+    - 0.0
+    IZ_phase_rad: 0.5635
+    L4:
+      amplitude: 1.0
+      phase: 0.0
+    L5:
+      amplitude: 0.2246
+      phase: 0.4
+    L6:
+      amplitude: 0.15
+      phase: 3.1
+    L7:
+      amplitude: 0.0
+      phase: 0.0
+    ZI_phase_rad: 1.775
+    amplitude: 0.4715
+    detuning: 0.0
+    envelope: cos_square_DRAGdouble
+    length: 2.01e-07
+    mod_freq: -130000000.0
+    phase: 0.0
+    ramp_fraction: 0.3
+    ramp_length: null
+    spectator_ZZ:
+      L6:
+        amplitude: 0.0
+        phase: 0.0
+      L7:
+        amplitude: 0.0775
+        phase: 0.0
+      mod_freq: 20000000.0
+    spectator_phase:
+      Q6: 0.966
+      Q7: 1.747
+  C6T5:
+    DRAG_alpha:
+    - 0.0
+    - 0.0
+    IZ_phase_rad: 2.0475
+    L4:
+      amplitude: 0.085
+      phase: -2.87
+    L5:
+      amplitude: 0.0
+      phase: -2.57
+    L6:
+      amplitude: 1.0
+      phase: 0.0
+    L7:
+      amplitude: 0.5
+      phase: -1.951
+    ZI_phase_rad: -1.535
+    amplitude: 0.6212
+    detuning: 0.0
+    envelope: cos_square_DRAGdouble
+    length: 2.01e-07
+    mod_freq: -136269981.857756
+    phase: 0.0
+    ramp_fraction: 0.3
+    ramp_length: null
+    spectator_ZZ:
+      L7:
+        amplitude: 0.0
+        phase: 0.0
+      mod_freq: 20000000.0
+    spectator_phase:
+      Q4: 0.054
+      Q7: 3.205
+  C7T6:
+    DRAG_alpha:
+    - 0.0
+    - 0.0
+    IZ_phase_rad: 2.7835
+    L4:
+      amplitude: 0.0
+      phase: -1.5
+    L5:
+      amplitude: 0.37
+      phase: -1.5
+    L6:
+      amplitude: 0.0
+      phase: 0.0
+    L7:
+      amplitude: 1.0
+      phase: 0.0
+    ZI_phase_rad: -2.265
+    amplitude: 0.3227
+    detuning: 0.0
+    envelope: cos_square_DRAGdouble
+    length: 2.01e-07
+    mod_freq: 20000000.0
+    phase: 0.0
+    ramp_fraction: 0.3
+    ramp_length: null
+    spectator_ZZ:
+      L4:
+        amplitude: 0.0915
+        phase: 0.0
+      L5:
+        amplitude: 0.0
+        phase: 0.0
+      mod_freq: -340000000.0
+    spectator_phase:
+      Q4: 1.59
+      Q5: 0.31
+  simul:
+    C5T4:
+      DRAG_alpha:
+      - 0.0
+      - 0.0
+      IZ_phase_rad: 0.4545
+      L4:
+        amplitude: 1.0
+        phase: 0.0
+      L5:
+        amplitude: 0.2246
+        phase: 0.4
+      L6:
+        amplitude: 0.15
+        phase: 3.1
+      L7:
+        amplitude: 0.0
+        phase: 0.0
+      ZI_phase_rad: 1.6905
+      amplitude: 0.4692
+      detuning: 0.0
+      mod_freq: -130000000.0
+      phase: 0.0
+    C7T6:
+      DRAG_alpha:
+      - 0.0
+      - 0.0
+      IZ_phase_rad: 2.96
+      L4:
+        amplitude: 0.0
+        phase: -1.5
+      L5:
+        amplitude: 0.37
+        phase: -1.5
+      L6:
+        amplitude: 0.0
+        phase: 0.0
+      L7:
+        amplitude: 1.0
+        phase: 0.0
+      ZI_phase_rad: -2.155
+      amplitude: 0.3238
+      detuning: 0.0
+      mod_freq: 20000000.0
+      phase: 0.0
+    envelope: cos_square_DRAGdouble
+    length: 2.01e-07
+    ramp_fraction: 0.3
+    ramp_length: null
+Q4:
+  DRAG_alpha: 0
+  EF:
+    DRAG_alpha: 0.0
+    amp_180: 0.24
+    amp_90: 0.125775
+    freq: 4977000000.0
+    mod_freq: -448000000.0
+    pulse_shape: DRAG
+    rabi_amp: 0.05
+    rabi_ramp: 1.5e-08
+  amp_180: 0.28097
+  amp_90: 0.15592357511333266
+  angle_90: 0.089
+  anharmonicity: -275000000.0
+  chan_I: 1
+  chan_Q: 0
+  chan_Q_phase: 0.0
+  crosstalk:
+    Q5:
+      amp: 0.32360748213675894
+      enable: 1.0
+      phase: -3.2030159603822943
+    Q6:
+      amp: 0.28921276568808396
+      enable: 1.0
+      phase: -4.358142289925395
+  freq: 5254048222.617375
+  mod_freq: -170951777.38262463
+  mod_freq_ef: -574499476.0
+  pulse_shape: DRAG
+  rabi_amp: 0.1
+  rabi_ramp: 1.5e-08
+  readout:
+    confusion_matrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    iq_angle: 1.0859999656677246
+    iq_covariances:
+    - 1800.0
+    - 1900.0
+    - 1900.0
+    iq_means:
+    - -272.67366
+    - 16.0
+    - -59.1275
+    - -161.81445
+    - 180.0
+    - 29.0
+  res_freq: 6563010000.0
+  res_mod_freq: 43010000.0
+Q5:
+  DRAG_alpha: 0
+  EF:
+    DRAG_alpha: 0.0
+    amp_180: 0.24
+    amp_90: 0.10962
+    freq: 5058958500.0
+    mod_freq: -366041500.0
+    pulse_shape: DRAG
+    rabi_amp: 0.05
+    rabi_ramp: 1.5e-08
+  amp_180: 0.24042
+  amp_90: 0.13998922651106374
+  angle_90: 0.077
+  anharmonicity: -275000000.0
+  chan_I: 7
+  chan_Q: 6
+  chan_Q_phase: 0.0
+  crosstalk:
+    Q4:
+      amp: 0.15374664432435872
+      enable: 1.0
+      phase: -3.4934076341943827
+    Q6:
+      amp: -0.25563773019206293
+      enable: 1.0
+      phase: -3.181325491595344
+  freq: 5331004163.37656
+  mod_freq: -93995836.62343979
+  mod_freq_ef: -507064182.0
+  pulse_shape: DRAG
+  rabi_amp: 0.1
+  rabi_ramp: 1.5e-08
+  readout:
+    confusion_matrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    iq_angle: -0.13699999451637268
+    iq_covariances:
+    - 780.0
+    - 800.0
+    - 800.0
+    iq_means:
+    - -142.28833
+    - 12.0
+    - 30.0
+    - -90.4143
+    - 140.0
+    - 38.0
+  res_freq: 6622400000.0
+  res_mod_freq: 102400000.0
+Q6:
+  DRAG_alpha: 0
+  EF:
+    DRAG_alpha: 0.0
+    amp_180: 0.24
+    amp_90: 0.09812
+    freq: 5219181400.0
+    mod_freq: -205818600.0
+    pulse_shape: DRAG
+    rabi_amp: 0.05
+    rabi_ramp: 1.5e-08
+  amp_180: 0.25522
+  amp_90: 0.14913109429173663
+  angle_90: 0.03
+  anharmonicity: -271350000.0
+  chan_I: 5
+  chan_Q: 4
+  crosstalk:
+    Q4:
+      amp: 0.05502096771961145
+      enable: 0.0
+      phase: 3.3153826780250975
+    Q5:
+      amp: 0.21822598385750358
+      enable: 1.0
+      phase: -8.562627648980722
+    Q7:
+      amp: 0.12465694002910575
+      enable: 1.0
+      phase: -6.999672206180174
+  freq: 5490955208.023929
+  mod_freq: 65955208.02392864
+  mod_freq_ef: -342664111.7941656
+  pulse_shape: DRAG
+  rabi_amp: 0.1
+  rabi_ramp: 1.5e-08
+  readout:
+    confusion_matrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    iq_angle: -2.568000078201294
+    iq_covariances:
+    - 240.0
+    - 260.0
+    - 250.0
+    iq_means:
+    - 84.0
+    - 4.8
+    - -6.745
+    - 62.0
+    - -76.4203
+    - -2.751
+  res_freq: 6678700000.0
+  res_mod_freq: 158700000.0
+Q7:
+  DRAG_alpha: 0
+  EF:
+    DRAG_alpha: 0.0
+    amp_180: 0.24
+    amp_90: 0.18
+    freq: 5374705400.0
+    mod_freq: -50294600.0
+    pulse_shape: DRAG
+    rabi_amp: 0.05
+    rabi_ramp: 1.5e-08
+  amp_180: 0.285
+  amp_90: 0.10917489438882243
+  angle_90: 0.054
+  anharmonicity: -269000000.0
+  chan_I: 3
+  chan_Q: 2
+  crosstalk:
+    Q6:
+      amp: 0.9669366636166953
+      enable: 1.0
+      phase: -3.5851719191386433
+  freq: 5661690784.308945
+  mod_freq: 236690784.3089447
+  mod_freq_ef: -165589965.12414837
+  pulse_shape: DRAG
+  rabi_amp: 0.1
+  rabi_ramp: 1.5e-08
+  readout:
+    confusion_matrix:
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    - 0.0
+    - 0.0
+    - 0.0
+    - 1.0
+    iq_angle: -0.07400000095367432
+    iq_covariances:
+    - 48.0
+    - 48.0
+    - 49.0
+    iq_means:
+    - -30.4209
+    - -0.0
+    - -0.71
+    - -22.8164
+    - 26.0
+    - 3.0
+  res_freq: 6736400000.0
+  res_mod_freq: 216400000.0
+common:
+  ZZ:
+    56: 176000
+    67: 197000
+    70: 260700
+  pulse_length: 3e-08
+  trig_delay: 130.0
+  y_phase: 1.5707963267948966
+hardware:
+  qubit_LO: 5425000000.0
+  readout_LO: 6520000000.0
+readout:
+  R0_amp: 0.0
+  R4_amp: 0.03
+  R5_amp: 0.031
+  R6_amp: 0.031
+  R7_amp: 0.048
+  chan_I: 11
+  chan_Q: 10
+  corr_matrix:
+  - Q4/readout/confusion_matrix
+  - Q5/readout/confusion_matrix
+  - Q6/readout/confusion_matrix
+  - Q7/readout/confusion_matrix
+  heralding: true
+  length: 1.024e-06
+  readout_qubits:
+  - 4
+  - 5
+  - 6
+  - 7
+readout/corr_matrix:
+- Q4/readout/confusion_matrix
+- Q5/readout/confusion_matrix
+- Q6/readout/confusion_matrix
+- Q7/readout/confusion_matrix
