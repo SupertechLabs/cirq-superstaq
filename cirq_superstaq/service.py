@@ -27,6 +27,32 @@ import cirq_superstaq
 from cirq_superstaq import job, superstaq_client
 
 
+def counts_to_results(
+    counter: collections.Counter, circuit: cirq.Circuit, param_resolver: cirq.ParamResolver
+) -> cirq.Result:
+    key_names = circuit.all_measurement_key_names()
+
+    combine_key_names = "".join(list(key_names))
+
+    lst = []
+    for i in counter.keys():
+        list_of_bin = []
+        collect_i_int = counter[i]
+        for j in i:
+            list_of_bin.append(int(j))
+        for i in range(collect_i_int):
+            lst.append(list_of_bin)
+    arr_list1 = np.array(lst)
+    result = cirq.Result(
+        params=param_resolver,
+        measurements={
+            combine_key_names: arr_list1,
+        },
+    )
+
+    return result
+
+
 class Service:
     """A class to access SuperstaQ's API.
 
@@ -96,7 +122,7 @@ class Service:
             ibmq_pulse=ibmq_pulse,
         )
 
-    def run(
+    def get_counts(
         self,
         circuit: "cirq.Circuit",
         repetitions: int,
@@ -104,6 +130,19 @@ class Service:
         target: Optional[str] = None,
         param_resolver: cirq.ParamResolverOrSimilarType = cirq.ParamResolver({}),
     ) -> collections.Counter:
+        resolved_circuit = cirq.protocols.resolve_parameters(circuit, param_resolver)
+        counts = self.create_job(resolved_circuit, repetitions, name, target).counts()
+
+        return counts
+
+    def run(
+        self,
+        circuit: "cirq.Circuit",
+        repetitions: int,
+        name: Optional[str] = None,
+        target: Optional[str] = None,
+        param_resolver: cirq.ParamResolver = cirq.ParamResolver({}),
+    ) -> cirq.Result:
         """Run the given circuit on the SuperstaQ API.
 
         Args:
@@ -116,10 +155,8 @@ class Service:
         Returns:
             A `cirq.Result` for running the circuit.
         """
-        resolved_circuit = cirq.protocols.resolve_parameters(circuit, param_resolver)
-        counts = self.create_job(resolved_circuit, repetitions, name, target).counts()
-
-        return counts
+        counts = self.get_counts(circuit, repetitions, name, target, param_resolver)
+        return counts_to_results(counts, circuit, param_resolver)
 
     def create_job(
         self,
