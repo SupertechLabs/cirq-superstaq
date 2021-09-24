@@ -30,23 +30,47 @@ from cirq_superstaq import job, superstaq_client
 def counts_to_results(
     counter: collections.Counter, circuit: cirq.Circuit, param_resolver: cirq.ParamResolver
 ) -> cirq.Result:
-    key_names = circuit.all_measurement_key_names()
+    """Converts a collections.Counter to a cirq.Result.
 
-    combine_key_names = "".join(list(key_names))
+    Args:
+            circuit: The circuit to run.
+            repetitions: The number of times to run the circuit.
+            name: An optional name for the created job. Different from the `job_id`.
+            target: Where to run the job. Can be 'qpu' or 'simulator'.
+            param_resolver: A `cirq.ParamResolver` to resolve parameters in  `circuit`.
 
-    lst = []
-    for i in counter.keys():
-        list_of_bin = []
-        collect_i_int = counter[i]
-        for j in i:
-            list_of_bin.append(int(j))
-        for i in range(collect_i_int):
-            lst.append(list_of_bin)
-    arr_list1 = np.array(lst)
+        Returns:
+            A `cirq.Result` for the given circuit and counter.
+
+    """
+
+    measurement_key_names = list(circuit.all_measurement_key_names())
+    measurement_key_names.sort()
+    # Combines all the measurement key names into a string: {'0', '1'} -> "01"
+    combine_key_names = "".join(list(measurement_key_names))
+
+    samples: List[List[int]] = []
+    for key in counter.keys():
+        keys_as_list: List[int] = []
+
+        # Combines the keys of the counter into a list. If key = "01", keys_as_list = [0, 1]
+        for index in key:
+            keys_as_list.append(int(index))
+
+        # Gets the number of counts of the key
+        # counter = collections.Counter({"01": 48, "11": 52})["01"] -> 48
+        counts_of_key = counter[key]
+
+        # Appends all the keys onto 'samples' list number-of-counts-in-the-key times
+        # If collections.Counter({"01": 48, "11": 52}), [0, 1] is appended to 'samples` 48 times and
+        # [1, 1] is appended to 'samples' 52 times
+        for key in range(counts_of_key):
+            samples.append(keys_as_list)
+
     result = cirq.Result(
         params=param_resolver,
         measurements={
-            combine_key_names: arr_list1,
+            combine_key_names: np.array(samples),
         },
     )
 
@@ -130,6 +154,19 @@ class Service:
         target: Optional[str] = None,
         param_resolver: cirq.ParamResolverOrSimilarType = cirq.ParamResolver({}),
     ) -> collections.Counter:
+        """Runs the given circuit on the SuperstaQ API and returns the result
+        of the ran circuit as a collections.Counter
+
+        Args:
+            circuit: The circuit to run.
+            repetitions: The number of times to run the circuit.
+            name: An optional name for the created job. Different from the `job_id`.
+            target: Where to run the job. Can be 'qpu' or 'simulator'.
+            param_resolver: A `cirq.ParamResolver` to resolve parameters in  `circuit`.
+
+        Returns:
+            A `collection.Counter` for running the circuit.
+        """
         resolved_circuit = cirq.protocols.resolve_parameters(circuit, param_resolver)
         counts = self.create_job(resolved_circuit, repetitions, name, target).counts()
 
@@ -143,7 +180,8 @@ class Service:
         target: Optional[str] = None,
         param_resolver: cirq.ParamResolver = cirq.ParamResolver({}),
     ) -> cirq.Result:
-        """Run the given circuit on the SuperstaQ API.
+        """Run the given circuit on the SuperstaQ API and returns the result
+        of the ran circut as a cirq.Result.
 
         Args:
             circuit: The circuit to run.
