@@ -33,11 +33,9 @@ def counts_to_results(
     """Converts a collections.Counter to a cirq.Result.
 
     Args:
+            counter: The collections.Counter of counts for the run.
             circuit: The circuit to run.
-            repetitions: The number of times to run the circuit.
-            name: An optional name for the created job. Different from the `job_id`.
-            target: Where to run the job. Can be 'qpu' or 'simulator'.
-            param_resolver: A `cirq.ParamResolver` to resolve parameters in  `circuit`.
+            param_resolver: A `cirq.ParamResolver` to resolve parameters in `circuit`.
 
         Returns:
             A `cirq.Result` for the given circuit and counter.
