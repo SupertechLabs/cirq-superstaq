@@ -44,7 +44,7 @@ def counts_to_results(
     """
     measurement_key_names = (
         list(circuit.all_measurement_keys())
-        if "0.13.0" not in cirq.__version__
+        if not cirq.__version__.startswith("0.13.0")
         else list(circuit.all_measurement_key_names())  # type: ignore
     )
 
