@@ -42,8 +42,12 @@ def counts_to_results(
             A `cirq.Result` for the given circuit and counter.
 
     """
+    measurement_key_names = (
+        list(circuit.all_measurement_keys())
+        if cirq.__version__ <= "0.13.0"
+        else list(circuit.all_measurement_key_names())  # type: ignore
+    )
 
-    measurement_key_names = list(circuit.all_measurement_key_names())
     measurement_key_names.sort()
     # Combines all the measurement key names into a string: {'0', '1'} -> "01"
     combine_key_names = "".join(measurement_key_names)
