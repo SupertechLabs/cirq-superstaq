@@ -2,19 +2,22 @@
 name: Publish cirq-superstaq to PyPI
 
 on:
-  push:
-    branches: [add-gh-action-pypi-publish]
+  workflow_dispatch:
 
 jobs:
-  publish:
-    name: Publish cirq-superstaq to PyPI
-    runs-on: ubuntu-latest 
+  docs:
+    name: publish to PyPI
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
     steps:
-    - name: Publish new version to PyPI
-      if: startsWith(github.ref, 'refs/tags')
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        user: __token__
-        password: ${{ secrets.PYPI_API_TOKEN }}
-      run: |
-        ./update-version-tag.sh
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        env:
+          PYPI_API_KEY: ${{ secrets.$vPYPI_API_KEY }}
+        run: |
+          python -m pip install twine
+          dev_tools/update-version.sh
