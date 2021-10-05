@@ -3,7 +3,7 @@ name: Publish cirq-superstaq to PyPI
 
 on:
   push:
-    branches: [main]
+    branches: [add-gh-action-pypi-publish]
 
 jobs:
   publish:
