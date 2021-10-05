@@ -17,4 +17,4 @@ jobs:
         user: __token__
         password: ${{ secrets.PYPI_API_TOKEN }}
       run: |
-        echo $(git describe --tags --abbrev=0) > 'cirq-superstaq/_version.py'
+        ./update-version-tag.sh
