@@ -258,7 +258,7 @@ class Service:
         return balance
 
     def aqt_compile(
-        self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "default"
+        self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = None
     ) -> "cirq_superstaq.aqt.AQTCompilerOutput":
         """Compiles the given circuit(s) to given target AQT device, optimized to its native gate set.
 
@@ -271,8 +271,8 @@ class Service:
             pulse sequence corresponding to the optimized cirq.Circuit(s) and the
             .pulse_list(s) attribute is the list(s) of cycles.
         """
-        if target != "default" and target != "zurich":
-            raise ValueError(f"Provided backend ({target}) is invalid! Use 'default' or 'zurich'.")
+        if not target:
+            raise ValueError("Target backend must be provided!")
 
         if isinstance(circuits, cirq.Circuit):
             serialized_program = cirq_superstaq.serialization.serialize_circuits([circuits])
@@ -287,11 +287,14 @@ class Service:
 
         return aqt.read_json(json_dict, circuits_list)
 
-    def ibmq_compile(self, circuit: cirq.Circuit, target: Optional[str] = None) -> Any:
+    def ibmq_compile(self, circuit: cirq.Circuit, target: str = None) -> Any:
         """Returns pulse schedule for the given circuit and target.
 
         Qiskit must be installed for returned object to correctly deserialize to a pulse schedule.
         """
+        if not target:
+            raise ValueError("Target backend must be provided!")
+
         serialized_program = cirq_superstaq.serialization.serialize_circuits([circuit])
         json_dict = self._client.ibmq_compile(serialized_program, target)
         try:
