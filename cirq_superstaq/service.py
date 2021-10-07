@@ -271,7 +271,6 @@ class Service:
             pulse sequence corresponding to the optimized cirq.Circuit(s) and the
             .pulse_list(s) attribute is the list(s) of cycles.
         """
-       
         if target != "default" and target != "zurich":
             raise ValueError(f"Provided backend ({target}) is invalid! Use 'default' or 'zurich'.")
 
