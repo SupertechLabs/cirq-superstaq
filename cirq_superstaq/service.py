@@ -258,18 +258,23 @@ class Service:
         return balance
 
     def aqt_compile(
-        self, circuits: Union[cirq.Circuit, List[cirq.Circuit]]
+        self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = None
     ) -> "cirq_superstaq.aqt.AQTCompilerOutput":
-        """Compiles the given circuit(s) to AQT device, optimized to its native gate set.
+        """Compiles the given circuit(s) to given target AQT device, optimized to its native gate set.
 
         Args:
             circuits: cirq Circuit(s) with operations on qubits 4 through 8.
+            target: string of target backend AQT device.
         Returns:
             object whose .circuit(s) attribute is an optimized cirq Circuit(s)
             If qtrl is installed, the object's .seq attribute is a qtrl Sequence object of the
             pulse sequence corresponding to the optimized cirq.Circuit(s) and the
             .pulse_list(s) attribute is the list(s) of cycles.
         """
+       
+        if target != "default" and target != "zurich":
+            raise ValueError(f"Provided backend ({target}) is invalid! Use 'default' or 'zurich'.")
+
         if isinstance(circuits, cirq.Circuit):
             serialized_program = cirq_superstaq.serialization.serialize_circuits([circuits])
             circuits_list = False
@@ -277,7 +282,7 @@ class Service:
             serialized_program = cirq_superstaq.serialization.serialize_circuits(circuits)
             circuits_list = True
 
-        json_dict = self._client.aqt_compile(serialized_program)
+        json_dict = self._client.aqt_compile(serialized_program, target)
 
         from cirq_superstaq import aqt
 
