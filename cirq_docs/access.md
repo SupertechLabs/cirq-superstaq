@@ -1,6 +1,6 @@
 # Setting up access and authentication to Cirq-SuperstaQ
 
-[Cirq-SuperstaQ](https://github.com/SupertechLabs/cirq-superstaq) is used to access [SuperStaq](https://www.super.tech/about-superstaq/) via a Web API through [Cirq](https://github.com/quantumlib/Cirq). Cirq programmers can take advantage of the applications, pulse level optimizations, and write-once-target-all features of SuperstaQ with this package.
+Cirq-SuperstaQ is used to access [SuperStaq](https://www.super.tech/about-superstaq/) via a Web API through [Cirq](https://github.com/quantumlib/Cirq). Cirq programmers can take advantage of the applications, pulse level optimizations, and write-once-target-all features of SuperstaQ with this package.
 
 Please note that Python version `3.7` or higher is required.
 
