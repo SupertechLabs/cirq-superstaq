@@ -26,6 +26,7 @@ from applications_superstaq.qubo import read_json_qubo_result
 
 import cirq_superstaq
 from cirq_superstaq import job, superstaq_client
+from cirq._compat import deprecated_parameter
 
 
 def counts_to_results(
@@ -257,8 +258,14 @@ class Service:
             return f"${balance:,.2f}"
         return balance
 
+    @deprecated_parameter(
+        deadline="v1.0",
+        fix="Target backend must be provided.",
+        parameter_desc="target",
+        match=lambda args, kwargs: "target" in kwargs or len(args) > 1,
+    )
     def aqt_compile(
-        self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = None
+        self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: Optional[str] = None
     ) -> "cirq_superstaq.aqt.AQTCompilerOutput":
         """Compiles the given circuit(s) to given target AQT device, optimized to its native gate set.
 
@@ -271,9 +278,6 @@ class Service:
             pulse sequence corresponding to the optimized cirq.Circuit(s) and the
             .pulse_list(s) attribute is the list(s) of cycles.
         """
-        if not target:
-            raise ValueError("Target backend must be provided!")
-
         if isinstance(circuits, cirq.Circuit):
             serialized_program = cirq_superstaq.serialization.serialize_circuits([circuits])
             circuits_list = False
@@ -287,14 +291,38 @@ class Service:
 
         return aqt.read_json(json_dict, circuits_list)
 
-    def ibmq_compile(self, circuit: cirq.Circuit, target: str = None) -> Any:
+    def aqt_compile_v2(
+        self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str
+    ) -> "cirq_superstaq.aqt.AQTCompilerOutput":
+        """Compiles the given circuit(s) to given target AQT device, optimized to its native gate set.
+
+        Args:
+            circuits: cirq Circuit(s) with operations on qubits 4 through 8.
+            target: string of target backend AQT device.
+        Returns:
+            object whose .circuit(s) attribute is an optimized cirq Circuit(s)
+            If qtrl is installed, the object's .seq attribute is a qtrl Sequence object of the
+            pulse sequence corresponding to the optimized cirq.Circuit(s) and the
+            .pulse_list(s) attribute is the list(s) of cycles.
+        """
+        if isinstance(circuits, cirq.Circuit):
+            serialized_program = cirq_superstaq.serialization.serialize_circuits([circuits])
+            circuits_list = False
+        else:
+            serialized_program = cirq_superstaq.serialization.serialize_circuits(circuits)
+            circuits_list = True
+
+        json_dict = self._client.aqt_compile(serialized_program, target)
+
+        from cirq_superstaq import aqt
+
+        return aqt.read_json(json_dict, circuits_list)
+
+    def ibmq_compile(self, circuit: cirq.Circuit, target: Optional[str] = None) -> Any:
         """Returns pulse schedule for the given circuit and target.
 
         Qiskit must be installed for returned object to correctly deserialize to a pulse schedule.
         """
-        if not target:
-            raise ValueError("Target backend must be provided!")
-
         serialized_program = cirq_superstaq.serialization.serialize_circuits([circuit])
         json_dict = self._client.ibmq_compile(serialized_program, target)
         try:
