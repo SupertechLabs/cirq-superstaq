@@ -23,10 +23,10 @@ import qubovert as qv
 from applications_superstaq.finance import MaxSharpeOutput, MinVolOutput
 from applications_superstaq.logistics import TSPOutput, WarehouseOutput
 from applications_superstaq.qubo import read_json_qubo_result
+from cirq._compat import deprecated_parameter
 
 import cirq_superstaq
 from cirq_superstaq import job, superstaq_client
-from cirq._compat import deprecated_parameter
 
 
 def counts_to_results(
