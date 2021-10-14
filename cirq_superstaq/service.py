@@ -14,7 +14,7 @@
 
 import collections
 import os
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, Union
 
 import applications_superstaq
 import cirq
@@ -23,10 +23,51 @@ import qubovert as qv
 from applications_superstaq.finance import MaxSharpeOutput, MinVolOutput
 from applications_superstaq.logistics import TSPOutput, WarehouseOutput
 from applications_superstaq.qubo import read_json_qubo_result
-from cirq._compat import deprecated_parameter
 
 import cirq_superstaq
 from cirq_superstaq import job, superstaq_client
+
+Service_t = TypeVar("Service_t")
+
+def deprecated_parameter(
+    *,
+    deadline: str,
+    fix: str,
+    func_name: Optional[str] = None,
+    parameter_desc: str,
+    match: Callable[[Tuple[Any, ...], Dict[str, Any]], bool],
+) -> Callable[[Callable], Callable]:
+    """Marks a function parameter as deprecated, similar to in Cirq/_compat.py.
+
+    Args:
+        deadline: The version of cirq_superstaq where function will be removed.
+        fix: A complete sentence describing what the user should use instead of this function.
+        parameter_desc: The name and type of the parameter being deprecated.
+        match: A lambda taking args, kwargs and determines if, e.g., deprecated parameter is
+            populated or not (i.e., the parameter is no required, so its *optionality* is
+            deprecated). Also determines whether deprecation warning is printed.
+
+    Returns:
+        A decorator that decorates functions with a parametert deprecation warning.
+    """
+    def decorator(func: Callable) -> Callable:
+        # args each type-annotated with expected type for one such argument; see Type Hints PEP:
+        # https://www.python.org/dev/peps/pep-0484/#arbitrary-argument-lists-and-default-argument-values
+        def decorated_func(*args: Service_t, **kwargs: str) -> Any:
+            if match(args, kwargs):
+                qualname = func.__qualname__ if func_name is None else func_name
+                print(
+                    f'The {parameter_desc} parameter of {qualname} was '
+                    f'not provided but, this version is deprecated.\n'
+                    f'This version will be removed in cirq-superstaq {deadline}.\n'
+                    f'{fix}'
+                )
+
+            return func(*args, **kwargs)
+
+        return decorated_func
+
+    return decorator
 
 
 def counts_to_results(
@@ -262,7 +303,7 @@ class Service:
         deadline="v1.0",
         fix="Target backend must be provided.",
         parameter_desc="target",
-        match=lambda args, kwargs: "target" in kwargs or len(args) > 1,
+        match=lambda args, kwargs: "target" not in kwargs,
     )
     def aqt_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: Optional[str] = None
