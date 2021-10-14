@@ -14,7 +14,7 @@
 
 import collections
 import os
-from typing import Any, Callable, Dict, List, Optional, Tuple, TypeVar, Union
+from typing import Any, Dict, List, Optional, Union
 
 import applications_superstaq
 import cirq
