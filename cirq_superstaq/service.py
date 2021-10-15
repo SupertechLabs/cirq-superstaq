@@ -258,7 +258,7 @@ class Service:
         return balance
 
     def aqt_compile(
-        self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = None
+        self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "keysight"
     ) -> "cirq_superstaq.aqt.AQTCompilerOutput":
         """Compiles the given circuit(s) to given target AQT device, optimized to its native gate set.
 
