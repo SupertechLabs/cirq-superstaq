@@ -284,7 +284,7 @@ class Service:
 
         return aqt.read_json(json_dict, circuits_list)
 
-    def ibmq_compile(self, circuit: cirq.Circuit, target: str = None) -> Any:
+    def ibmq_compile(self, circuit: cirq.Circuit, target: str = "ibmq_qasm_simulator") -> Any:
         """Returns pulse schedule for the given circuit and target.
 
         Qiskit must be installed for returned object to correctly deserialize to a pulse schedule.
