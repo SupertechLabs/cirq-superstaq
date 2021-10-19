@@ -11,3 +11,5 @@ Creating and submitting a circuit through Cirq-SuperstaQ requires an API access 
 ## Next steps
 
 [Getting started with Cirq-SuperstaQ](../tutorials/cirq-superstaq/getting_started_cirq_superstaq.ipynb)
+
+[Accessing IBM Q through Cirq-SuperstaQ](../tutorials/cirq-superstaq/ibm_cirq_superstaq.ipynb)
