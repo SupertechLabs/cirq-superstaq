@@ -174,7 +174,7 @@ def test_service_aqt_compile_multiple(mock_aqt_compile: mock.MagicMock) -> None:
 )
 def test_service_ibmq_compile(mock_ibmq_compile: mock.MagicMock) -> None:
     service = cirq_superstaq.Service(remote_host="http://example.com", api_key="key")
-    assert service.ibmq_compile(cirq.Circuit()) == mock.sentinel.DEFAULT
+    assert str(service.ibmq_compile(cirq.Circuit())) == "sentinel.DEFAULT"
 
     with mock.patch.dict("sys.modules", {"unittest": None}), pytest.raises(
         cirq_superstaq.SuperstaQModuleNotFoundException,
