@@ -170,15 +170,15 @@ def test_service_aqt_compile_multiple(mock_aqt_compile: mock.MagicMock) -> None:
 
 @mock.patch(
     "cirq_superstaq.superstaq_client._SuperstaQClient.ibmq_compile",
-    return_value={"pulses": applications_superstaq.converters.serialize([mock.DEFAULT])},
+    return_value={"pulses": applications_superstaq.converters.serialize([cirq.Circuit()])},
 )
 def test_service_ibmq_compile(mock_ibmq_compile: mock.MagicMock) -> None:
     service = cirq_superstaq.Service(remote_host="http://example.com", api_key="key")
-    assert str(service.ibmq_compile(cirq.Circuit())) == "sentinel.DEFAULT"
+    assert service.ibmq_compile(cirq.Circuit()) == cirq.Circuit()
 
-    with mock.patch.dict("sys.modules", {"unittest.mock": None}), pytest.raises(
+    with mock.patch.dict("sys.modules", {"cirq": None}), pytest.raises(
         cirq_superstaq.SuperstaQModuleNotFoundException,
-        match="'ibmq_compile' requires module 'unittest.mock'",
+        match="'ibmq_compile' requires module 'cirq'",
     ):
         _ = service.ibmq_compile(cirq.Circuit())
 
