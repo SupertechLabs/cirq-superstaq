@@ -13,6 +13,7 @@
 
 import collections
 import os
+import sys
 from unittest import mock
 
 import applications_superstaq
@@ -176,7 +177,7 @@ def test_service_ibmq_compile(mock_ibmq_compile: mock.MagicMock) -> None:
     service = cirq_superstaq.Service(remote_host="http://example.com", api_key="key")
     assert service.ibmq_compile(cirq.Circuit()) == cirq.Circuit()
 
-    with mock.patch.dict("sys.modules", {"cirq": None}), pytest.raises(
+    with mock.patch.dict(sys.modules, {"cirq": None}), pytest.raises(
         cirq_superstaq.SuperstaQModuleNotFoundException,
         match="'ibmq_compile' requires module 'cirq'",
     ):
