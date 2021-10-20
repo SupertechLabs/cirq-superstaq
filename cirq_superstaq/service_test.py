@@ -177,11 +177,14 @@ def test_service_ibmq_compile(mock_ibmq_compile: mock.MagicMock) -> None:
     service = cirq_superstaq.Service(remote_host="http://example.com", api_key="key")
     assert service.ibmq_compile(cirq.Circuit()) == cirq.Circuit()
 
-    with mock.patch.dict(sys.modules, {"cirq": None}), pytest.raises(
+    sys.modules["cirq"] = None
+
+    with pytest.raises(
         cirq_superstaq.SuperstaQModuleNotFoundException,
         match="'ibmq_compile' requires module 'cirq'",
     ):
         _ = service.ibmq_compile(cirq.Circuit())
+    sys.modules["cirq"] = cirq
 
 
 @mock.patch(
