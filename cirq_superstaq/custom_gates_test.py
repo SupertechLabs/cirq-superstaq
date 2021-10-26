@@ -80,28 +80,58 @@ def test_zx_circuit() -> None:
 
 def test_acecr() -> None:
     qubits = cirq.LineQubit.range(2)
-    expected = "0: ───AceCR-+(Z side)───\n      │\n1: ───AceCR-+(X side)───"
-    assert str(cirq.Circuit(cirq_superstaq.AceCRMinusPlus(qubits[0], qubits[1]))) == expected
-    expected = "0: ───AceCR+-(X side)───\n      │\n1: ───AceCR+-(Z side)───"
-    assert str(cirq.Circuit(cirq_superstaq.AceCRPlusMinus(qubits[1], qubits[0]))) == expected
+    cirq.testing.assert_has_diagram(
+        cirq.Circuit(cirq_superstaq.AceCRMinusPlus(qubits[0], qubits[1])),
+        textwrap.dedent(
+            """
+            0: ───AceCR-+(Z side)───
+                  │
+            1: ───AceCR-+(X side)───
+            """
+        ),
+    )
     assert cirq_superstaq.AceCRPlusMinus == cirq_superstaq.AceCR("+-")
     assert cirq_superstaq.AceCRPlusMinus != cirq_superstaq.AceCR("-+")
-    assert repr(cirq_superstaq.AceCRMinusPlus) == "cirq_superstaq.AceCR('-+')"
     cirq.testing.assert_equivalent_repr(
         cirq_superstaq.AceCRMinusPlus, setup_code="import cirq_superstaq"
     )
-    cirq.testing.assert_equivalent_repr(
-        cirq_superstaq.AceCRPlusMinus, setup_code="import cirq_superstaq"
-    )
-    assert str(cirq_superstaq.AceCRMinusPlus) == "AceCR-+"
-    assert hash(cirq_superstaq.AceCRMinusPlus) == hash("-+")
+    assert str(cirq_superstaq.AceCRPlusMinus) == "AceCR+-"
+    assert hash(cirq_superstaq.AceCRMinusPlus) == hash(("-+", None))
+
     assert cirq_superstaq.AceCRPlusMinus != cirq.CNOT
+    cirq.testing.assert_has_diagram(
+        cirq.Circuit(cirq_superstaq.AceCRPlusMinusXNeg90Target(qubits[1], qubits[0])),
+        textwrap.dedent(
+            """
+            0: ───AceCR+-(X side) with Rx(-0.5π)───
+                  │
+            1: ───AceCR+-(Z side)──────────────────
+            """
+        ),
+    )
+    cirq.testing.assert_equivalent_repr(
+        cirq_superstaq.AceCRPlusMinusXNeg90Target, setup_code="import cirq_superstaq; import cirq"
+    )
+    assert str(cirq_superstaq.AceCRMinusPlusXNeg90Target) == "AceCR-+(Rx(-0.5π))"
+    assert hash(cirq_superstaq.AceCRMinusPlusXNeg90Target) == hash(("-+", cirq.rx(-np.pi / 2)))
 
 
 def test_acecr_decompose() -> None:
     a = cirq.LineQubit(0)
     b = cirq.LineQubit(1)
-    assert cirq.decompose_once(cirq_superstaq.AceCRMinusPlus(a, b)) is not None
+    expected = cirq.Circuit(
+        cirq_superstaq.CR(a, b) ** -0.25,
+        cirq.X(a),
+        cirq_superstaq.CR(a, b) ** 0.25,
+    )
+    assert cirq.decompose_once(cirq_superstaq.AceCRMinusPlus(a, b)) == list(
+        expected.all_operations()
+    )
+
+    expected.insert(1, cirq.rx(-np.pi / 2)(b))
+    assert cirq.decompose_once(cirq_superstaq.AceCRMinusPlusXNeg90Target(a, b)) == list(
+        expected.all_operations()
+    )
 
 
 def test_barrier() -> None:

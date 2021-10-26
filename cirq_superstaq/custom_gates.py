@@ -1,6 +1,6 @@
 """Miscellaneous custom gates that we encounter and want to explicitly define."""
 
-from typing import Any, Callable, Dict, List, Sequence, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 import cirq
 import numpy as np
@@ -133,9 +133,10 @@ CR = ZX = ZXPowGate()  # standard CR is a full turn of ZX, i.e. exponent = 1
 
 
 class AceCR(cirq.Gate):
-    def __init__(self, polarity: str) -> None:
+    def __init__(self, polarity: str, target_gate: Optional[cirq.Gate] = None) -> None:
         assert polarity in ["+-", "-+"]
         self.polarity = polarity
+        self.target_gate = target_gate
 
     def _num_qubits_(self) -> int:
         return 2
@@ -145,6 +146,8 @@ class AceCR(cirq.Gate):
             *qubits
         ) ** -0.25
         yield cirq.X(qubits[0])
+        if self.target_gate is not None:
+            yield self.target_gate(qubits[1])
         yield cirq_superstaq.CR(*qubits) ** -0.25 if self.polarity == "+-" else cirq_superstaq.CR(
             *qubits
         ) ** 0.25
@@ -152,31 +155,37 @@ class AceCR(cirq.Gate):
     def _circuit_diagram_info_(
         self, args: cirq.CircuitDiagramInfoArgs
     ) -> cirq.protocols.CircuitDiagramInfo:
-        return cirq.protocols.CircuitDiagramInfo(
-            wire_symbols=(f"AceCR{self.polarity}(Z side)", f"AceCR{self.polarity}(X side)")
-        )
+        top, bottom = f"AceCR{self.polarity}(Z side)", f"AceCR{self.polarity}(X side)"
+        if self.target_gate is not None:
+            bottom += f" with {self.target_gate}"
+        return cirq.protocols.CircuitDiagramInfo(wire_symbols=(top, bottom))
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, AceCR):
             return False
-        return self.polarity == other.polarity
+        return self.polarity == other.polarity and self.target_gate == other.target_gate
 
     def __hash__(self) -> int:
-        return hash(self.polarity)
+        return hash((self.polarity, self.target_gate))
 
     def __repr__(self) -> str:
+        if self.target_gate is not None:
+            return f"cirq_superstaq.AceCR('{self.polarity}', {self.target_gate!r})"
         return f"cirq_superstaq.AceCR('{self.polarity}')"
 
     def __str__(self) -> str:
+        if self.target_gate is not None:
+            return f"AceCR{self.polarity}({self.target_gate})"
         return f"AceCR{self.polarity}"
 
     def _json_dict_(self) -> Dict[str, Any]:
-        return cirq.protocols.obj_to_dict_helper(self, ["polarity"])
+        return cirq.protocols.obj_to_dict_helper(self, ["polarity", "target_gate"])
 
 
 AceCRMinusPlus = AceCR("-+")
-
 AceCRPlusMinus = AceCR("+-")
+AceCRPlusMinusXNeg90Target = AceCR("+-", cirq.rx(-np.pi / 2))
+AceCRMinusPlusXNeg90Target = AceCR("-+", cirq.rx(-np.pi / 2))
 
 
 class Barrier(cirq.ops.IdentityGate):
