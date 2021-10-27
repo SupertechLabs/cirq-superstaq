@@ -25,19 +25,18 @@ cirq_superstaq_packages = ["cirq_superstaq"] + [
     "cirq_superstaq." + package for package in find_packages(where="cirq_superstaq")
 ]
 
-print(cirq_superstaq_packages)
-
 setup(
     name=name,
     version=__version__,
     url="https://github.com/SupertechLabs/cirq-superstaq",
     author="Super.tech",
     author_email="pranav@super.tech",
-    python_requires=(">=3.8.0"),
+    python_requires=(">=3.7.0"),
     install_requires=requirements,
     license="N/A",
     description=description,
     long_description=long_description,
+    long_description_content_type="text/markdown",
     packages=cirq_superstaq_packages,
     package_data={"cirq_superstaq": ["py.typed"]},
 )

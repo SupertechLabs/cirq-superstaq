@@ -12,14 +12,16 @@
 # limitations under the License.
 """Client for making requests to SuperstaQ's API."""
 
-import json
 import sys
 import time
 import urllib
 from typing import Any, Callable, cast, Dict, Optional
 
-import cirq_superstaq
+import applications_superstaq
+import qubovert as qv
 import requests
+
+import cirq_superstaq
 
 
 class _SuperstaQClient:
@@ -29,12 +31,11 @@ class _SuperstaQClient:
     """
 
     RETRIABLE_STATUS_CODES = {
-        requests.codes.internal_server_error,
         requests.codes.service_unavailable,
     }
     SUPPORTED_TARGETS = {"qpu", "simulator"}
     SUPPORTED_VERSIONS = {
-        "v0.1",
+        cirq_superstaq.API_VERSION,
     }
 
     def __init__(
@@ -65,8 +66,8 @@ class _SuperstaQClient:
             api_key: The key used for authenticating against the SuperstaQ API.
             default_target: The default target to run against. Supports one of 'qpu' and
                 'simulator'. Can be overridden by calls with target in their signature.
-            api_version: Which version fo the api to use. As of Dec, 2020, accepts 'v0.1' only,
-                which is the default.
+            api_version: Which version fo the api to use, defaults to cirq_superstaq.API_VERSION,
+                which is the most recent version when this client was downloaded.
             max_retry_seconds: The time to continue retriable responses. Defaults to 3600.
             verbose: Whether to print to stderr and stdio any retriable errors that are encountered.
         """
@@ -77,14 +78,22 @@ class _SuperstaQClient:
         )
         assert (
             api_version in self.SUPPORTED_VERSIONS
-        ), f"Only api v0.1 is accepted but was {api_version}"
+        ), f"Only api versions {self.SUPPORTED_VERSIONS} are accepted but was {api_version}"
         assert (
             default_target is None or default_target in self.SUPPORTED_TARGETS
         ), f"Target can only be one of {self.SUPPORTED_TARGETS} but was {default_target}."
         assert max_retry_seconds >= 0, "Negative retry not possible without time machine."
 
         self.url = f"{url.scheme}://{url.netloc}/{api_version}"
-        self.headers = {"Authorization": api_key, "Content-Type": "application/json"}
+        self.verify_https: bool = (
+            cirq_superstaq.API_URL + "/" + cirq_superstaq.API_VERSION == self.url
+        )
+        self.headers = {
+            "Authorization": api_key,
+            "Content-Type": "application/json",
+            "X-Client-Name": "cirq-superstaq",
+            "X-Client-Version": cirq_superstaq.API_VERSION,
+        }
         self.default_target = default_target
         self.max_retry_seconds = max_retry_seconds
         self.verbose = verbose
@@ -96,7 +105,7 @@ class _SuperstaQClient:
 
     def create_job(
         self,
-        serialized_program: str,
+        serialized_circuits: str,
         repetitions: Optional[int] = None,
         target: Optional[str] = None,
         name: Optional[str] = None,
@@ -104,8 +113,7 @@ class _SuperstaQClient:
         """Create a job.
 
         Args:
-            serialized_program: The `cirq_superstaq.SerializedProgram` containing the serialized
-                information about the circuit to run.
+            serialized_circuits: The serialized representation of the circuit to run.
             repetitions: The number of times to repeat the circuit. For simulation the repeated
                 sampling is not done on the server, but is passed as metadata to be recovered
                 from the returned job.
@@ -122,7 +130,7 @@ class _SuperstaQClient:
         """
         actual_target = self._target(target)
         json_dict: Dict[str, Any] = {
-            "circuit": json.loads(serialized_program),
+            "cirq_circuits": serialized_circuits,
             "backend": actual_target,
             "shots": repetitions,
             "ibmq_token": self.ibmq_token,
@@ -134,10 +142,10 @@ class _SuperstaQClient:
 
         def request() -> requests.Response:
             return requests.post(
-                f"{self.url}/job",
+                f"{self.url}/jobs",
                 json=json_dict,
                 headers=self.headers,
-                verify=(cirq_superstaq.API_URL == self.url),
+                verify=self.verify_https,
             )
 
         return self._make_request(request).json()
@@ -158,9 +166,136 @@ class _SuperstaQClient:
 
         def request() -> requests.Response:
             return requests.get(
-                f"{self.url}/jobs/{job_id}",
+                f"{self.url}/job/{job_id}",
                 headers=self.headers,
-                verify=(cirq_superstaq.API_URL == self.url),
+                verify=self.verify_https,
+            )
+
+        return self._make_request(request).json()
+
+    def get_balance(self) -> dict:
+        """Get the querying user's account balance in USD.
+
+        Returns:
+            The json body of the response as a dict.
+        """
+
+        def request() -> requests.Response:
+            return requests.get(
+                f"{self.url}/balance",
+                headers=self.headers,
+                verify=self.verify_https,
+            )
+
+        return self._make_request(request).json()
+
+    def aqt_compile(self, serialized_circuits: str, target: str) -> dict:
+        """Makes a POST request to SuperstaQ API to compile a list of circuits for Berkeley-AQT."""
+        json_dict = {"cirq_circuits": serialized_circuits, "backend": target}
+
+        def request() -> requests.Response:
+            return requests.post(
+                f"{self.url}/aqt_compile",
+                headers=self.headers,
+                json=json_dict,
+                verify=self.verify_https,
+            )
+
+        return self._make_request(request).json()
+
+    def ibmq_compile(self, serialized_circuits: str, target: str) -> dict:
+        """Makes a POST request to SuperstaQ API to compile a circuits for IBM devices."""
+        json_dict = {"cirq_circuits": serialized_circuits, "backend": target}
+
+        def request() -> requests.Response:
+            return requests.post(
+                f"{self.url}/ibmq_compile",
+                headers=self.headers,
+                json=json_dict,
+                verify=self.verify_https,
+            )
+
+        return self._make_request(request).json()
+
+    def submit_qubo(self, qubo: qv.QUBO, target: str, repetitions: int = 1000) -> dict:
+        """Makes a POST request to SuperstaQ API to submit a QUBO problem to the given target."""
+        json_dict = {
+            "qubo": applications_superstaq.qubo.convert_qubo_to_model(qubo),
+            "backend": target,
+            "shots": repetitions,
+        }
+
+        def request() -> requests.Response:
+            return requests.post(
+                f"{self.url}/qubo",
+                headers=self.headers,
+                json=json_dict,
+                verify=self.verify_https,
+            )
+
+        return self._make_request(request).json()
+
+    def find_min_vol_portfolio(self, json_dict: dict) -> dict:
+        """Makes a POST request to SuperstaQ API to find a minimum volatility portfolio
+        that exceeds a certain specified return."""
+
+        def request() -> requests.Response:
+            return requests.post(
+                f"{self.url}/minvol",
+                headers=self.headers,
+                json=json_dict,
+                verify=self.verify_https,
+            )
+
+        return self._make_request(request).json()
+
+    def find_max_pseudo_sharpe_ratio(self, json_dict: dict) -> dict:
+        """Makes a POST request to SuperstaQ API to find a max Sharpe ratio portfolio."""
+
+        def request() -> requests.Response:
+            return requests.post(
+                f"{self.url}/maxsharpe",
+                headers=self.headers,
+                json=json_dict,
+                verify=self.verify_https,
+            )
+
+        return self._make_request(request).json()
+
+    def tsp(self, json_dict: dict) -> dict:
+        """Makes a POST request to SuperstaQ API to find a optimal TSP tour."""
+
+        def request() -> requests.Response:
+            return requests.post(
+                f"{self.url}/tsp",
+                headers=self.headers,
+                json=json_dict,
+                verify=self.verify_https,
+            )
+
+        return self._make_request(request).json()
+
+    def warehouse(self, json_dict: dict) -> dict:
+        """Makes a POST request to SuperstaQ API to find optimal warehouse assignment."""
+
+        def request() -> requests.Response:
+            return requests.post(
+                f"{self.url}/warehouse",
+                headers=self.headers,
+                json=json_dict,
+            )
+
+        return self._make_request(request).json()
+
+    def aqt_upload_configs(self, aqt_configs: Dict[str, str]) -> dict:
+        """Makes a POST request to SuperstaQ API to upload configurations."""
+
+        def request() -> requests.Response:
+            return requests.post(
+                f"{self.url}/aqt_configs",
+                headers=self.headers,
+                json=aqt_configs,
+                verify=self.verify_https,
             )
 
         return self._make_request(request).json()
@@ -176,6 +311,29 @@ class _SuperstaQClient:
             "but neither were set."
         )
         return cast(str, target or self.default_target)
+
+    def _handle_status_codes(self, response: requests.Response) -> None:
+        if response.status_code == requests.codes.unauthorized:
+            raise cirq_superstaq.superstaq_exceptions.SuperstaQException(
+                '"Not authorized" returned by SuperstaQ API.  '
+                "Check to ensure you have supplied the correct API key.",
+                response.status_code,
+            )
+        if response.status_code == requests.codes.not_found:
+            raise cirq_superstaq.superstaq_exceptions.SuperstaQNotFoundException(
+                "SuperstaQ could not find requested resource."
+            )
+
+        if response.status_code not in self.RETRIABLE_STATUS_CODES:
+            message = response.reason
+            if response.status_code == 400:
+                message = str(response.text)
+            raise cirq_superstaq.superstaq_exceptions.SuperstaQException(
+                "Non-retriable error making request to SuperstaQ API. "
+                f"Status: {response.status_code} "
+                f"Error : {message}",
+                response.status_code,
+            )
 
     def _make_request(self, request: Callable[[], requests.Response]) -> requests.Response:
         """Make a request to the API, retrying if necessary.
@@ -197,25 +355,11 @@ class _SuperstaQClient:
                 response = request()
                 if response.ok:
                     return response
-                if response.status_code == requests.codes.unauthorized:
-                    raise cirq_superstaq.superstaq_exceptions.SuperstaQException(
-                        '"Not authorized" returned by SuperstaQ API.  '
-                        "Check to ensure you have supplied the correct API key.",
-                        response.status_code,
-                    )
-                if response.status_code == requests.codes.not_found:
-                    raise cirq_superstaq.superstaq_exceptions.SuperstaQNotFoundException(
-                        "SuperstaQ could not find requested resource."
-                    )
-                if response.status_code not in self.RETRIABLE_STATUS_CODES:
-                    raise cirq_superstaq.superstaq_exceptions.SuperstaQException(
-                        "Non-retry-able error making request to SuperstaQ API. "
-                        f"Status: {response.status_code} "
-                        f"Error :{response.reason}",
-                        response.status_code,
-                    )
+
+                self._handle_status_codes(response)
                 message = response.reason
-                # Fallthrough should retry.
+
+            # Fallthrough should retry.
             except requests.RequestException as e:
                 # Connection error, timeout at server, or too many redirects.
                 # Retry these.
