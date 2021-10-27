@@ -16,6 +16,9 @@ from typing import List, Optional
 
 import cirq
 
+import cirq_superstaq
+
+
 class Sampler(cirq.Sampler):
     """A sampler that works against the SuperstaQ API. Users should get a sampler from the `sampler`
     method on `cirq_superstaq.Service`.
@@ -37,7 +40,7 @@ class Sampler(cirq.Sampler):
 
     def __init__(
         self,
-        service: 'ciq_superstaq.Service',
+        service: cirq_superstaq.Service,
         target: Optional[str],
     ):
         """Constructs the sampler. Uers should get a sampler from the `sampler` method on
@@ -58,7 +61,7 @@ class Sampler(cirq.Sampler):
         program: cirq.AbstractCircuit,
         params: cirq.Sweepable,
         repetitions: int = 1,
-    ) -> List["cirq.Resut"]:
+    ) -> List["cirq.Result"]:
         """Runs a sweep for the given Circuit. Note that this creates jobs for each of the sweeps in
         the given sweepable, and then blocks until all of jobs are complete.
 
@@ -73,7 +76,7 @@ class Sampler(cirq.Sampler):
         resolvers = [resolver for resolver in cirq.to_resolvers(params)]
         jobs = [
             self._service.create_job(
-                circuiq=cirq.resolve_parameters(program, resolver),
+                circuit=cirq.resolve_parameters(program, resolver),
                 repetitions=repetitions,
                 target=self._target,
             )
@@ -81,9 +84,6 @@ class Sampler(cirq.Sampler):
         ]
         job_results = [job.results() for job in jobs]
         cirq_results = []
-        for result, params in zip(job_result, resolvers):
-            if isinstance(result, results.QPUResult):
-                cirq_results.append(Result.to_cirq_result(params=params))
-            else:
-                cirq_results.append(result.to_cirq_result(params=params, seed=self._seed))
+        for result, params in zip(job_results, resolvers):
+            cirq_results.append(result.to_cirq_result(params=params))
         return cirq_results
