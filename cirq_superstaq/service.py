@@ -34,12 +34,12 @@ def counts_to_results(
     """Converts a collections.Counter to a cirq.Result.
 
     Args:
-        counter: The collections.Counter of counts for the run.
-        circuit: The circuit to run.
-        param_resolver: A `cirq.ParamResolver` to resolve parameters in `circuit`.
+            counter: The collections.Counter of counts for the run.
+            circuit: The circuit to run.
+            param_resolver: A `cirq.ParamResolver` to resolve parameters in `circuit`.
 
-    Returns:
-        A `cirq.Result` for the given circuit and counter.
+        Returns:
+            A `cirq.Result` for the given circuit and counter.
     """
 
     measurement_key_names = list(circuit.all_measurement_keys())
