@@ -262,7 +262,7 @@ class Service:
 
     def aqt_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "keysight"
-    ) -> "cirq_superstaq.aqt.AQTCompilerOutput":
+    ) -> "cirq_superstaq.compiler_output.CompilerOutput":
         """Compiles the given circuit(s) to given target AQT device, optimized to its native gate set.
 
         Args:
@@ -279,34 +279,30 @@ class Service:
 
         json_dict = self._client.aqt_compile(serialized_circuits, target)
 
-        from cirq_superstaq import aqt
+        from cirq_superstaq import compiler_output
 
-        return aqt.read_json(json_dict, circuits_list)
-
+        return compiler_output.read_json_aqt(json_dict, circuits_list)
 
     def qscout_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "qscout"
-    ) -> "cirq_superstaq.aqt.AQTCompilerOutput":
-        """Compiles the given circuit(s) to given target AQT device, optimized to its native gate set.
+    ) -> "cirq_superstaq.compiler_output.CompilerOutput":
+        """Compiles the given circuit(s) to given target  QSCOUT device, optimized to its native gate set.
 
         Args:
-            circuits: cirq Circuit(s) with operations on qubits 4 through 8.
-            target: string of target backend AQT device.
+            circuits: cirq Circuit(s) with operations on qubits 0 and 1.
+            target: string of target backend QSCOUT device.
         Returns:
             object whose .circuit(s) attribute is an optimized cirq Circuit(s)
-            If qtrl is installed, the object's .seq attribute is a qtrl Sequence object of the
-            pulse sequence corresponding to the optimized cirq.Circuit(s) and the
-            .pulse_list(s) attribute is the list(s) of cycles.
+            and a list of jaqal programs represented as strings
         """
         serialized_circuits = cirq_superstaq.serialization.serialize_circuits(circuits)
         circuits_list = not isinstance(circuits, cirq.Circuit)
 
         json_dict = self._client.qscout_compile(serialized_circuits, target)
 
-        from cirq_superstaq import aqt
+        from cirq_superstaq import compiler_output
 
-
-        return aqt.read_json_qscout(json_dict, circuits_list)
+        return compiler_output.read_json_qscout(json_dict, circuits_list)
 
     def ibmq_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "ibmq_qasm_simulator"
