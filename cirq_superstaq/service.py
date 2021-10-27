@@ -195,18 +195,16 @@ class Service:
         counts = self.get_counts(circuit, repetitions, name, target, param_resolver)
         return counts_to_results(counts, circuit, param_resolver)
 
-
-    def sampler(self, target: Optional[str] = None):
+    def sampler(self, target: Optional[str] = None) -> cirq.Sampler:
         """Returns a `cirq.Sampler` object for accessing sampler interface.
 
         Args:
-            target:
+            target: Backend to sample against.
 
         Returns:
             A `cirq.Sampler` for the SuperstaQ API.
         """
         return cirq_superstaq.sampler.Sampler(service=self, target=target)
-
 
     def create_job(
         self,
