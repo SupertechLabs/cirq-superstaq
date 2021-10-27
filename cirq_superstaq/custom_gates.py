@@ -184,8 +184,6 @@ class AceCR(cirq.Gate):
 
 AceCRMinusPlus = AceCR("-+")
 AceCRPlusMinus = AceCR("+-")
-AceCRPlusMinusXNeg90Target = AceCR("+-", cirq.rx(-np.pi / 2))
-AceCRMinusPlusXNeg90Target = AceCR("-+", cirq.rx(-np.pi / 2))
 
 
 class Barrier(cirq.ops.IdentityGate):

@@ -100,7 +100,7 @@ def test_acecr() -> None:
 
     assert cirq_superstaq.AceCRPlusMinus != cirq.CNOT
     cirq.testing.assert_has_diagram(
-        cirq.Circuit(cirq_superstaq.AceCRPlusMinusXNeg90Target(qubits[1], qubits[0])),
+        cirq.Circuit(cirq_superstaq.AceCR("+-", cirq.rx(-np.pi / 2))(qubits[1], qubits[0])),
         textwrap.dedent(
             """
             0: ───AceCR+-(X side) with Rx(-0.5π)───
@@ -110,10 +110,13 @@ def test_acecr() -> None:
         ),
     )
     cirq.testing.assert_equivalent_repr(
-        cirq_superstaq.AceCRPlusMinusXNeg90Target, setup_code="import cirq_superstaq; import cirq"
+        cirq_superstaq.AceCR("+-", cirq.rx(-np.pi / 2)),
+        setup_code="import cirq_superstaq; import cirq",
     )
-    assert str(cirq_superstaq.AceCRMinusPlusXNeg90Target) == "AceCR-+(Rx(-0.5π))"
-    assert hash(cirq_superstaq.AceCRMinusPlusXNeg90Target) == hash(("-+", cirq.rx(-np.pi / 2)))
+    assert str(cirq_superstaq.AceCR("-+", cirq.rx(-np.pi / 2))) == "AceCR-+(Rx(-0.5π))"
+    assert hash(cirq_superstaq.AceCR("-+", cirq.rx(-np.pi / 2))) == hash(
+        ("-+", cirq.rx(-np.pi / 2))
+    )
 
 
 def test_acecr_decompose() -> None:
@@ -129,7 +132,7 @@ def test_acecr_decompose() -> None:
     )
 
     expected.insert(1, cirq.rx(-np.pi / 2)(b))
-    assert cirq.decompose_once(cirq_superstaq.AceCRMinusPlusXNeg90Target(a, b)) == list(
+    assert cirq.decompose_once(cirq_superstaq.AceCR("-+", cirq.rx(-np.pi / 2))(a, b)) == list(
         expected.all_operations()
     )
 

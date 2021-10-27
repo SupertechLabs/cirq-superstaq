@@ -17,9 +17,7 @@ from cirq_superstaq._init_vars import API_URL, API_VERSION
 from cirq_superstaq.custom_gates import (
     AceCR,
     AceCRMinusPlus,
-    AceCRMinusPlusXNeg90Target,
     AceCRPlusMinus,
-    AceCRPlusMinusXNeg90Target,
     Barrier,
     CR,
     FermionicSWAPGate,
@@ -39,9 +37,7 @@ from cirq_superstaq.superstaq_exceptions import (
 __all__ = [
     "AceCR",
     "AceCRMinusPlus",
-    "AceCRMinusPlusXNeg90Target",
     "AceCRPlusMinus",
-    "AceCRPlusMinusXNeg90Target",
     "API_URL",
     "API_VERSION",
     "Barrier",
