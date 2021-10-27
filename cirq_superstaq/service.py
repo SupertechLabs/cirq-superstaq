@@ -44,7 +44,7 @@ def counts_to_results(
 
     # Handles deprecated Cirq function in cases were version earlier than v0.13 is used. Ugly, but
     # only necessary until cirq v0.13 is used SuperstaQ-wide.
-    if cirq.__version__[:4] == "0.13":
+    if cirq.__version__[:4] >= "0.13":
         measurement_key_names = list(circuit.all_measurement_key_names())
     else:
         measurement_key_names = list(circuit.all_measurement_keys())
