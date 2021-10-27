@@ -40,6 +40,7 @@ def counts_to_results(
 
         Returns:
             A `cirq.Result` for the given circuit and counter.
+
     """
 
     measurement_key_names = list(circuit.all_measurement_keys())
