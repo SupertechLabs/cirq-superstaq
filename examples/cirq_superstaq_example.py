@@ -1,4 +1,5 @@
 """Creates and simulates a simple circuit generating a Bell state.
+
 === EXAMPLE OUTPUT ===
 Circuit:
 0: ---H(0)---@---M('output')---
