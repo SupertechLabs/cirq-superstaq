@@ -42,12 +42,7 @@ def counts_to_results(
         A `cirq.Result` for the given circuit and counter.
     """
 
-    # Handles deprecated Cirq function in cases were version earlier than v0.13 is used. Ugly, but
-    # only necessary until cirq v0.13 is used SuperstaQ-wide.
-    if cirq.__version__[:4] >= "0.13":
-        measurement_key_names = list(circuit.all_measurement_key_names())
-    else:
-        measurement_key_names = list(circuit.all_measurement_keys())
+    measurement_key_names = list(circuit.all_measurement_keys())
     measurement_key_names.sort()
     # Combines all the measurement key names into a string: {'0', '1'} -> "01"
     combine_key_names = "".join(measurement_key_names)
