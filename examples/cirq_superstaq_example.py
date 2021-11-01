@@ -6,6 +6,8 @@ Circuit:
              |
 1: ----------X-----------------
 
+This is the job that's created: Done
+
 Results:
 {'0': 45, '1': 55}
 """
