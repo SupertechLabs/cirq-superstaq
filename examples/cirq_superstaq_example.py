@@ -5,9 +5,7 @@ Circuit:
 0: ---H(0)---@---M('output')---
              |
 1: ----------X-----------------
-
-This is the job that's created: Done
-
+This is the job that's created: Running
 Results:
 {'0': 45, '1': 55}
 """
@@ -19,7 +17,7 @@ import cirq_superstaq
 # Creates Service class (used to create and run jobs) with api_key. Use API-generated superstaq
 # token for api_key.
 service = cirq_superstaq.Service(
-    api_key="""Insert superstaq token that you received from https://superstaq.super.tech""",
+    api_key="""ya29.a0ARrdaM9YftF39tfB_Rn-emvterslXHY7rtsLPOwRBhzNbCRYx8tyxPpAO0Aibxl4JLZ8ZW7_pTv-B23L8f1R_oYUTijiCP3YxWwmwWsKDhdwXwrMLnnh2wl8IlQYkz_1S5ScEhYlbH3WxTu5Swy778tzQTAWfmo""",
     verbose=True,
 )
 
