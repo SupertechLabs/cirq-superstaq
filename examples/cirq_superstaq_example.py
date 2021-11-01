@@ -25,6 +25,7 @@ service = cirq_superstaq.Service(
 q0 = cirq.LineQubit(0)
 q1 = cirq.LineQubit(1)
 circuit = cirq.Circuit(cirq.H(q0), cirq.CNOT(q0, q1), cirq.measure(q0))
+print("Circuit:")
 print(circuit)
 
 # Creating job with Service object.
@@ -33,4 +34,5 @@ job = service.create_job(circuit=circuit, repetitions=100, target="ibmq_qasm_sim
 print("This is the job that's created: ", job.status())
 
 # Get counts of the resultant job.
+print("Results:")
 print(job.counts())
