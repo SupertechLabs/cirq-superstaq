@@ -65,9 +65,14 @@ def test_get_backends(service: cirq_superstaq.Service) -> None:
             "d-wave_advantage-system1.1_qpu",
             "ionq_ion_qpu",
         ],
-        "compile-only": ["aqt_keysight_qpu", "sandia_qscout_qpu"],
+        "compile-only": [
+            "aqt_keysight_qpu",
+            "sandia_qscout_qpu",
+        ],
     }
-    assert service.get_backends() == expected
+    result = service.get_backends()
+    assert set(result["compile-and-run"]) == set(expected["compile-and-run"])
+    assert set(result["compile-only"]) == set(expected["compile-only"])
 
 
 def test_qscout_compile(service: cirq_superstaq.Service) -> None:
