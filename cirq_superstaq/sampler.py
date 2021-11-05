@@ -12,8 +12,7 @@
 # limitations under the License.
 """A `cirq.Sampler` implementation for the SuperstaQ API."""
 
-import collections
-from typing import List, Optional
+from typing import List
 
 import cirq
 
@@ -44,7 +43,7 @@ class Sampler(cirq.Sampler):
     def __init__(
         self,
         service: cirq_superstaq.service.Service,
-        target: Optional[str],
+        target: str,
     ):
         """Constructs the sampler. Uers should get a sampler from the `sampler` method on
         `cirq_superstaq.Service`.
@@ -85,7 +84,7 @@ class Sampler(cirq.Sampler):
             )
             for resolver in resolvers
         ]
-        job_counters = [collections.Counter(job.counts()) for job in jobs]
+        job_counters = [job.counts() for job in jobs]
         cirq_results = []
         for counter, resolver in zip(job_counters, resolvers):
             cirq_results.append(counts_to_results(counter, program, resolver))
