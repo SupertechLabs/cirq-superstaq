@@ -86,6 +86,6 @@ class Sampler(cirq.Sampler):
         ]
         job_counters = [job.counts() for job in jobs]
         cirq_results = []
-        for counter, resolver in zip(job_counters, resolvers):
-            cirq_results.append(counts_to_results(counter, program, resolver))
+        for counts, resolver in zip(job_counters, resolvers):
+            cirq_results.append(counts_to_results(counts, program, resolver))
         return cirq_results
