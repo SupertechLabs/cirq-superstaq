@@ -29,7 +29,7 @@ from cirq_superstaq import job, superstaq_client
 
 
 def counts_to_results(
-    counter: collections.Counter, circuit: cirq.Circuit, param_resolver: cirq.ParamResolver
+    counter: collections.Counter, circuit: cirq.AbstractCircuit, param_resolver: cirq.ParamResolver
 ) -> cirq.Result:
     """Converts a collections.Counter to a cirq.Result.
 
@@ -208,7 +208,7 @@ class Service:
 
     def create_job(
         self,
-        circuit: cirq.Circuit,
+        circuit: cirq.AbstractCircuit,
         repetitions: int = 1000,
         name: Optional[str] = None,
         target: Optional[str] = None,
