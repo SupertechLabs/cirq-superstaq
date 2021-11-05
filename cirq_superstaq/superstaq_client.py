@@ -189,6 +189,18 @@ class _SuperstaQClient:
 
         return self._make_request(request).json()
 
+    def get_backends(self) -> dict:
+        """Makes a GET request to SuperstaQ API to get a list of available backends."""
+
+        def request() -> requests.Response:
+            return requests.get(
+                f"{self.url}/backends",
+                headers=self.headers,
+                verify=self.verify_https,
+            )
+
+        return self._make_request(request).json()
+
     def aqt_compile(self, serialized_circuits: str, target: str) -> dict:
         """Makes a POST request to SuperstaQ API to compile a list of circuits for Berkeley-AQT."""
         json_dict = {"cirq_circuits": serialized_circuits, "backend": target}
@@ -196,6 +208,20 @@ class _SuperstaQClient:
         def request() -> requests.Response:
             return requests.post(
                 f"{self.url}/aqt_compile",
+                headers=self.headers,
+                json=json_dict,
+                verify=self.verify_https,
+            )
+
+        return self._make_request(request).json()
+
+    def qscout_compile(self, serialized_circuits: str, target: str) -> dict:
+        """Makes a POST request to SuperstaQ API to compile a list of circuits for Berkeley-AQT."""
+        json_dict = {"cirq_circuits": serialized_circuits, "backend": target}
+
+        def request() -> requests.Response:
+            return requests.post(
+                f"{self.url}/qscout_compile",
                 headers=self.headers,
                 json=json_dict,
                 verify=self.verify_https,

@@ -1,6 +1,7 @@
 """Integration checks that run daily (via Github action) between client and prod server."""
 
 import os
+import textwrap
 
 import cirq
 import numpy as np
@@ -38,3 +39,56 @@ def test_tsp(service: cirq_superstaq.Service) -> None:
     out = service.tsp(cities)
     for city in cities:
         assert city.replace(" ", "+") in out.map_link[0]
+
+
+def test_get_backends(service: cirq_superstaq.Service) -> None:
+    expected = {
+        "compile-and-run": [
+            "ibmq_qasm_simulator",
+            "ibmq_armonk_qpu",
+            "ibmq_santiago_qpu",
+            "ibmq_bogota_qpu",
+            "ibmq_lima_qpu",
+            "ibmq_belem_qpu",
+            "ibmq_quito_qpu",
+            "ibmq_statevector_simulator",
+            "ibmq_mps_simulator",
+            "ibmq_extended-stabilizer_simulator",
+            "ibmq_stabilizer_simulator",
+            "ibmq_manila_qpu",
+            "aws_dm1_simulator",
+            "aws_sv1_simulator",
+            "d-wave_advantage-system4.1_qpu",
+            "d-wave_dw-2000q-6_qpu",
+            "aws_tn1_simulator",
+            "ionq_ion_qpu",
+        ],
+        "compile-only": ["aqt_keysight_qpu", "sandia_qscout_qpu"],
+    }
+    result = service.get_backends()
+    assert sorted(result["compile-and-run"]) == sorted(expected["compile-and-run"])
+    assert sorted(result["compile-only"]) == sorted(expected["compile-only"])
+
+
+def test_qscout_compile(service: cirq_superstaq.Service) -> None:
+    q0 = cirq.LineQubit(0)
+    circuit = cirq.Circuit(cirq.H(q0), cirq.measure(q0))
+    compiled_circuit = cirq.Circuit(
+        cirq.PhasedXPowGate(phase_exponent=-0.5, exponent=0.5).on(q0),
+        cirq.Z(q0) ** -1.0,
+        cirq.measure(q0),
+    )
+
+    jaqal_program = textwrap.dedent(
+        """\
+                register allqubits[1]
+
+                prepare_all
+                R allqubits[0] -1.5707963267948966 1.5707963267948966
+                Rz allqubits[0] -3.141592653589793
+                measure_all
+                """
+    )
+    out = service.qscout_compile(circuit)
+    assert out.circuit == compiled_circuit
+    assert out.jaqal_programs == jaqal_program
