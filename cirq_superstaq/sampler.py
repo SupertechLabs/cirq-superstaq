@@ -12,7 +12,7 @@
 # limitations under the License.
 """A `cirq.Sampler` implementation for the SuperstaQ API."""
 
-from typing import List, Optional
+from typing import List
 
 import cirq
 
@@ -43,7 +43,7 @@ class Sampler(cirq.Sampler):
     def __init__(
         self,
         service: cirq_superstaq.service.Service,
-        target: Optional[str],
+        target: str,
     ):
         """Constructs the sampler. Uers should get a sampler from the `sampler` method on
         `cirq_superstaq.Service`.

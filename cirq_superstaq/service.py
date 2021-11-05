@@ -195,7 +195,7 @@ class Service:
         counts = self.get_counts(circuit, repetitions, name, target, param_resolver)
         return counts_to_results(counts, circuit, param_resolver)
 
-    def sampler(self, target: Optional[str] = None) -> cirq.Sampler:
+    def sampler(self, target: str) -> cirq.Sampler:
         """Returns a `cirq.Sampler` object for accessing sampler interface.
 
         Args:
