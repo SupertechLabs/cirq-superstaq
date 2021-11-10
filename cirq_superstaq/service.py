@@ -20,12 +20,13 @@ import applications_superstaq
 import cirq
 import numpy as np
 import qubovert as qv
+from applications_superstaq import superstaq_client
 from applications_superstaq.finance import MaxSharpeOutput, MinVolOutput
 from applications_superstaq.logistics import TSPOutput, WarehouseOutput
 from applications_superstaq.qubo import read_json_qubo_result
 
 import cirq_superstaq
-from cirq_superstaq import job, superstaq_client
+from cirq_superstaq import job
 
 
 def counts_to_results(
@@ -132,6 +133,7 @@ class Service:
                 "SUPERSTAQ_API_KEY was also not set."
             )
         self._client = superstaq_client._SuperstaQClient(
+            client_name="cirq-superstaq",
             remote_host=self.remote_host,
             api_key=self.api_key,
             default_target=default_target,
@@ -332,7 +334,7 @@ class Service:
         try:
             pulses = applications_superstaq.converters.deserialize(json_dict["pulses"])
         except ModuleNotFoundError as e:
-            raise cirq_superstaq.SuperstaQModuleNotFoundException(
+            raise applications_superstaq.SuperstaQModuleNotFoundException(
                 name=str(e.name), context="ibmq_compile"
             )
 
