@@ -94,11 +94,6 @@ class Service:
         api_version: str = cirq_superstaq.API_VERSION,
         max_retry_seconds: int = 3600,
         verbose: bool = False,
-        ibmq_token: str = None,
-        ibmq_group: str = None,
-        ibmq_project: str = None,
-        ibmq_hub: str = None,
-        ibmq_pulse: bool = True,
     ):
         """Creates the Service to access SuperstaQ's API.
 
@@ -140,11 +135,6 @@ class Service:
             api_version=api_version,
             max_retry_seconds=max_retry_seconds,
             verbose=verbose,
-            ibmq_token=ibmq_token,
-            ibmq_group=ibmq_group,
-            ibmq_project=ibmq_project,
-            ibmq_hub=ibmq_hub,
-            ibmq_pulse=ibmq_pulse,
         )
 
     def get_counts(
@@ -231,7 +221,7 @@ class Service:
         """
         serialized_circuits = cirq_superstaq.serialization.serialize_circuits(circuit)
         result = self._client.create_job(
-            serialized_circuits=serialized_circuits,
+            serialized_circuits={"cirq_circuits": serialized_circuits},
             repetitions=repetitions,
             target=target,
             name=name,
@@ -294,7 +284,7 @@ class Service:
         serialized_circuits = cirq_superstaq.serialization.serialize_circuits(circuits)
         circuits_list = not isinstance(circuits, cirq.Circuit)
 
-        json_dict = self._client.aqt_compile(serialized_circuits, target)
+        json_dict = self._client.aqt_compile({"cirq_circuits": serialized_circuits}, target)
 
         from cirq_superstaq import compiler_output
 
@@ -315,7 +305,7 @@ class Service:
         serialized_circuits = cirq_superstaq.serialization.serialize_circuits(circuits)
         circuits_list = not isinstance(circuits, cirq.Circuit)
 
-        json_dict = self._client.qscout_compile(serialized_circuits, target)
+        json_dict = self._client.qscout_compile({"cirq_circuits": serialized_circuits}, target)
 
         from cirq_superstaq import compiler_output
 
@@ -330,7 +320,7 @@ class Service:
         """
         serialized_circuits = cirq_superstaq.serialization.serialize_circuits(circuits)
 
-        json_dict = self._client.ibmq_compile(serialized_circuits, target)
+        json_dict = self._client.ibmq_compile({"cirq_circuits": serialized_circuits}, target)
         try:
             pulses = applications_superstaq.converters.deserialize(json_dict["pulses"])
         except ModuleNotFoundError as e:
