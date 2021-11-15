@@ -218,9 +218,9 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         Raises:
             SuperstaQException: If there was an error accessing the API.
         """
-        serialized_circuit = cirq_superstaq.serialization.serialize_circuits(circuit)
+        serialized_circuits = cirq_superstaq.serialization.serialize_circuits(circuit)
         result = self._client.create_job(
-            serialized_circuits={"cirq_circuits": serialized_circuit},
+            serialized_circuits={"cirq_circuits": serialized_circuits},
             repetitions=repetitions,
             target=target,
             name=name,
