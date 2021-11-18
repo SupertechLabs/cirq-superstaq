@@ -319,7 +319,9 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         """
         serialized_circuits = cirq_superstaq.serialization.serialize_circuits(circuits)
 
-        json_dict = self._client.ibmq_compile({"cirq_circuits": serialized_circuits, "backend": target}, target)
+        json_dict = self._client.ibmq_compile(
+            {"cirq_circuits": serialized_circuits, "backend": target}, target
+        )
         try:
             pulses = applications_superstaq.converters.deserialize(json_dict["pulses"])
         except ModuleNotFoundError as e:
