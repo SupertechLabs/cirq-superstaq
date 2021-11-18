@@ -16,6 +16,13 @@ def service() -> cirq_superstaq.Service:
     service = cirq_superstaq.Service(api_key=token)
     return service
 
+def test_ibmq_compile(service: cirq_superstaq.Service):
+    qubits = cirq.LineQubit.range(2)
+    circuit = cirq.Circuit(cirq_superstaq.AceCRPlusMinus(qubits[0], qubits[1]))
+    out = service.ibmq_compile(circuit, target="ibmq_jakarta_qpu")
+    assert out.duration == 896
+    assert out.start_time == 0
+    assert len(out) == 5
 
 def test_aqt_compile(service: cirq_superstaq.Service) -> None:
     qubits = cirq.LineQubit.range(8)
