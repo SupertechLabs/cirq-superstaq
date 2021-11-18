@@ -66,7 +66,6 @@ def test_get_backends(service: cirq_superstaq.Service) -> None:
             "sandia_qscout_qpu",
             "hqs_lt-s1-apival_qpu",
             "hqs_lt-s1_qpu",
-            "neutral_atom_qpu",
         ],
         "compile-only": [
             "aqt_keysight_qpu",
