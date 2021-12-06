@@ -220,12 +220,11 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         Raises:
             SuperstaQException: If there was an error accessing the API.
         """
-        if target:
-            if "ibmq" in target and not self.ibmq_token:
-                raise EnvironmentError(
-                    "Parameter ibmq_token was not specified and the environment variable IBMQ_TOKEN"
-                    "was also not set."
-                )
+        if target and "ibmq" in target and not self.ibmq_token:
+            raise EnvironmentError(
+                "Parameter ibmq_token was not specified and the environment variable IBMQ_TOKEN was"
+                "also not set."
+            )
         serialized_circuits = cirq_superstaq.serialization.serialize_circuits(circuit)
         result = self._client.create_job(
             serialized_circuits={"cirq_circuits": serialized_circuits},
