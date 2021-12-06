@@ -165,10 +165,9 @@ def test_service_create_job() -> None:
     assert create_job_kwargs["target"] == "qpu"
 
 
+@mock.patch.dict(os.environ, {"IBMQ_TOKEN": ""})
 def test_service_create_job_no_ibmq_token() -> None:
     service = cirq_superstaq.Service(remote_host="http://example.com", api_key="key")
-    with mock.patch.dict("os.environ"):
-        del os.environ["IBMQ_TOKEN"]
 
     circuit = cirq.Circuit(cirq.X(cirq.LineQubit(0)))
     with pytest.raises(EnvironmentError):
