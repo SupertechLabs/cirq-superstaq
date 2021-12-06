@@ -170,7 +170,7 @@ def test_service_create_job_no_ibmq_token() -> None:
     service = cirq_superstaq.Service(remote_host="http://example.com", api_key="key")
 
     circuit = cirq.Circuit(cirq.X(cirq.LineQubit(0)))
-    with pytest.raises(EnvironmentError):
+    with pytest.raises(EnvironmentError, match="Parameter ibmq_token was not specified"):
         _ = service.create_job(circuit=circuit, repetitions=100, target="ibmq_qpu")
 
 
