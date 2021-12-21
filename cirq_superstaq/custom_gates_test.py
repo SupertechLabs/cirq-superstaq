@@ -338,6 +338,9 @@ def test_rxy() -> None:
     cirq.testing.assert_equivalent_repr(rot_gate, setup_code="import cirq_superstaq")
     assert str(rot_gate) == f"Rxy({rot_gate.phase_exponent}π, {rot_gate.exponent}π)"
 
+    # check Rxy.__pow__()
+    assert cirq.approx_eq(rot_gate ** 0.75, cirq_superstaq.Rxy(1.23 * np.pi, 3.42 * np.pi))
+
     circuit = cirq.Circuit(rot_gate.on(qubit))
 
     # build Rxy decomposition manually
@@ -348,6 +351,21 @@ def test_rxy() -> None:
     )
 
     assert np.allclose(cirq.unitary(circuit), cirq.unitary(decomposed_circuit))
+
+    expected_qasm = textwrap.dedent(
+        """\
+        OPENQASM 2.0;
+        include "qelib1.inc";
+
+
+        // Qubits: [0]
+        qreg q[1];
+
+
+        rxy(pi*-0.77,pi*4.56) q[0];
+        """
+    )
+    assert circuit.to_qasm(header="") == expected_qasm
 
     circuit = cirq.Circuit(cirq_superstaq.custom_gates.Rxy(np.pi, 0.5 * np.pi).on(qubit))
     cirq.testing.assert_has_diagram(circuit, "0: ───Rxy(π, 0.5π)───")
