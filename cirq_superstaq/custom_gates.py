@@ -420,6 +420,17 @@ class Rxy(cirq.PhasedXPowGate):
         gate_str = f"Rxy({axis_angle_str}, {rot_angle_str})"
         return cirq.CircuitDiagramInfo(wire_symbols=(gate_str,))
 
+    def _qasm_(self, args: cirq.QasmArgs, qubits: Tuple[cirq.Qid]) -> Optional[str]:
+        return args.format(
+            "rxy({0:half_turns},{1:half_turns}) {2};\n",
+            self.phase_exponent,
+            self.exponent,
+            qubits[0]
+        )
+
+    def __pow__(self, power: float) -> 'Rxy':
+        return Rxy(self.axis_angle, power * self.rot_angle)
+
     def __str__(self) -> str:
         return f"Rxy({self.phase_exponent}π, {self.exponent}π)"
 
