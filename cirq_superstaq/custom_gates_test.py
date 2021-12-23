@@ -338,9 +338,6 @@ def test_rxy() -> None:
     cirq.testing.assert_equivalent_repr(rot_gate, setup_code="import cirq_superstaq")
     assert str(rot_gate) == f"Rxy({rot_gate.phase_exponent}π, {rot_gate.exponent}π)"
 
-    # check Rxy.__pow__()
-    assert cirq.approx_eq(rot_gate ** 0.75, cirq_superstaq.Rxy(1.23 * np.pi, 3.42 * np.pi))
-
     circuit = cirq.Circuit(rot_gate.on(qubit))
 
     # build Rxy decomposition manually

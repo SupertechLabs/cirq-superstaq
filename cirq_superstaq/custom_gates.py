@@ -428,9 +428,6 @@ class Rxy(cirq.PhasedXPowGate):
             qubits[0],
         )
 
-    def __pow__(self, power: float) -> "Rxy":
-        return Rxy(self.axis_angle, power * self.rot_angle)
-
     def __str__(self) -> str:
         return f"Rxy({self.phase_exponent}π, {self.exponent}π)"
 
