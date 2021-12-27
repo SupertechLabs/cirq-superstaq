@@ -345,17 +345,11 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         Pulse must be installed for returned object to correctly deserialize to a pulse schedule.
         """
         serialized_circuits = cirq_superstaq.serialization.serialize_circuits(circuits)
+        circuits_list = not isinstance(circuits, cirq.Circuit)
 
         json_dict = self._client.neutral_atom_compile(
             {"cirq_circuits": serialized_circuits, "backend": target}
         )
-        try:
-            pulses = applications_superstaq.converters.deserialize(json_dict["pulses"])
-        except ModuleNotFoundError as e:
-            raise applications_superstaq.SuperstaQModuleNotFoundException(
-                name=str(e.name), context="neutral_atom_compile"
-            )
+        from cirq_superstaq import compiler_output
 
-        if isinstance(circuits, cirq.Circuit):
-            return pulses[0]
-        return pulses
+        return compiler_output.read_json_qscout(json_dict, circuits_list)
