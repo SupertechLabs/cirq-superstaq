@@ -11,14 +11,16 @@
 # Parse arguments.
 only_print=1
 
-for arg in $@; do
+args=("." "--line-length=100" "--color")
+
+for arg in "$@"; do
     if [[ "${arg}" == "--apply" ]]; then
         only_print=0
+    else
+        args+=("${arg}")
     fi
 done
 
-
-args=("." "--line-length=100" "--color")
 
 if (( only_print == 1 )); then
     args+=("--check" "--diff")
@@ -28,7 +30,9 @@ LOGS="$(black "${args[@]}" 2>&1)"
 STATUS=$?
 echo "${LOGS}"
 
-if [[ "$STATUS" == "1" ]]; then
+if [[ "$STATUS" == "123" ]]; then  # 123 is status code for failure
+  exit 1
+elif [[ "$STATUS" == "1" ]]; then
   echo -e "Run ./check/format --apply and commit the formatted files"
 fi
 
