@@ -30,9 +30,7 @@ LOGS="$(black "${args[@]}" 2>&1)"
 STATUS=$?
 echo "${LOGS}"
 
-if [[ "$STATUS" == "123" ]]; then  # 123 is status code for failure
-  exit 1
-elif [[ "$STATUS" == "1" ]]; then
+if [[ "$STATUS" == "1" ]]; then
   echo -e "Run ./check/format --apply and commit the formatted files"
 fi
 
