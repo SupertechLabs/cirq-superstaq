@@ -274,7 +274,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
 
         Returns: no returns.
         """
-        return self._client.set_ibm_token(token)
+        return self._client.set_ibm_token({"ibmq_token": token})
 
     def aqt_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "keysight"
