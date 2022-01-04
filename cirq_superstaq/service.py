@@ -266,16 +266,6 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         """Get list of available backends."""
         return self._client.get_backends()["superstaq_backends"]
 
-    def set_ibm_token(self, token: str) -> None:
-        """Sets IBMQ token field for user in database.
-
-        Args:
-            token: IBMQ token string.
-
-        Returns: no returns.
-        """
-        return self._client.set_ibm_token({"ibmq_token": token})
-
     def aqt_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "keysight"
     ) -> "cirq_superstaq.compiler_output.CompilerOutput":
