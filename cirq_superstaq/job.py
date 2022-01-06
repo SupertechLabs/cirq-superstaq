@@ -12,14 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Represents a job created via the SuperstaQ API."""
-
 import collections
 import time
+from typing import Any
 
+import applications_superstaq
+from applications_superstaq import superstaq_client
 from cirq._doc import document
-
-import cirq_superstaq
-from cirq_superstaq import superstaq_client
 
 
 class Job:
@@ -75,7 +74,7 @@ class Job:
 
     def _check_if_unsuccessful(self) -> None:
         if self.status() in self.UNSUCCESSFUL_STATES:
-            raise cirq_superstaq.superstaq_exceptions.SuperstaQUnsuccessfulJobException(
+            raise applications_superstaq.superstaq_exceptions.SuperstaQUnsuccessfulJobException(
                 self.job_id(), self.status()
             )
 
@@ -170,3 +169,11 @@ class Job:
 
     def __str__(self) -> str:
         return f"Job with job_id={self.job_id()}"
+
+    def __repr__(self) -> str:
+        return f"cirq_superstaq.Job(client={self._client!r}, job_dict={self._job!r})"
+
+    def __eq__(self, other: Any) -> bool:
+        if not isinstance(self, type(other)):
+            return False
+        return self._job == other._job

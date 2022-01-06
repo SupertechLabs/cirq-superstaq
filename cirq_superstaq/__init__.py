@@ -22,17 +22,14 @@ from cirq_superstaq.custom_gates import (
     CR,
     FermionicSWAPGate,
     ParallelGates,
+    ParallelRxy,
+    Rxy,
     ZX,
     ZXPowGate,
 )
 from cirq_superstaq.job import Job
+from cirq_superstaq.sampler import Sampler
 from cirq_superstaq.service import Service
-from cirq_superstaq.superstaq_exceptions import (
-    SuperstaQException,
-    SuperstaQModuleNotFoundException,
-    SuperstaQNotFoundException,
-    SuperstaQUnsuccessfulJobException,
-)
 
 __all__ = [
     "AceCR",
@@ -45,12 +42,11 @@ __all__ = [
     "FermionicSWAPGate",
     "Job",
     "ParallelGates",
+    "ParallelRxy",
     "serialization",
+    "Rxy",
+    "Sampler",
     "Service",
-    "SuperstaQException",
-    "SuperstaQModuleNotFoundException",
-    "SuperstaQNotFoundException",
-    "SuperstaQUnsuccessfulJobException",
     "ZX",
     "ZXPowGate",
 ]
