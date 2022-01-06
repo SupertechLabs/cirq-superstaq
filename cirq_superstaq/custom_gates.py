@@ -392,16 +392,18 @@ class MSGate(cirq.ion.ion_gates.MSGate):
 
 
 @cirq.value_equality(approximate=True)
-class Rxy(cirq.PhasedXPowGate):
-    """A single-qubit Rxy gate, defined by two angles.
-
-    The first angle (axis_angle) defines the axis of rotation:
-    'axis_angle' radians from x to y, or cos(axis_angle) x + sin(axis_angle) y.
-
-    The second angle (rot_angle) defines the angle by which to rotate (again, in radians).
-    """
+class Rphi(cirq.PhasedXPowGate):
+    """A single-qubit gate that rotates about an axis in the X-Y plane."""
 
     def __init__(self, axis_angle: float, rot_angle: float) -> None:
+        """
+        Args:
+            axis_angle (float): angle (in radians) in the `X`-`Y` plane, defining the axis of
+            rotation.  The axis of rotation is `cos(axis_angle) X + sin(axis_angle) Y` (i.e.
+            `axis_angle` radians from `X` to `Y`).
+
+            rot_angle (float): the angle by which to rotate.
+        """
         super().__init__(
             phase_exponent=axis_angle / np.pi, exponent=rot_angle / np.pi, global_shift=-0.5
         )
@@ -414,13 +416,13 @@ class Rxy(cirq.PhasedXPowGate):
     def rot_angle(self) -> float:
         return self.exponent * np.pi
 
-    def __pow__(self, power: float) -> "Rxy":
-        return Rxy(self.axis_angle, power * self.rot_angle)
+    def __pow__(self, power: float) -> "Rphi":
+        return Rphi(self.axis_angle, power * self.rot_angle)
 
     def _circuit_diagram_info_(self, args: cirq.CircuitDiagramInfoArgs) -> cirq.CircuitDiagramInfo:
         axis_angle_str = args.format_radians(self.axis_angle)
         rot_angle_str = args.format_radians(self.rot_angle)
-        gate_str = f"Rxy({axis_angle_str}, {rot_angle_str})"
+        gate_str = f"Rphi({axis_angle_str}, {rot_angle_str})"
         return cirq.CircuitDiagramInfo(wire_symbols=(gate_str,))
 
     def _qasm_(self, args: cirq.QasmArgs, qubits: Tuple[cirq.Qid, ...]) -> Optional[str]:
@@ -432,25 +434,25 @@ class Rxy(cirq.PhasedXPowGate):
         )
 
     def __str__(self) -> str:
-        return f"Rxy({self.phase_exponent}π, {self.exponent}π)"
+        return f"Rphi({self.phase_exponent}π, {self.exponent}π)"
 
     def __repr__(self) -> str:
-        return f"cirq_superstaq.Rxy({self.axis_angle}, {self.rot_angle})"
+        return f"cirq_superstaq.Rphi({self.axis_angle}, {self.rot_angle})"
 
     def _json_dict_(self) -> Dict[str, Any]:
         return cirq.protocols.obj_to_dict_helper(self, ["axis_angle", "rot_angle"])
 
 
 @cirq.value_equality(approximate=True)
-class ParallelRxy(cirq.ParallelGate, cirq.InterchangeableQubitsGate):
-    """Wrapper class to define a ParallelGate of identical Rxy gates."""
+class ParallelRphi(cirq.ParallelGate, cirq.InterchangeableQubitsGate):
+    """Wrapper class to define a ParallelGate of identical Rphi gates."""
 
     def __init__(self, axis_angle: float, rot_angle: float, num_copies: int) -> None:
-        super().__init__(cirq_superstaq.Rxy(axis_angle, rot_angle), num_copies)
-        self._sub_gate: Rxy
+        super().__init__(cirq_superstaq.Rphi(axis_angle, rot_angle), num_copies)
+        self._sub_gate: Rphi
 
     @property
-    def sub_gate(self) -> Rxy:
+    def sub_gate(self) -> Rphi:
         return self._sub_gate
 
     @property
@@ -469,8 +471,8 @@ class ParallelRxy(cirq.ParallelGate, cirq.InterchangeableQubitsGate):
     def rot_angle(self) -> float:
         return self.sub_gate.rot_angle
 
-    def __pow__(self, power: float) -> "ParallelRxy":
-        return ParallelRxy(self.axis_angle, power * self.rot_angle, self.num_copies)
+    def __pow__(self, power: float) -> "ParallelRphi":
+        return ParallelRphi(self.axis_angle, power * self.rot_angle, self.num_copies)
 
     def _circuit_diagram_info_(self, args: cirq.CircuitDiagramInfoArgs) -> cirq.CircuitDiagramInfo:
         diagram_info = cirq.circuit_diagram_info(self.sub_gate, args)
@@ -480,10 +482,12 @@ class ParallelRxy(cirq.ParallelGate, cirq.InterchangeableQubitsGate):
         return cirq.CircuitDiagramInfo(wire_symbols=wire_symbols)
 
     def __str__(self) -> str:
-        return f"Rxy({self.phase_exponent}π, {self.exponent}π) x {self.num_copies}"
+        return f"Rphi({self.phase_exponent}π, {self.exponent}π) x {self.num_copies}"
 
     def __repr__(self) -> str:
-        return f"cirq_superstaq.ParallelRxy({self.axis_angle}, {self.rot_angle}, {self.num_copies})"
+        return (
+            f"cirq_superstaq.ParallelRphi({self.axis_angle}, {self.rot_angle}, {self.num_copies})"
+        )
 
     def _json_dict_(self) -> Dict[str, Any]:
         return cirq.protocols.obj_to_dict_helper(self, ["axis_angle", "rot_angle", "num_copies"])
@@ -502,9 +506,9 @@ def custom_resolver(cirq_type: str) -> Union[Callable[..., cirq.Gate], None]:
         return ParallelGates
     if cirq_type == "MSGate":
         return MSGate
-    if cirq_type == "Rxy":
-        return Rxy
-    if cirq_type == "ParallelRxy":
-        return ParallelRxy
+    if cirq_type == "Rphi":
+        return Rphi
+    if cirq_type == "ParallelRphi":
+        return ParallelRphi
 
     return None
