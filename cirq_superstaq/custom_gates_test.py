@@ -337,15 +337,15 @@ def test_rxy() -> None:
     rot_gate = cirq_superstaq.Rphi(1.23 * np.pi, 4.56 * np.pi)
     cirq.testing.assert_equivalent_repr(rot_gate, setup_code="import cirq_superstaq")
     assert str(rot_gate) == f"Rphi({rot_gate.phase_exponent}π, {rot_gate.exponent}π)"
-    assert rot_gate ** -1 == cirq_superstaq.Rphi(rot_gate.axis_angle, -rot_gate.rot_angle)
+    assert rot_gate ** -1 == cirq_superstaq.Rphi(rot_gate.phi, -rot_gate.theta)
 
     circuit = cirq.Circuit(rot_gate.on(qubit))
 
     # build Rphi decomposition manually
     decomposed_circuit = cirq.Circuit(
-        cirq.rz(-rot_gate.axis_angle).on(qubit),
-        cirq.rx(rot_gate.rot_angle).on(qubit),
-        cirq.rz(+rot_gate.axis_angle).on(qubit),
+        cirq.rz(-rot_gate.phi).on(qubit),
+        cirq.rx(rot_gate.theta).on(qubit),
+        cirq.rz(+rot_gate.phi).on(qubit),
     )
 
     assert np.allclose(cirq.unitary(circuit), cirq.unitary(decomposed_circuit))
@@ -376,15 +376,13 @@ def test_parallel_rxy() -> None:
     cirq.testing.assert_equivalent_repr(rot_gate, setup_code="import cirq; import cirq_superstaq")
     text = f"Rphi({rot_gate.phase_exponent}π, {rot_gate.exponent}π) x {len(qubits)}"
     assert str(rot_gate) == text
-    assert rot_gate ** -1 == cirq_superstaq.ParallelRphi(
-        rot_gate.axis_angle, -rot_gate.rot_angle, len(qubits)
-    )
+    assert rot_gate ** -1 == cirq_superstaq.ParallelRphi(rot_gate.phi, -rot_gate.theta, len(qubits))
 
     circuit = cirq.Circuit(rot_gate.on(*qubits))
 
     # build ParallelRphi decomposition manually
     manual_circuit = cirq.Circuit(
-        [cirq_superstaq.Rphi(rot_gate.axis_angle, rot_gate.rot_angle).on(qubit) for qubit in qubits]
+        [cirq_superstaq.Rphi(rot_gate.phi, rot_gate.theta).on(qubit) for qubit in qubits]
     )
 
     assert np.allclose(cirq.unitary(circuit), cirq.unitary(manual_circuit))
