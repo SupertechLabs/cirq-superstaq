@@ -43,6 +43,16 @@ def test_get_balance(service: cirq_superstaq.Service) -> None:
     assert isinstance(service.get_balance(pretty_output=False), float)
 
 
+def test_ibmq_set_token() -> None:
+    api_token = os.environ["TEST_USER_TOKEN"]
+    ibmq_token = os.environ["TEST_USER_IBMQ_TOKEN"]
+    service = cirq_superstaq.Service(api_key=api_token)
+    assert service.ibmq_set_token(ibmq_token) == "Your IBM Q account token has been updated"
+
+    with pytest.raises(SuperstaQException, match="IBMQ token is invalid."):
+        assert service.ibmq_set_toke("INVALID_TOKEN")
+
+
 def test_tsp(service: cirq_superstaq.Service) -> None:
     cities = ["Chicago", "San Francisco", "New York City", "New Orleans"]
     out = service.tsp(cities)
