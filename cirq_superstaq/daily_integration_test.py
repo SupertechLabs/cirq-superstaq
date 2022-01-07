@@ -6,6 +6,7 @@ import textwrap
 import cirq
 import numpy as np
 import pytest
+from applications_superstaq import SuperstaQException
 
 import cirq_superstaq
 
