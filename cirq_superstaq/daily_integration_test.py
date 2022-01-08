@@ -51,7 +51,7 @@ def test_ibmq_set_token() -> None:
     assert service.ibmq_set_token(ibmq_token) == "Your IBM Q account token has been updated"
 
     with pytest.raises(SuperstaQException, match="IBMQ token is invalid."):
-        assert service.ibmq_set_toke("INVALID_TOKEN")
+        assert service.ibmq_set_token("INVALID_TOKEN")
 
 
 def test_tsp(service: cirq_superstaq.Service) -> None:
