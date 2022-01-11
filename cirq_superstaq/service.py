@@ -314,6 +314,29 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
 
         return compiler_output.read_json_qscout(json_dict, circuits_list)
 
+    def cq_compile(
+        self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "qscout"
+    ) -> "cirq_superstaq.compiler_output.CompilerOutput":
+        """Compiles the given circuit(s) to given target  QSCOUT device, optimized to its native gate set.
+
+        Args:
+            circuits: cirq Circuit(s) with operations on qubits 0 and 1.
+            target: string of target backend QSCOUT device.
+        Returns:
+            object whose .circuit(s) attribute is an optimized cirq Circuit(s)
+            and a list of jaqal programs represented as strings
+        """
+        serialized_circuits = cirq_superstaq.serialization.serialize_circuits(circuits)
+        circuits_list = not isinstance(circuits, cirq.Circuit)
+
+        json_dict = self._client.cq_compile(
+            {"cirq_circuits": serialized_circuits, "backend": target}
+        )
+
+        from cirq_superstaq import compiler_output
+
+        return compiler_output.read_json_cq(json_dict, circuits_list)
+
     def ibmq_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "ibmq_qasm_simulator"
     ) -> Any:
