@@ -331,7 +331,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
 
         from cirq_superstaq import compiler_output
 
-        return compiler_output.read_json_cq(json_dict, circuits_list)
+        return compiler_output.read_json_only_circuits(json_dict, circuits_list)
 
     def ibmq_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "ibmq_qasm_simulator"

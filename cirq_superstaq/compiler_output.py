@@ -112,7 +112,7 @@ def read_json_qscout(json_dict: dict, circuits_list: bool) -> CompilerOutput:
     )
 
 
-def read_json_cq(json_dict: dict, circuits_list: bool) -> CompilerOutput:
+def read_json_only_circuits(json_dict: dict, circuits_list: bool) -> CompilerOutput:
     """Reads out returned JSON from SuperstaQ API's ColdQuanta compilation endpoint.
 
     Args:

@@ -89,3 +89,21 @@ def test_read_json_with_qscout() -> None:
     out = compiler_output.read_json_qscout(json_dict, circuits_list=True)
     assert out.circuits == [circuit, circuit]
     assert out.jaqal_programs == json_dict["jaqal_programs"]
+
+
+def test_read_json_only_circuits() -> None:
+    q0 = cirq.LineQubit(0)
+    circuit = cirq.Circuit(cirq.H(q0), cirq.measure(q0))
+
+    json_dict = {
+        "cirq_circuits": cirq_superstaq.serialization.serialize_circuits(circuit),
+    }
+
+    out = compiler_output.read_json_only_circuits(json_dict, circuits_list=False)
+    assert out.circuit == circuit
+
+    json_dict = {
+        "cirq_circuits": cirq_superstaq.serialization.serialize_circuits([circuit, circuit]),
+    }
+    out = compiler_output.read_json_only_circuits(json_dict, circuits_list=True)
+    assert out.circuits == [circuit, circuit]
