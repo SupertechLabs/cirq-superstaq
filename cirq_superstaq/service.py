@@ -158,7 +158,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
             A `collection.Counter` for running the circuit.
         """
         resolved_circuit = cirq.protocols.resolve_parameters(circuit, param_resolver)
-        counts = self.create_job(resolved_circuit, repetitions, name, target).counts()
+        counts = self.create_job(resolved_circuit, repetitions, target).counts()
 
         return counts
 
@@ -201,7 +201,6 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         self,
         circuit: cirq.AbstractCircuit,
         repetitions: int = 1000,
-        name: Optional[str] = None,
         target: Optional[str] = None,
     ) -> job.Job:
         """Create a new job to run the given circuit.
@@ -209,7 +208,6 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         Args:
             circuit: The circuit to run.
             repetitions: The number of times to repeat the circuit. Defaults to 100.
-            name: An optional name for the created job. Different from the `job_id`.
             target: Where to run the job. Can be 'qpu' or 'simulator'.
 
         Returns:
@@ -223,7 +221,6 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
             serialized_circuits={"cirq_circuits": serialized_circuits},
             repetitions=repetitions,
             target=target,
-            name=name,
         )
         # The returned job does not have fully populated fields, so make
         # a second call and return the results of the fully filled out job.
@@ -315,16 +312,15 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         return compiler_output.read_json_qscout(json_dict, circuits_list)
 
     def cq_compile(
-        self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "qscout"
+        self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "coldquanta"
     ) -> "cirq_superstaq.compiler_output.CompilerOutput":
-        """Compiles the given circuit(s) to given target  QSCOUT device, optimized to its native gate set.
+        """Compiles the given circuit(s) to given target CQ device, optimized to its native gate set.
 
         Args:
             circuits: cirq Circuit(s) with operations on qubits 0 and 1.
-            target: string of target backend QSCOUT device.
+            target: string of target backend ColdQuanta device.
         Returns:
             object whose .circuit(s) attribute is an optimized cirq Circuit(s)
-            and a list of jaqal programs represented as strings
         """
         serialized_circuits = cirq_superstaq.serialization.serialize_circuits(circuits)
         circuits_list = not isinstance(circuits, cirq.Circuit)

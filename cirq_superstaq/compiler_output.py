@@ -111,6 +111,7 @@ def read_json_qscout(json_dict: dict, circuits_list: bool) -> CompilerOutput:
         circuits=compiled_circuits[0], jaqal_programs=json_dict["jaqal_programs"][0]
     )
 
+
 def read_json_cq(json_dict: dict, circuits_list: bool) -> CompilerOutput:
     """Reads out returned JSON from SuperstaQ API's ColdQuanta compilation endpoint.
 
@@ -128,11 +129,6 @@ def read_json_cq(json_dict: dict, circuits_list: bool) -> CompilerOutput:
     )
 
     if circuits_list:
-        return CompilerOutput(
-            circuits=compiled_circuits
-        )
+        return CompilerOutput(circuits=compiled_circuits)
 
-    return CompilerOutput(
-        circuits=compiled_circuits[0]
-    )
-
+    return CompilerOutput(circuits=compiled_circuits[0])
