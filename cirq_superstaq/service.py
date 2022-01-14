@@ -318,7 +318,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
 
         Args:
             circuits: cirq Circuit(s) with operations on qubits 0 and 1.
-            target: string of target backend ColdQuanta device.
+            target: string of target backend CQ device.
         Returns:
             object whose .circuit(s) attribute is an optimized cirq Circuit(s)
         """
