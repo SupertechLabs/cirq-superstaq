@@ -334,14 +334,15 @@ def test_parallel_gates_equivalence_groups() -> None:
 def test_rxy() -> None:
     qubit = cirq.LineQubit(0)
 
-    rot_gate = cirq_superstaq.Rphi(1.23 * np.pi, 4.56 * np.pi)
+    rot_gate = cirq_superstaq.RGate(4.56 * np.pi, 1.23 * np.pi)
+    print(repr(rot_gate))
     cirq.testing.assert_equivalent_repr(rot_gate, setup_code="import cirq_superstaq")
-    assert str(rot_gate) == f"Rphi({rot_gate.phase_exponent}π, {rot_gate.exponent}π)"
-    assert rot_gate ** -1 == cirq_superstaq.Rphi(rot_gate.phi, -rot_gate.theta)
+    assert str(rot_gate) == f"RGate({rot_gate.exponent}π, {rot_gate.phase_exponent}π)"
+    assert rot_gate ** -1 == cirq_superstaq.RGate(-rot_gate.theta, rot_gate.phi)
 
     circuit = cirq.Circuit(rot_gate.on(qubit))
 
-    # build Rphi decomposition manually
+    # build RGate decomposition manually
     decomposed_circuit = cirq.Circuit(
         cirq.rz(-rot_gate.phi).on(qubit),
         cirq.rx(rot_gate.theta).on(qubit),
@@ -360,39 +361,43 @@ def test_rxy() -> None:
         qreg q[1];
 
 
-        rphi(pi*-0.77,pi*4.56) q[0];
+        r(pi*4.56,pi*-0.77) q[0];
         """
     )
     assert circuit.to_qasm(header="") == expected_qasm
 
-    circuit = cirq.Circuit(cirq_superstaq.Rphi(np.pi, 0.5 * np.pi).on(qubit))
-    cirq.testing.assert_has_diagram(circuit, "0: ───Rphi(π, 0.5π)───")
+    circuit = cirq.Circuit(cirq_superstaq.RGate(np.pi, 0.5 * np.pi).on(qubit))
+    cirq.testing.assert_has_diagram(circuit, "0: ───RGate(π, 0.5π)───")
 
 
 def test_parallel_rxy() -> None:
     qubits = cirq.LineQubit.range(2)
 
-    rot_gate = cirq_superstaq.ParallelRphi(1.23 * np.pi, 4.56 * np.pi, len(qubits))
+    rot_gate = cirq_superstaq.ParallelRGate(1.23 * np.pi, 4.56 * np.pi, len(qubits))
     cirq.testing.assert_equivalent_repr(rot_gate, setup_code="import cirq; import cirq_superstaq")
-    text = f"Rphi({rot_gate.phase_exponent}π, {rot_gate.exponent}π) x {len(qubits)}"
+    text = f"RGate({rot_gate.phase_exponent}π, {rot_gate.exponent}π) x {len(qubits)}"
     assert str(rot_gate) == text
-    assert rot_gate ** -1 == cirq_superstaq.ParallelRphi(rot_gate.phi, -rot_gate.theta, len(qubits))
+    assert rot_gate ** -1 == cirq_superstaq.ParallelRGate(
+        -rot_gate.theta, rot_gate.phi, len(qubits)
+    )
 
     circuit = cirq.Circuit(rot_gate.on(*qubits))
 
-    # build ParallelRphi decomposition manually
+    # build ParallelRGate decomposition manually
     manual_circuit = cirq.Circuit(
-        [cirq_superstaq.Rphi(rot_gate.phi, rot_gate.theta).on(qubit) for qubit in qubits]
+        [cirq_superstaq.RGate(rot_gate.theta, rot_gate.phi).on(qubit) for qubit in qubits]
     )
 
     assert np.allclose(cirq.unitary(circuit), cirq.unitary(manual_circuit))
 
-    circuit = cirq.Circuit(cirq_superstaq.ParallelRphi(np.pi, 0.5 * np.pi, len(qubits)).on(*qubits))
+    circuit = cirq.Circuit(
+        cirq_superstaq.ParallelRGate(np.pi, 0.5 * np.pi, len(qubits)).on(*qubits)
+    )
     text = textwrap.dedent(
         """
-        0: ───Rphi(π, 0.5π)───
+        0: ───RGate(π, 0.5π)───
               │
-        1: ───#2──────────────
+        1: ───#2───────────────
         """
     )
     cirq.testing.assert_has_diagram(circuit, text)
@@ -410,8 +415,8 @@ def test_custom_resolver() -> None:
         qubits[0], qubits[2], qubits[3]
     )
     circuit += cirq_superstaq.custom_gates.MSGate(rads=0.5).on(qubits[0], qubits[1])
-    circuit += cirq_superstaq.Rphi(1.23, 4.56).on(qubits[0])
-    circuit += cirq_superstaq.ParallelRphi(1.23, 4.56, len(qubits)).on(*qubits)
+    circuit += cirq_superstaq.RGate(1.23, 4.56).on(qubits[0])
+    circuit += cirq_superstaq.ParallelRGate(1.23, 4.56, len(qubits)).on(*qubits)
     circuit += cirq.CX(qubits[0], qubits[1])
 
     json_text = cirq.to_json(circuit)
