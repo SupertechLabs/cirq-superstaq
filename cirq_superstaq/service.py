@@ -312,13 +312,13 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         return compiler_output.read_json_qscout(json_dict, circuits_list)
 
     def cq_compile(
-        self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "coldquanta"
+        self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "cq"
     ) -> "cirq_superstaq.compiler_output.CompilerOutput":
         """Compiles the given circuit(s) to given target CQ device, optimized to its native gate set.
 
         Args:
             circuits: cirq Circuit(s) with operations on qubits 0 and 1.
-            target: string of target backend ColdQuanta device.
+            target: string of target backend CQ device.
         Returns:
             object whose .circuit(s) attribute is an optimized cirq Circuit(s)
         """
