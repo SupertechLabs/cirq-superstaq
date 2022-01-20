@@ -85,7 +85,6 @@ def test_service_run_and_get_counts() -> None:
         circuit=circuit,
         repetitions=4,
         target="ibmq_qasm_simulator",
-        name="bacon",
         param_resolver=params,
     )
     assert counts == {"11": 1}
