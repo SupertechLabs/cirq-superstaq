@@ -331,7 +331,7 @@ def test_parallel_gates_equivalence_groups() -> None:
         _ = gate.qubit_index_to_equivalence_group_key(-1)
 
 
-def test_rxy() -> None:
+def test_rgate() -> None:
     qubit = cirq.LineQubit(0)
 
     rot_gate = cirq_superstaq.RGate(4.56 * np.pi, 1.23 * np.pi)
@@ -370,7 +370,7 @@ def test_rxy() -> None:
     cirq.testing.assert_has_diagram(circuit, "0: ───RGate(π, 0.5π)───")
 
 
-def test_parallel_rxy() -> None:
+def test_parallel_rgate() -> None:
     qubits = cirq.LineQubit.range(2)
 
     rot_gate = cirq_superstaq.ParallelRGate(1.23 * np.pi, 4.56 * np.pi, len(qubits))
