@@ -85,7 +85,6 @@ def test_service_run_and_get_counts() -> None:
         circuit=circuit,
         repetitions=4,
         target="ibmq_qasm_simulator",
-        name="bacon",
         param_resolver=params,
     )
     assert counts == {"11": 1}
@@ -94,7 +93,6 @@ def test_service_run_and_get_counts() -> None:
         circuit=circuit,
         repetitions=4,
         target="ibmq_qasm_simulator",
-        name="bacon",
         param_resolver=params,
     )
     assert result.histogram(key="a") == collections.Counter({3: 1})
@@ -314,20 +312,19 @@ def test_service_neutral_atom_compile(mock_neutral_atom_compile: mock.MagicMock)
         _ = service.neutral_atom_compile(cirq.Circuit())
 
 
+@mock.patch.dict(os.environ, {"SUPERSTAQ_API_KEY": "tomyheart"})
 def test_service_api_key_via_env() -> None:
-    os.environ["SUPERSTAQ_API_KEY"] = "tomyheart"
     service = cirq_superstaq.Service(remote_host="http://example.com")
     assert service.api_key == "tomyheart"
-    del os.environ["SUPERSTAQ_API_KEY"]
 
 
+@mock.patch.dict(os.environ, {"SUPERSTAQ_REMOTE_HOST": "http://example.com"})
 def test_service_remote_host_via_env() -> None:
-    os.environ["SUPERSTAQ_REMOTE_HOST"] = "http://example.com"
     service = cirq_superstaq.Service(api_key="tomyheart")
     assert service.remote_host == "http://example.com"
-    del os.environ["SUPERSTAQ_REMOTE_HOST"]
 
 
+@mock.patch.dict(os.environ, {"SUPERSTAQ_API_KEY": ""})
 def test_service_no_param_or_env_variable() -> None:
     with pytest.raises(EnvironmentError):
         _ = cirq_superstaq.Service(remote_host="http://example.com")

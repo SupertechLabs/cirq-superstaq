@@ -140,7 +140,6 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         self,
         circuit: cirq.Circuit,
         repetitions: int,
-        name: Optional[str] = None,
         target: Optional[str] = None,
         param_resolver: cirq.ParamResolverOrSimilarType = cirq.ParamResolver({}),
     ) -> collections.Counter:
@@ -150,7 +149,6 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         Args:
             circuit: The circuit to run.
             repetitions: The number of times to run the circuit.
-            name: An optional name for the created job. Different from the `job_id`.
             target: Where to run the job. Can be 'qpu' or 'simulator'.
             param_resolver: A `cirq.ParamResolver` to resolve parameters in  `circuit`.
 
@@ -166,7 +164,6 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         self,
         circuit: cirq.Circuit,
         repetitions: int,
-        name: Optional[str] = None,
         target: Optional[str] = None,
         param_resolver: cirq.ParamResolver = cirq.ParamResolver({}),
     ) -> cirq.Result:
@@ -176,14 +173,13 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         Args:
             circuit: The circuit to run.
             repetitions: The number of times to run the circuit.
-            name: An optional name for the created job. Different from the `job_id`.
             target: Where to run the job. Can be 'qpu' or 'simulator'.
             param_resolver: A `cirq.ParamResolver` to resolve parameters in  `circuit`.
 
         Returns:
             A `cirq.Result` for running the circuit.
         """
-        counts = self.get_counts(circuit, repetitions, name, target, param_resolver)
+        counts = self.get_counts(circuit, repetitions, target, param_resolver)
         return counts_to_results(counts, circuit, param_resolver)
 
     def sampler(self, target: str) -> cirq.Sampler:
@@ -266,7 +262,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
     def aqt_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "keysight"
     ) -> "cirq_superstaq.compiler_output.CompilerOutput":
-        """Compiles the given circuit(s) to given target AQT device, optimized to its native gate set.
+        """Compiles the given circuit(s) to target AQT device, optimized to its native gate set.
 
         Args:
             circuits: cirq Circuit(s) with operations on qubits 4 through 8.
@@ -291,7 +287,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
     def qscout_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "qscout"
     ) -> "cirq_superstaq.compiler_output.CompilerOutput":
-        """Compiles the given circuit(s) to given target  QSCOUT device, optimized to its native gate set.
+        """Compiles the given circuit(s) to target QSCOUT device, optimized to its native gate set.
 
         Args:
             circuits: cirq Circuit(s) with operations on qubits 0 and 1.
