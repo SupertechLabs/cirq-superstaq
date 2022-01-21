@@ -310,7 +310,8 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
     def cq_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "cq"
     ) -> "cirq_superstaq.compiler_output.CompilerOutput":
-        """Compiles the given circuit(s) to given target CQ device, optimized to its native gate set.
+        """Compiles the given circuit(s) to given target CQ device, optimized to its native gate
+        set.
 
         Args:
             circuits: cirq Circuit(s) with operations on qubits 0 and 1.
