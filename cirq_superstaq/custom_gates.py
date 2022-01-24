@@ -478,6 +478,14 @@ class ParallelRGate(cirq.ParallelGate, cirq.InterchangeableQubitsGate):
         )
         return cirq.CircuitDiagramInfo(wire_symbols=wire_symbols)
 
+    def _qasm_(self, args: cirq.QasmArgs, qubits: Tuple[cirq.Qid, ...]) -> Optional[str]:
+        return args.format(
+            "GR({0:half_turns},{1:half_turns}) {2} {3};\n",
+            self.exponent,
+            self.phase_exponent,
+            *qubits,
+        )
+
     def __str__(self) -> str:
         return f"RGate({self.phase_exponent}π, {self.exponent}π) x {self.num_copies}"
 

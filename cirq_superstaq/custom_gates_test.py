@@ -335,7 +335,6 @@ def test_rxy() -> None:
     qubit = cirq.LineQubit(0)
 
     rot_gate = cirq_superstaq.RGate(4.56 * np.pi, 1.23 * np.pi)
-    print(repr(rot_gate))
     cirq.testing.assert_equivalent_repr(rot_gate, setup_code="import cirq_superstaq")
     assert str(rot_gate) == f"RGate({rot_gate.exponent}π, {rot_gate.phase_exponent}π)"
     assert rot_gate ** -1 == cirq_superstaq.RGate(-rot_gate.theta, rot_gate.phi)
@@ -389,6 +388,21 @@ def test_parallel_rxy() -> None:
     )
 
     assert np.allclose(cirq.unitary(circuit), cirq.unitary(manual_circuit))
+
+    expected_qasm = textwrap.dedent(
+        """\
+        OPENQASM 2.0;
+        include "qelib1.inc";
+
+
+        // Qubits: [0, 1]
+        qreg q[2];
+
+
+        GR(pi*1.23,pi*0.56) q[0] q[1];
+        """
+    )
+    assert circuit.to_qasm(header="") == expected_qasm
 
     circuit = cirq.Circuit(
         cirq_superstaq.ParallelRGate(np.pi, 0.5 * np.pi, len(qubits)).on(*qubits)
