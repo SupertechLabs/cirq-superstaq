@@ -399,7 +399,7 @@ def test_parallel_rgate() -> None:
         qreg q[2];
 
 
-        GR(2,pi*1.23,pi*0.56) q[0],q[1];
+        GR(pi*1.23,pi*0.56) q[0],q[1];
         """
     )
     assert circuit.to_qasm(header="") == expected_qasm
@@ -425,7 +425,7 @@ def test_parallel_rgate() -> None:
         qreg q[2];
 
 
-        GR(2,pi*1.0,pi*0.5) q[0],q[1];
+        GR(pi*1.0,pi*0.5) q[0],q[1];
         """
     )
 
