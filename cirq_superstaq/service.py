@@ -198,7 +198,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         circuit: cirq.AbstractCircuit,
         repetitions: int = 1000,
         target: Optional[str] = None,
-        ibmq_pulse: Optional[str] = None,
+        ibmq_pulse: Optional[bool] = None,
     ) -> job.Job:
         """Create a new job to run the given circuit.
 
