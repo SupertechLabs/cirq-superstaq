@@ -100,7 +100,7 @@ def test_cq_compile(service: cirq_superstaq.Service) -> None:
     circuit = cirq.Circuit(
         cirq.H(qubits[0]),
         cirq.CNOT(qubits[0], qubits[1]),
-        cirq.measure(qubits[0], qubits[1]),
+        cirq.measure(qubits[0]),
     )
     compiled_circuit = cirq.Circuit(
         cirq_superstaq.ParallelRGate(-0.25 * np.pi, 0.5 * np.pi, 2).on(qubits[0], qubits[1]),
@@ -111,7 +111,7 @@ def test_cq_compile(service: cirq_superstaq.Service) -> None:
         cirq.Z(qubits[0]),
         cirq.measure(qubits[0]),
         cirq_superstaq.ParallelRGate(-0.25 * np.pi, 0.5 * np.pi, 2).on(qubits[0], qubits[1]),
-        cirq.Z(qubits[1]) ** -1.0,
+        cirq.Z(qubits[0]) ** -1.0,
         cirq_superstaq.ParallelRGate(0.25 * np.pi, 0.5 * np.pi, 2).on(qubits[0], qubits[1]),
     )
 
