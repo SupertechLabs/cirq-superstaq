@@ -202,10 +202,17 @@ class ZXPowGate(cirq.EigenGate, cirq.Gate):
 CR = ZX = ZXPowGate()  # standard CR is a full turn of ZX, i.e. exponent = 1
 
 
+@cirq.value_equality
 class AceCR(cirq.Gate):
-    def __init__(self, polarity: str) -> None:
-        assert polarity in ["+-", "-+"]
+    def __init__(self, polarity: str, sandwiched_gate: Optional[cirq.Gate] = None) -> None:
+        assert polarity in ["+-", "-+"], "must be +- or -+ polarity"
         self.polarity = polarity
+
+        if sandwiched_gate is not None:
+            assert sandwiched_gate in cirq.Gateset(
+                cirq.X, cirq.X ** 0.5, cirq.X ** -0.5
+            ), "this sandwiched gate is not supported"
+        self.sandwiched_gate = sandwiched_gate
 
     def _num_qubits_(self) -> int:
         return 2
@@ -215,6 +222,8 @@ class AceCR(cirq.Gate):
             *qubits
         ) ** -0.25
         yield cirq.X(qubits[0])
+        if self.sandwiched_gate is not None:
+            yield self.sandwiched_gate(qubits[1])
         yield cirq_superstaq.CR(*qubits) ** -0.25 if self.polarity == "+-" else cirq_superstaq.CR(
             *qubits
         ) ** 0.25
@@ -222,36 +231,36 @@ class AceCR(cirq.Gate):
     def _circuit_diagram_info_(
         self, args: cirq.CircuitDiagramInfoArgs
     ) -> cirq.protocols.CircuitDiagramInfo:
-        return cirq.protocols.CircuitDiagramInfo(
-            wire_symbols=(f"AceCR{self.polarity}(Z side)", f"AceCR{self.polarity}(X side)")
-        )
+        top, bottom = f"AceCR{self.polarity}(Z side)", f"AceCR{self.polarity}(X side)"
+        if self.sandwiched_gate is not None:
+            bottom += f"|{self.sandwiched_gate}|"
+        return cirq.protocols.CircuitDiagramInfo(wire_symbols=(top, bottom))
 
     def _qasm_(self, args: cirq.QasmArgs, qubits: Tuple[cirq.Qid, cirq.Qid]) -> Optional[str]:
-        """QASM symbol for AceCR('+-') (AceCR('-+')) is acecr_pm (acecr_mp)"""
+        """QASM symbol for AceCR('+-') (AceCR('-+')) is acecr_pm (acecr_mp).
+        Update me
+        """
         polarity_str = self.polarity.replace("+", "p").replace("-", "m")
-        return args.format(
-            "acecr_{0} {1},{2};\n",
-            polarity_str,
-            qubits[0],
-            qubits[1],
-        )
+        gate_name_qasm = f"acecr_{polarity_str}"
+        if self.sandwiched_gate is not None:
+            gate_name_qasm += f"_{self.sandwiched_gate}"
+        return args.format(gate_name_qasm + " {0},{1};\n", qubits[0], qubits[1])
 
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, AceCR):
-            return False
-        return self.polarity == other.polarity
-
-    def __hash__(self) -> int:
-        return hash(self.polarity)
+    def _value_equality_values_(self) -> Any:
+        return (self.polarity, self.sandwiched_gate)
 
     def __repr__(self) -> str:
-        return f"cirq_superstaq.AceCR('{self.polarity}')"
+        if self.sandwiched_gate is None:
+            return f"cirq_superstaq.AceCR({self.polarity!r})"
+        return f"cirq_superstaq.AceCR({self.polarity!r}, {self.sandwiched_gate!r})"
 
     def __str__(self) -> str:
-        return f"AceCR{self.polarity}"
+        if self.sandwiched_gate is None:
+            return f"AceCR{self.polarity}"
+        return f"AceCR{self.polarity}|{self.sandwiched_gate}|"
 
     def _json_dict_(self) -> Dict[str, Any]:
-        return cirq.protocols.obj_to_dict_helper(self, ["polarity"])
+        return cirq.protocols.obj_to_dict_helper(self, ["polarity", "sandwiched_gate"])
 
 
 AceCRMinusPlus = AceCR("-+")
