@@ -213,10 +213,9 @@ class AceCR(cirq.Gate):
             applied to the target.
     """
 
-    def __init__(
-        self, polarity: str, sandwich_rx_rads: Optional[cirq.value.TParamVal] = 0
-    ) -> None:
-        assert polarity in ["+-", "-+"], "Polarity must be +- or -+"
+    def __init__(self, polarity: str, sandwich_rx_rads: Optional[cirq.value.TParamVal] = 0) -> None:
+        if polarity not in ("+-", "-+"):
+            raise ValueError("Polarity must be either '+-' or '-+'")
         self.polarity = polarity
         self.sandwich_rx_rads = sandwich_rx_rads
 
