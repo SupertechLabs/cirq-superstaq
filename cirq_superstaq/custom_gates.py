@@ -260,12 +260,10 @@ class AceCR(cirq.Gate):
         acecr_mp_rx(pi*0.5).
         """
         polarity_str = self.polarity.replace("+", "p").replace("-", "m")
-        gate_name_qasm = f"acecr_{polarity_str}"
-        kwargs: dict = {"q0": qubits[0], "q1": qubits[1]}
-        if self.sandwich_rx_rads is not None:
-            kwargs["theta"] = self.sandwich_rx_rads / np.pi
-            gate_name_qasm += "_rx({theta:half_turns})"
-        return args.format(gate_name_qasm + " {q0},{q1};\n", **kwargs)
+        if not self.sandwich_rx_rads:
+            return args.format("acecr_{} {},{};\n", polarity_str, *qubits)
+        exponent = self.sandwich_rx_rads / np.pi
+        return args.format("acecr_{}_rx({:half_turns}) {},{};\n", polarity_str, exponent, *qubits)
 
     def _value_equality_values_(self) -> Any:
         return (self.polarity, self.sandwich_rx_rads)
