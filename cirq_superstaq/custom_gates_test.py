@@ -153,9 +153,8 @@ def test_zx_circuit() -> None:
 def test_acecr_init() -> None:
     cirq_superstaq.AceCR("+-")
     cirq_superstaq.AceCR("-+", np.pi / 3)
-    with pytest.raises(AssertionError, match="Polarity must be"):
+    with pytest.raises(ValueError, match="Polarity must be"):
         cirq_superstaq.AceCR("++")
-
 
 
 def test_acecr_circuit_diagram_info() -> None:
