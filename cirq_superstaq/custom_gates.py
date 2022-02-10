@@ -204,15 +204,28 @@ CR = ZX = ZXPowGate()  # standard CR is a full turn of ZX, i.e. exponent = 1
 
 @cirq.value_equality
 class AceCR(cirq.Gate):
-    def __init__(self, polarity: str, sandwiched_gate: Optional[cirq.Gate] = None) -> None:
-        assert polarity in ["+-", "-+"], "must be +- or -+ polarity"
+    """Active Cancellation Echoed Cross Resonance gate, supporting polarity switches and sandwiches.
+
+    The typical AceCR in literature is a positive half-CR, then X on control, then negative half-CR.
+    Args:
+        polarity: should be either "+-" or "-+". Specifies if positive or negative half-CR is first
+        sandwich_rx_rads: during the X on control, an rx gate can be simultaneously
+            applied to the target.
+    """
+
+    def __init__(
+        self, polarity: str, sandwich_rx_rads: Optional[cirq.value.TParamVal] = None
+    ) -> None:
+        assert polarity in ["+-", "-+"], "Polarity must be +- or -+"
         self.polarity = polarity
 
-        if sandwiched_gate is not None:
-            assert sandwiched_gate in cirq.Gateset(
-                cirq.X, cirq.X ** 0.5, cirq.X ** -0.5
-            ), "this sandwiched gate is not supported"
-        self.sandwiched_gate = sandwiched_gate
+        if sandwich_rx_rads is not None:
+            assert sandwich_rx_rads in [
+                np.pi / 2,
+                np.pi,
+                -np.pi / 2,
+            ], "Sandwiched rx angle can only be π/2, π, or -π/2"
+        self.sandwich_rx_rads = sandwich_rx_rads
 
     def _num_qubits_(self) -> int:
         return 2
@@ -222,8 +235,8 @@ class AceCR(cirq.Gate):
             *qubits
         ) ** -0.25
         yield cirq.X(qubits[0])
-        if self.sandwiched_gate is not None:
-            yield self.sandwiched_gate(qubits[1])
+        if self.sandwich_rx_rads is not None:
+            yield cirq.rx(self.sandwich_rx_rads)(qubits[1])
         yield cirq_superstaq.CR(*qubits) ** -0.25 if self.polarity == "+-" else cirq_superstaq.CR(
             *qubits
         ) ** 0.25
@@ -232,35 +245,39 @@ class AceCR(cirq.Gate):
         self, args: cirq.CircuitDiagramInfoArgs
     ) -> cirq.protocols.CircuitDiagramInfo:
         top, bottom = f"AceCR{self.polarity}(Z side)", f"AceCR{self.polarity}(X side)"
-        if self.sandwiched_gate is not None:
-            bottom += f"|{self.sandwiched_gate}|"
+        if self.sandwich_rx_rads is not None:
+            bottom += f"|{cirq.rx(self.sandwich_rx_rads)}|"
         return cirq.protocols.CircuitDiagramInfo(wire_symbols=(top, bottom))
 
     def _qasm_(self, args: cirq.QasmArgs, qubits: Tuple[cirq.Qid, cirq.Qid]) -> Optional[str]:
-        """QASM symbol for AceCR('+-') (AceCR('-+')) is acecr_pm (acecr_mp).
-        Update me
+        """QASM symbol for AceCR("+-") (AceCR("-+")) is acecr_pm (acecr_mp)
+
+        If there is a sandwich, it comes last. For example, AceCR("-+", np.pi / 2) has qasm
+        acecr_mp_rx(pi*0.5).
         """
         polarity_str = self.polarity.replace("+", "p").replace("-", "m")
         gate_name_qasm = f"acecr_{polarity_str}"
-        if self.sandwiched_gate is not None:
-            gate_name_qasm += f"_{self.sandwiched_gate}"
-        return args.format(gate_name_qasm + " {0},{1};\n", qubits[0], qubits[1])
+        kwargs: dict = {"q0": qubits[0], "q1": qubits[1]}
+        if self.sandwich_rx_rads is not None:
+            kwargs["theta"] = self.sandwich_rx_rads / np.pi
+            gate_name_qasm += "_rx({theta:half_turns})"
+        return args.format(gate_name_qasm + " {q0},{q1};\n", **kwargs)
 
     def _value_equality_values_(self) -> Any:
-        return (self.polarity, self.sandwiched_gate)
+        return (self.polarity, self.sandwich_rx_rads)
 
     def __repr__(self) -> str:
-        if self.sandwiched_gate is None:
+        if self.sandwich_rx_rads is None:
             return f"cirq_superstaq.AceCR({self.polarity!r})"
-        return f"cirq_superstaq.AceCR({self.polarity!r}, {self.sandwiched_gate!r})"
+        return f"cirq_superstaq.AceCR({self.polarity!r}, {self.sandwich_rx_rads!r})"
 
     def __str__(self) -> str:
-        if self.sandwiched_gate is None:
+        if self.sandwich_rx_rads is None:
             return f"AceCR{self.polarity}"
-        return f"AceCR{self.polarity}|{self.sandwiched_gate}|"
+        return f"AceCR{self.polarity}|{cirq.rx(self.sandwich_rx_rads)}|"
 
     def _json_dict_(self) -> Dict[str, Any]:
-        return cirq.protocols.obj_to_dict_helper(self, ["polarity", "sandwiched_gate"])
+        return cirq.protocols.obj_to_dict_helper(self, ["polarity", "sandwich_rx_rads"])
 
 
 AceCRMinusPlus = AceCR("-+")
