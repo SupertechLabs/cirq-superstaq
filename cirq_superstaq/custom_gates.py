@@ -214,17 +214,10 @@ class AceCR(cirq.Gate):
     """
 
     def __init__(
-        self, polarity: str, sandwich_rx_rads: Optional[cirq.value.TParamVal] = None
+        self, polarity: str, sandwich_rx_rads: Optional[cirq.value.TParamVal] = 0
     ) -> None:
         assert polarity in ["+-", "-+"], "Polarity must be +- or -+"
         self.polarity = polarity
-
-        if sandwich_rx_rads is not None:
-            assert sandwich_rx_rads in [
-                np.pi / 2,
-                np.pi,
-                -np.pi / 2,
-            ], "Sandwiched rx angle can only be π/2, π, or -π/2"
         self.sandwich_rx_rads = sandwich_rx_rads
 
     def _num_qubits_(self) -> int:
@@ -235,7 +228,7 @@ class AceCR(cirq.Gate):
             *qubits
         ) ** -0.25
         yield cirq.X(qubits[0])
-        if self.sandwich_rx_rads is not None:
+        if self.sandwich_rx_rads:
             yield cirq.rx(self.sandwich_rx_rads)(qubits[1])
         yield cirq_superstaq.CR(*qubits) ** -0.25 if self.polarity == "+-" else cirq_superstaq.CR(
             *qubits
@@ -245,7 +238,7 @@ class AceCR(cirq.Gate):
         self, args: cirq.CircuitDiagramInfoArgs
     ) -> cirq.protocols.CircuitDiagramInfo:
         top, bottom = f"AceCR{self.polarity}(Z side)", f"AceCR{self.polarity}(X side)"
-        if self.sandwich_rx_rads is not None:
+        if self.sandwich_rx_rads:
             bottom += f"|{cirq.rx(self.sandwich_rx_rads)}|"
         return cirq.protocols.CircuitDiagramInfo(wire_symbols=(top, bottom))
 
@@ -265,12 +258,12 @@ class AceCR(cirq.Gate):
         return (self.polarity, self.sandwich_rx_rads)
 
     def __repr__(self) -> str:
-        if self.sandwich_rx_rads is None:
+        if not self.sandwich_rx_rads:
             return f"cirq_superstaq.AceCR({self.polarity!r})"
         return f"cirq_superstaq.AceCR({self.polarity!r}, {self.sandwich_rx_rads!r})"
 
     def __str__(self) -> str:
-        if self.sandwich_rx_rads is None:
+        if not self.sandwich_rx_rads:
             return f"AceCR{self.polarity}"
         return f"AceCR{self.polarity}|{cirq.rx(self.sandwich_rx_rads)}|"
 

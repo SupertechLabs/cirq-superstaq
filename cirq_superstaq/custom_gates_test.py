@@ -152,13 +152,10 @@ def test_zx_circuit() -> None:
 
 def test_acecr_init() -> None:
     cirq_superstaq.AceCR("+-")
+    cirq_superstaq.AceCR("-+", np.pi / 3)
     with pytest.raises(AssertionError, match="Polarity must be"):
         cirq_superstaq.AceCR("++")
 
-    cirq_superstaq.AceCR("-+", np.pi / 2)
-    cirq_superstaq.AceCR("-+", np.pi)
-    with pytest.raises(AssertionError, match="Sandwiched rx angle can only be"):
-        cirq_superstaq.AceCR("-+", np.pi / 4)
 
 
 def test_acecr_circuit_diagram_info() -> None:
