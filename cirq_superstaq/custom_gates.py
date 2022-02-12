@@ -257,7 +257,7 @@ class AceCR(cirq.Gate):
         exponent = self.sandwich_rx_rads / np.pi
         return args.format("acecr_{}_rx({:half_turns}) {},{};\n", polarity_str, exponent, *qubits)
 
-    def _value_equality_values_(self) -> Any:
+    def _value_equality_values_(self) -> Tuple[str, cirq.TParamVal]:
         return (self.polarity, self.sandwich_rx_rads)
 
     def __repr__(self) -> str:
