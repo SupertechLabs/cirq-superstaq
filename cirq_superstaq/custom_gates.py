@@ -209,8 +209,8 @@ class AceCR(cirq.Gate):
     The typical AceCR in literature is a positive half-CR, then X on control, then negative half-CR.
     Args:
         polarity: should be either "+-" or "-+". Specifies if positive or negative half-CR is first
-        sandwich_rx_rads: during the X on control, an rx gate can be simultaneously
-            applied to the target.
+        sandwich_rx_rads: angle of rotation for an rx gate simultaneously applied to the target
+            during the X on control
     """
 
     def __init__(self, polarity: str, sandwich_rx_rads: cirq.TParamVal = 0) -> None:
@@ -255,6 +255,9 @@ class AceCR(cirq.Gate):
 
     def _value_equality_values_(self) -> Tuple[str, cirq.TParamVal]:
         return (self.polarity, self.sandwich_rx_rads)
+
+    def _parameter_names_(self) -> AbstractSet[str]:
+        return cirq.parameter_names(self.sandwich_rx_rads)
 
     def __repr__(self) -> str:
         if not self.sandwich_rx_rads:
