@@ -206,11 +206,12 @@ CR = ZX = ZXPowGate()  # standard CR is a full turn of ZX, i.e. exponent = 1
 class AceCR(cirq.Gate):
     """Active Cancellation Echoed Cross Resonance gate, supporting polarity switches and sandwiches.
 
-    The typical AceCR in literature is a positive half-CR, then X on control, then negative half-CR.
+    The typical AceCR in literature is a positive half-CR, then X on "Z side", then negative
+    half-CR.  ("Z side" and "X side" refer to the two sides of the underlying ZX interactions).
     Args:
         polarity: Should be either "+-" or "-+". Specifies if positive or negative half-CR is first
-        sandwich_rx_rads: Angle of rotation for an rx gate applied to the target simultaneously
-            with the X gate on the control
+        sandwich_rx_rads: Angle of rotation for an rx gate applied to the "X side" simultaneously
+            with the X gate on the "Z side".
     """
 
     def __init__(self, polarity: str, sandwich_rx_rads: float = 0) -> None:
