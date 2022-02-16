@@ -220,9 +220,6 @@ class AceCR(cirq.Gate):
         self.polarity = polarity
         self.sandwich_rx_rads = cirq.ops.fsim_gate._canonicalize(sandwich_rx_rads)
 
-    def _value_equality_approximate_values_(self) -> Tuple[str, cirq.PeriodicValue]:
-        return self.polarity, cirq.PeriodicValue(self.sandwich_rx_rads, 2 * np.pi)
-
     def _num_qubits_(self) -> int:
         return 2
 
@@ -259,6 +256,9 @@ class AceCR(cirq.Gate):
 
     def _value_equality_values_(self) -> Tuple[str, float]:
         return (self.polarity, self.sandwich_rx_rads)
+
+    def _value_equality_approximate_values_(self) -> Tuple[str, cirq.PeriodicValue]:
+        return self.polarity, cirq.PeriodicValue(self.sandwich_rx_rads, 2 * np.pi)
 
     def __repr__(self) -> str:
         if not self.sandwich_rx_rads:
