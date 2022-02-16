@@ -242,7 +242,7 @@ class AceCR(cirq.Gate):
     ) -> cirq.protocols.CircuitDiagramInfo:
         top, bottom = f"AceCR{self.polarity}(Z side)", f"AceCR{self.polarity}(X side)"
         if self.sandwich_rx_rads:
-            bottom += f"|{cirq.rx(self.sandwich_rx_rads)}|"
+            bottom += f"|Rx({args.format_radians(self.sandwich_rx_rads)})|"
         return cirq.protocols.CircuitDiagramInfo(wire_symbols=(top, bottom))
 
     def _qasm_(self, args: cirq.QasmArgs, qubits: Tuple[cirq.Qid, cirq.Qid]) -> Optional[str]:
