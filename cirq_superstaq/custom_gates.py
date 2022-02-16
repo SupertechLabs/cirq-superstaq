@@ -202,7 +202,7 @@ class ZXPowGate(cirq.EigenGate, cirq.Gate):
 CR = ZX = ZXPowGate()  # standard CR is a full turn of ZX, i.e. exponent = 1
 
 
-@cirq.value_equality
+@cirq.value_equality(approximate=True)
 class AceCR(cirq.Gate):
     """Active Cancellation Echoed Cross Resonance gate, supporting polarity switches and sandwiches.
 
@@ -218,7 +218,10 @@ class AceCR(cirq.Gate):
         if polarity not in ("+-", "-+"):
             raise ValueError("Polarity must be either '+-' or '-+'")
         self.polarity = polarity
-        self.sandwich_rx_rads = sandwich_rx_rads
+        self.sandwich_rx_rads = cirq.ops.fsim_gate._canonicalize(sandwich_rx_rads)
+
+    def _value_equality_approximate_values_(self) -> Tuple[str, cirq.PeriodicValue]:
+        return self.polarity, cirq.PeriodicValue(self.sandwich_rx_rads, 2 * np.pi)
 
     def _num_qubits_(self) -> int:
         return 2
