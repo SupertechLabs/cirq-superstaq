@@ -27,7 +27,7 @@ def test_ibmq_compile(service: cirq_superstaq.Service) -> None:
     assert len(out) == 5
 
 
-def test_acer_non_neighbor_qubits_compile(service: cirq_superstaq.Service):
+def test_acer_non_neighbor_qubits_compile(service: cirq_superstaq.Service) -> None:
     qubits = cirq.LineQubit.range(4)
     circuit = cirq.Circuit(
         cirq_superstaq.AceCRMinusPlus(qubits[0], qubits[1]),
