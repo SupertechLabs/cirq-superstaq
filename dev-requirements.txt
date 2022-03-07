@@ -6,3 +6,4 @@ pylint==2.6.0
 pytest==6.1.2
 pytest-cov==2.11.1
 qiskit-terra~=0.18.0
+types-protobuf==3.19.11
