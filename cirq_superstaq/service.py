@@ -286,10 +286,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         json_dict = self._client.aqt_compile(
             {"cirq_circuits": serialized_circuits, "backend": target}
         )
-
-        from cirq_superstaq import compiler_output
-
-        return compiler_output.read_json_aqt(json_dict, circuits_is_list)
+        return cirq_superstaq.compiler_output.read_json_aqt(json_dict, circuits_is_list)
 
     def qscout_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "qscout"
@@ -309,10 +306,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         json_dict = self._client.qscout_compile(
             {"cirq_circuits": serialized_circuits, "backend": target}
         )
-
-        from cirq_superstaq import compiler_output
-
-        return compiler_output.read_json_qscout(json_dict, circuits_is_list)
+        return cirq_superstaq.compiler_output.read_json_qscout(json_dict, circuits_is_list)
 
     def cq_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "cq"
@@ -333,9 +327,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
             {"cirq_circuits": serialized_circuits, "backend": target}
         )
 
-        from cirq_superstaq import compiler_output
-
-        return compiler_output.read_json_only_circuits(json_dict, circuits_is_list)
+        return cirq_superstaq.compiler_output.read_json_only_circuits(json_dict, circuits_is_list)
 
     def ibmq_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "ibmq_qasm_simulator"
