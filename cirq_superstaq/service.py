@@ -350,13 +350,13 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
             raise applications_superstaq.SuperstaQModuleNotFoundException(
                 name=str(e.name), context="ibmq_compile"
             )
-        from cirq_superstaq import compiler_output
-
         if isinstance(circuits, cirq.Circuit):
-            return compiler_output.CompilerOutput(
+            return cirq_superstaq.compiler_output.CompilerOutput(
                 circuits=compiled_circuits[0], pulse_sequences=pulses[0]
             )
-        return compiler_output.CompilerOutput(circuits=compiled_circuits, pulse_sequences=pulses)
+        return cirq_superstaq.compiler_output.CompilerOutput(
+            circuits=compiled_circuits, pulse_sequences=pulses
+        )
 
     def neutral_atom_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "neutral_atom_qpu"
