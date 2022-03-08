@@ -22,9 +22,10 @@ def test_ibmq_compile(service: cirq_superstaq.Service) -> None:
     qubits = cirq.LineQubit.range(2)
     circuit = cirq.Circuit(cirq_superstaq.AceCRPlusMinus(qubits[0], qubits[1]))
     out = service.ibmq_compile(circuit, target="ibmq_jakarta_qpu")
-    assert 800 <= out.duration <= 1000  # 896 as of 12/27/2021
-    assert out.start_time == 0
-    assert len(out) == 5
+    assert isinstance(out.circuit, cirq.Circuit)
+    assert 800 <= out.pulse.duration <= 1000  # 896 as of 12/27/2021
+    assert out.pulse.start_time == 0
+    assert len(out.pulse) == 5
 
 
 def test_acer_non_neighbor_qubits_compile(service: cirq_superstaq.Service) -> None:
@@ -35,10 +36,11 @@ def test_acer_non_neighbor_qubits_compile(service: cirq_superstaq.Service) -> No
         cirq_superstaq.AceCRMinusPlus(qubits[2], qubits[3]),
     )
 
-    out = service.ibmq_compile(circuit, target="ibmq_casablanca_qpu")
-    assert 5000 <= out.duration <= 5200  # 5184 as of 2/25/2022
-    assert out.start_time == 0
-    assert len(out) == 76
+    out = service.ibmq_compile(circuit, target="ibmq_bogota_qpu")
+    assert isinstance(out.circuit, cirq.Circuit)
+    assert 5700 <= out.pulse.duration <= 5900  # 5824 as of 3/3/2022
+    assert out.pulse.start_time == 0
+    assert len(out.pulse) == 67
 
 
 def test_aqt_compile(service: cirq_superstaq.Service) -> None:

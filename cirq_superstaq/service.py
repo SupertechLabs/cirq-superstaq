@@ -342,15 +342,21 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
             {"cirq_circuits": serialized_circuits, "backend": target}
         )
         try:
+            compiled_circuits = cirq_superstaq.serialization.deserialize_circuits(
+                json_dict["cirq_circuits"]
+            )
             pulses = applications_superstaq.converters.deserialize(json_dict["pulses"])
         except ModuleNotFoundError as e:
             raise applications_superstaq.SuperstaQModuleNotFoundException(
                 name=str(e.name), context="ibmq_compile"
             )
-
         if isinstance(circuits, cirq.Circuit):
-            return pulses[0]
-        return pulses
+            return cirq_superstaq.compiler_output.CompilerOutput(
+                circuits=compiled_circuits[0], pulse_sequences=pulses[0]
+            )
+        return cirq_superstaq.compiler_output.CompilerOutput(
+            circuits=compiled_circuits, pulse_sequences=pulses
+        )
 
     def neutral_atom_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "neutral_atom_qpu"
