@@ -296,8 +296,8 @@ def test_service_ibmq_compile(mock_ibmq_compile: mock.MagicMock) -> None:
     assert service.ibmq_compile(circuit).circuit == circuit
     assert service.ibmq_compile([circuit]).circuits == [circuit]
 
-    assert service.ibmq_compile(circuit).pulse == mock.DEFAULT
-    assert service.ibmq_compile([circuit]).pulses == [mock.DEFAULT]
+    assert service.ibmq_compile(circuit).pulse_sequence == mock.DEFAULT
+    assert service.ibmq_compile([circuit]).pulse_sequences == [mock.DEFAULT]
 
     with mock.patch.dict("sys.modules", {"unittest": None}), pytest.raises(
         applications_superstaq.SuperstaQModuleNotFoundException,
