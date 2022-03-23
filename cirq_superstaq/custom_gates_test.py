@@ -480,6 +480,126 @@ def test_parallel_rgate() -> None:
     assert circuit.to_qasm(header="", qubit_order=qubits) == expected_qasm
 
 
+def test_iccxpowgate() -> None:
+    qubits = cirq.LineQubit.range(3)
+
+    gate = cirq_superstaq.ITOFFOLI
+
+    assert str(gate(*qubits)) == "ITOFFOLI(0, 1, 2)"
+    assert str(gate(*qubits) ** 0.5) == "ITOFFOLI**0.5(0, 1, 2)"
+    cirq.testing.assert_equivalent_repr(gate, setup_code="import cirq_superstaq")
+    cirq.testing.assert_equivalent_repr(gate ** 0.5, setup_code="import cirq_superstaq")
+    cirq.testing.assert_equivalent_repr(
+        cirq_superstaq.ICCXPowGate(global_shift=0.5), setup_code="import cirq_superstaq"
+    )
+
+    c = cirq.Circuit(cirq.H(qubits[0]), gate(*qubits))
+
+    cirq.testing.assert_has_diagram(
+        c,
+        textwrap.dedent(
+            """
+        0: ───H───@────
+                  │
+        1: ───────@────
+                  │
+        2: ───────iX───
+            """
+        ),
+    )
+
+    print(cirq.unitary(cirq_superstaq.ICCXPowGate().on(*qubits)))
+    assert np.allclose(
+        cirq.unitary(cirq_superstaq.ICCXPowGate().on(*qubits)),
+        np.array(
+            [
+                [
+                    0.0 + 0.0j,
+                    0.0 + 1.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                ],
+                [
+                    0.0 + 1.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                ],
+                [
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    1.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                ],
+                [
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    1.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                ],
+                [
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    1.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                ],
+                [
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    1.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                ],
+                [
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    1.0 + 0.0j,
+                ],
+                [
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    0.0 + 0.0j,
+                    1.0 + 0.0j,
+                    0.0 + 0.0j,
+                ],
+            ]
+        ),
+    )
+
+    cirq.testing.assert_consistent_resolve_parameters(gate)
+
+
 def test_custom_resolver() -> None:
     circuit = cirq.Circuit()
     qubits = cirq.LineQubit.range(4)

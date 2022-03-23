@@ -6,7 +6,6 @@ import cirq
 import numpy as np
 from cirq import linalg
 from cirq._compat import proper_repr
-from cirq.ops import pauli_gates
 
 import cirq_superstaq
 
@@ -201,68 +200,6 @@ class ZXPowGate(cirq.EigenGate, cirq.Gate):
             f" global_shift={self._global_shift!r})"
         )
 
-class iCCXPowGate(cirq.InterchangeableQubitsGate, cirq.EigenGate):
-    """A iToffoli (doubly-controlled-NOT) that can be raised to a power.
-    The matrix of `iCCX**t` is an 8x8 identity except the bottom right 2x2 area
-    is the matrix of `X**t`.
-    """
-
-    def _eigen_components(self) -> List[Tuple[float, np.ndarray]]:
-        return [
-            (0, linalg.block_diag(np.diag([1, 1, 1, 1, 1, 1]), np.array([[0.5, 0.5], [0.5, 0.5]]))),
-            (
-                1,
-                linalg.block_diag(
-                    np.diag([0, 0, 0, 0, 0, 0]), np.array([[0.5, -0.5], [-0.5, 0.5]])
-                ),
-            ),
-        ]
-
-    def qubit_index_to_equivalence_group_key(self, index):
-        return index < 2
-
-    def _apply_unitary_(self, args: 'protocols.ApplyUnitaryArgs') -> np.ndarray:
-        if cirq.is_parameterized(self):
-            return NotImplemented
-        p = 1j ** (2 * self._exponent * self._global_shift)
-        if p != 1:
-            args.target_tensor *= p
-        return cirq.apply_unitary(
-            cirq.ControlledGate(
-                cirq.ControlledGate(pauli_gates.X ** self.exponent)
-            ),
-            cirq.ApplyUnitaryArgs(args.target_tensor, args.available_buffer, args.axes),
-            default=NotImplemented,
-        )
-
-    def _decompose_(self, qubits):
-        c1, c2, t = qubits
-        yield cirq.CCX(c1, c2, t) ** self._exponent
-        yield cirq.CS(t)
-
-    def _circuit_diagram_info_(
-        self, args: 'cirq.CircuitDiagramInfoArgs'
-    ) -> 'cirq.CircuitDiagramInfo':
-        return cirq.CircuitDiagramInfo(
-            ('@', '@', 'X'), exponent=self._diagram_exponent(args), exponent_qubit_index=2
-        )
-
-    def __repr__(self) -> str:
-        if self._global_shift == 0:
-            if self._exponent == 1:
-                return 'cirq.ITOFFOLI'
-            return f'(cirq.ITOFFOLI**{proper_repr(self._exponent)})'
-        return 'cirq.ICCXPowGate(exponent={}, global_shift={!r})'.format(
-            proper_repr(self._exponent), self._global_shift
-        )
-
-    def __str__(self) -> str:
-        if self._exponent == 1:
-            return 'ITOFFOLI'
-        return f'ITOFFOLI**{self._exponent}'
-
-    def _num_qubits_(self) -> int:
-        return 3
 
 @cirq.value_equality(approximate=True)
 class AceCR(cirq.Gate):
@@ -573,6 +510,74 @@ class ParallelRGate(cirq.ParallelGate, cirq.InterchangeableQubitsGate):
         return cirq.protocols.obj_to_dict_helper(self, ["theta", "phi", "num_copies"])
 
 
+class ICCXPowGate(cirq.InterchangeableQubitsGate, cirq.EigenGate):
+    """A iToffoli (doubly-controlled-NOT) that can be raised to a power.
+    The matrix of `iCCX**t` is an 8x8 identity except the bottom right 2x2 area
+    is the matrix of `X**t` and the top right 2x2 area is the matrix of `iX**t` .
+    """
+
+    def _eigen_components(self) -> List[Tuple[float, np.ndarray]]:
+        return [
+            (
+                0,
+                linalg.block_diag(
+                    np.array(
+                        [
+                            [0, 1j, 0, 0, 0, 0],
+                            [1j, 0, 0, 0, 0, 0],
+                            [0, 0, 1, 0, 0, 0],
+                            [0, 0, 0, 1, 0, 0],
+                            [0, 0, 0, 0, 1, 0],
+                            [0, 0, 0, 0, 0, 1],
+                        ]
+                    ),
+                    np.array([[0.5, 0.5], [0.5, 0.5]]),
+                ),
+            ),
+            (
+                1,
+                linalg.block_diag(
+                    np.diag([0, 0, 0, 0, 0, 0]), np.array([[0.5, -0.5], [-0.5, 0.5]])
+                ),
+            ),
+        ]
+
+    # def _decompose_(self, qubits):
+    #     print("RJFRJHFG")
+    #     c1, c2, t = qubits
+    #     yield cirq.CCX(c1, c2, t) ** self._exponent
+    #     yield cirq.CZ(c1, c2) ** 0.5
+
+    def _circuit_diagram_info_(
+        self, args: "cirq.CircuitDiagramInfoArgs"
+    ) -> "cirq.CircuitDiagramInfo":
+        return cirq.CircuitDiagramInfo(
+            ("@", "@", "iX"), exponent=self._diagram_exponent(args), exponent_qubit_index=2
+        )
+
+    def __repr__(self) -> str:
+        if self._global_shift == 0:
+            if self._exponent == 1:
+                return "cirq_superstaq.ITOFFOLI"
+            return f"(cirq_superstaq.ITOFFOLI**{proper_repr(self._exponent)})"
+        return "cirq_superstaq.ICCXPowGate(exponent={}, global_shift={!r})".format(
+            proper_repr(self._exponent), self._global_shift
+        )
+
+    def __str__(self) -> str:
+        if self._exponent == 1:
+            return "ITOFFOLI"
+        return f"ITOFFOLI**{self._exponent}"
+
+    def _num_qubits_(self) -> int:
+        return 3
+
+
+CR = ZX = ZXPowGate()  # standard CR is a full turn of ZX, i.e. exponent = 1
+ICCNotPowGate = ICCXPowGate
+ICCX = ITOFFOLI = ICCNOT = ICCXPowGate()
+
+
 def custom_resolver(cirq_type: str) -> Union[Callable[..., cirq.Gate], None]:
     if cirq_type == "ZZSwapGate":
         return ZZSwapGate
@@ -592,11 +597,6 @@ def custom_resolver(cirq_type: str) -> Union[Callable[..., cirq.Gate], None]:
         return ParallelRGate
 
     return None
-
-
-CR = ZX = ZXPowGate()  # standard CR is a full turn of ZX, i.e. exponent = 1
-iCCNotPowGate = iCCXPowGate
-iCCX = iTOFFOLI = iCCNOT = iCCXPowGate()
 
 
 # return [
