@@ -595,5 +595,7 @@ def custom_resolver(cirq_type: str) -> Union[Callable[..., cirq.Gate], None]:
         return RGate
     if cirq_type == "ParallelRGate":
         return ParallelRGate
+    if cirq_type == "ICCXPowGate":
+        return ICCXPowGate
 
     return None
