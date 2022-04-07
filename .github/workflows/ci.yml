@@ -28,7 +28,8 @@ jobs:
           if [ -f dev-requirements.txt ]; then pip install -r dev-requirements.txt; fi
       - name: Format
         run: |
-          check/format
+          check/format.py
+
   lint:
     name: Lint check
     runs-on: ubuntu-latest
@@ -88,6 +89,7 @@ jobs:
       - name: Type check
         run: |
           check/mypy
+
   pytest:
     name: Pytest Ubuntu
     env:
