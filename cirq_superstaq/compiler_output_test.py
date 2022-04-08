@@ -4,6 +4,7 @@ from unittest import mock
 
 import applications_superstaq
 import cirq
+import pytest
 
 import cirq_superstaq
 
@@ -42,6 +43,11 @@ def test_read_json_ibmq() -> None:
     assert out.pulse_sequences == [mock.DEFAULT]
     assert not hasattr(out, "circuit")
     assert not hasattr(out, "pulse_sequence")
+
+    with mock.patch("qiskit.__version__", "0.17.2"), pytest.raises(
+        applications_superstaq.SuperstaQException, match="Qiskit Terra version"
+    ):
+        _ = cirq_superstaq.compiler_output.read_json_ibmq(json_dict, circuits_is_list=False)
 
     with mock.patch.dict("sys.modules", {"qiskit": None}):
         out = cirq_superstaq.compiler_output.read_json_ibmq(json_dict, circuits_is_list=False)

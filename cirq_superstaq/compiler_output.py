@@ -67,10 +67,16 @@ def read_json_ibmq(json_dict: dict, circuits_is_list: bool) -> CompilerOutput:
     compiled_circuits = cirq_superstaq.serialization.deserialize_circuits(
         json_dict["cirq_circuits"]
     )
-    pulses = None
 
     if importlib.util.find_spec("qiskit"):
+        import qiskit
+        if qiskit.__version__ < "0.18":
+            raise applications_superstaq.SuperstaQException(
+                "ibmq_compile requires Qiskit Terra version 0.18 or higher."
+            )
         pulses = applications_superstaq.converters.deserialize(json_dict["pulses"])
+    else:
+        pulses = None
 
     if circuits_is_list:
         return CompilerOutput(circuits=compiled_circuits, pulse_sequences=pulses)
