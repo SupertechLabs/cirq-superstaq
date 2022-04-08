@@ -44,16 +44,18 @@ def test_read_json_ibmq() -> None:
     assert not hasattr(out, "circuit")
     assert not hasattr(out, "pulse_sequence")
 
-    with mock.patch("qiskit.__version__", "0.17.2"), pytest.raises(
-        applications_superstaq.SuperstaQException, match="Qiskit Terra version"
+    with mock.patch.dict("sys.modules", {"qiskit": None}), pytest.warns(
+        UserWarning, match="requires Qiskit Terra"
     ):
-        _ = cirq_superstaq.compiler_output.read_json_ibmq(json_dict, circuits_is_list=False)
-
-    with mock.patch.dict("sys.modules", {"qiskit": None}):
         out = cirq_superstaq.compiler_output.read_json_ibmq(json_dict, circuits_is_list=False)
+        assert out.circuit == circuit
         assert out.pulse_sequence is None
 
+    with mock.patch("qiskit.__version__", "0.17.2"), pytest.warns(
+        UserWarning, match="you have 0.17.2"
+    ):
         out = cirq_superstaq.compiler_output.read_json_ibmq(json_dict, circuits_is_list=True)
+        assert out.circuits == [circuit]
         assert out.pulse_sequences is None
 
 
