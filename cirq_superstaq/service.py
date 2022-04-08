@@ -347,7 +347,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
 
     def neutral_atom_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "neutral_atom_qpu"
-    ) -> cirq_superstaq.compiler_output.CompilerOutput:
+    ) -> Any:
         """Returns pulse schedule for the given circuit and target.
 
         Pulse must be installed for returned object to correctly deserialize to a pulse schedule.
