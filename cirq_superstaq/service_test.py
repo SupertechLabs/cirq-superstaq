@@ -79,7 +79,7 @@ def test_service_run_and_get_counts() -> None:
 
     a = sympy.Symbol("a")
     q = cirq.LineQubit(0)
-    circuit = cirq.Circuit((cirq.X ** a)(q), cirq.measure(q, key="a"))
+    circuit = cirq.Circuit((cirq.X**a)(q), cirq.measure(q, key="a"))
     params = cirq.ParamResolver({"a": 0.5})
     counts = service.get_counts(
         circuit=circuit,
@@ -245,12 +245,12 @@ def test_service_qscout_compile_single(mock_qscout_compile: mock.MagicMock) -> N
 
     jaqal_program = textwrap.dedent(
         """\
-                register allqubits[1]
-                prepare_all
-                R allqubits[0] -1.5707963267948966 1.5707963267948966
-                Rz allqubits[0] -3.141592653589793
-                measure_all
-                """
+        register allqubits[1]
+        prepare_all
+        R allqubits[0] -1.5707963267948966 1.5707963267948966
+        Rz allqubits[0] -3.141592653589793
+        measure_all
+        """
     )
 
     mock_qscout_compile.return_value = {
@@ -261,7 +261,7 @@ def test_service_qscout_compile_single(mock_qscout_compile: mock.MagicMock) -> N
     service = cirq_superstaq.Service(remote_host="http://example.com", api_key="key")
     out = service.qscout_compile(circuit)
     assert out.circuit == circuit
-    assert out.jaqal_programs == jaqal_program
+    assert out.jaqal_program == jaqal_program
 
 
 @mock.patch("applications_superstaq.superstaq_client._SuperstaQClient.cq_compile")
@@ -299,11 +299,9 @@ def test_service_ibmq_compile(mock_ibmq_compile: mock.MagicMock) -> None:
     assert service.ibmq_compile(circuit).pulse_sequence == mock.DEFAULT
     assert service.ibmq_compile([circuit]).pulse_sequences == [mock.DEFAULT]
 
-    with mock.patch.dict("sys.modules", {"unittest": None}), pytest.raises(
-        applications_superstaq.SuperstaQModuleNotFoundException,
-        match="'ibmq_compile' requires module 'unittest'",
-    ):
-        _ = service.ibmq_compile(cirq.Circuit())
+    with mock.patch.dict("sys.modules", {"qiskit": None}):
+        assert service.ibmq_compile(cirq.Circuit()).pulse_sequence is None
+        assert service.ibmq_compile([cirq.Circuit()]).pulse_sequences is None
 
 
 @mock.patch(

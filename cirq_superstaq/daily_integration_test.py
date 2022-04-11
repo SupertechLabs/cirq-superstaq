@@ -38,7 +38,7 @@ def test_acer_non_neighbor_qubits_compile(service: cirq_superstaq.Service) -> No
 
     out = service.ibmq_compile(circuit, target="ibmq_bogota_qpu")
     assert isinstance(out.circuit, cirq.Circuit)
-    assert 5700 <= out.pulse_sequence.duration <= 6700  # 6624 as of 3/18/2022
+    assert 5700 <= out.pulse_sequence.duration <= 7500  # 7424 as of 4/06/2022
     assert out.pulse_sequence.start_time == 0
     assert len(out.pulse_sequence) == 67
 
@@ -98,17 +98,17 @@ def test_qscout_compile(service: cirq_superstaq.Service) -> None:
 
     jaqal_program = textwrap.dedent(
         """\
-                register allqubits[1]
+        register allqubits[1]
 
-                prepare_all
-                R allqubits[0] -1.5707963267948966 1.5707963267948966
-                Rz allqubits[0] -3.141592653589793
-                measure_all
-                """
+        prepare_all
+        R allqubits[0] -1.5707963267948966 1.5707963267948966
+        Rz allqubits[0] -3.141592653589793
+        measure_all
+        """
     )
     out = service.qscout_compile(circuit)
     assert out.circuit == compiled_circuit
-    assert out.jaqal_programs == jaqal_program
+    assert out.jaqal_program == jaqal_program
 
 
 def test_cq_compile(service: cirq_superstaq.Service) -> None:
@@ -130,3 +130,9 @@ def test_cq_compile(service: cirq_superstaq.Service) -> None:
 
     out = service.cq_compile(circuit)
     assert out.circuit == compiled_circuit
+
+
+def test_get_aqt_configs(service: cirq_superstaq.Service) -> None:
+    res = service.aqt_get_configs()
+    assert "pulses" in res
+    assert "variables" in res
