@@ -511,9 +511,9 @@ class ParallelRGate(cirq.ParallelGate, cirq.InterchangeableQubitsGate):
 
 
 class ICCXPowGate(cirq.InterchangeableQubitsGate, cirq.EigenGate):
-    """A iToffoli (doubly-controlled-NOT) that can be raised to a power.
-    The matrix of `iCCX**t` is an 8x8 identity except the bottom right 2x2 area
-    is the matrix of `X**t` and the top right 2x2 area is the matrix of `iX**t` .
+    """A iToffoli (i * doubly-controlled-NOT) that can be raised to a power.
+    The matrix of `iCCX**t` is an 8x8 identity except
+    the top right 2x2 area is the matrix of `iX**t` .
     """
 
     def _eigen_components(self) -> List[Tuple[float, np.ndarray]]:
