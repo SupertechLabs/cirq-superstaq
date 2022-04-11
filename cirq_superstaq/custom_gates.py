@@ -537,16 +537,10 @@ class ICCXPowGate(cirq.InterchangeableQubitsGate, cirq.EigenGate):
             (
                 1,
                 linalg.block_diag(
-                    np.diag([0, 0, 0, 0, 0, 0]), np.array([[0.5, -0.5], [-0.5, 0.5]])
+                    np.diag([0, 0, 0, 0, 0, 0]), np.array([[-0.5, 0.5], [0.5, -0.5]])
                 ),
             ),
         ]
-
-    # def _decompose_(self, qubits):
-    #     print("RJFRJHFG")
-    #     c1, c2, t = qubits
-    #     yield cirq.CCX(c1, c2, t) ** self._exponent
-    #     yield cirq.CZ(c1, c2) ** 0.5
 
     def _circuit_diagram_info_(
         self, args: "cirq.CircuitDiagramInfoArgs"

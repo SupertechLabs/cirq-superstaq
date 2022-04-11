@@ -488,7 +488,7 @@ def test_iccxpowgate() -> None:
     assert str(gate(*qubits)) == "ITOFFOLI(0, 1, 2)"
     assert str(gate(*qubits) ** 0.5) == "ITOFFOLI**0.5(0, 1, 2)"
     cirq.testing.assert_equivalent_repr(gate, setup_code="import cirq_superstaq")
-    cirq.testing.assert_equivalent_repr(gate ** 0.5, setup_code="import cirq_superstaq")
+    cirq.testing.assert_equivalent_repr(gate**0.5, setup_code="import cirq_superstaq")
     cirq.testing.assert_equivalent_repr(
         cirq_superstaq.ICCXPowGate(global_shift=0.5), setup_code="import cirq_superstaq"
     )
@@ -507,96 +507,25 @@ def test_iccxpowgate() -> None:
             """
         ),
     )
-
-    print(cirq.unitary(cirq_superstaq.ICCXPowGate().on(*qubits)))
     assert np.allclose(
         cirq.unitary(cirq_superstaq.ICCXPowGate().on(*qubits)),
+        # yapf: disable
         np.array(
             [
-                [
-                    0.0 + 0.0j,
-                    0.0 + 1.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                ],
-                [
-                    0.0 + 1.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                ],
-                [
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    1.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                ],
-                [
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    1.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                ],
-                [
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    1.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                ],
-                [
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    1.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                ],
-                [
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    1.0 + 0.0j,
-                ],
-                [
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    0.0 + 0.0j,
-                    1.0 + 0.0j,
-                    0.0 + 0.0j,
-                ],
+                [0, 1j, 0, 0, 0, 0, 0, 0],
+                [1j, 0, 0, 0, 0, 0, 0, 0],
+                [0, 0, 1, 0, 0, 0, 0, 0],
+                [0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 0, 0, 0, 1, 0, 0, 0],
+                [0, 0, 0, 0, 0, 1, 0, 0],
+                [0, 0, 0, 0, 0, 0, 1, 0],
+                [0, 0, 0, 0, 0, 0, 0, 1],
             ]
         ),
+        # yapf: enable
     )
-
+    cirq.testing.assert_has_consistent_apply_unitary(gate)
+    cirq.testing.assert_decompose_is_consistent_with_unitary(gate, ignoring_global_phase=True)
     cirq.testing.assert_consistent_resolve_parameters(gate)
 
 
@@ -615,6 +544,7 @@ def test_custom_resolver() -> None:
     circuit += cirq_superstaq.custom_gates.MSGate(rads=0.5).on(qubits[0], qubits[1])
     circuit += cirq_superstaq.RGate(1.23, 4.56).on(qubits[0])
     circuit += cirq_superstaq.ParallelRGate(1.23, 4.56, len(qubits)).on(*qubits)
+    circuit += cirq_superstaq.ITOFFOLI(qubits[0], qubits[1], qubits[2])
     circuit += cirq.CX(qubits[0], qubits[1])
 
     json_text = cirq.to_json(circuit)
