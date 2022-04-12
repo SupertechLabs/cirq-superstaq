@@ -480,35 +480,13 @@ def test_parallel_rgate() -> None:
     assert circuit.to_qasm(header="", qubit_order=qubits) == expected_qasm
 
 
-def test_iccxpowgate() -> None:
+def test_icccxpowgate() -> None:
     qubits = cirq.LineQubit.range(3)
 
-    gate = cirq_superstaq.ITOFFOLI
+    gate = cirq_superstaq.IITOFFOLI
 
-    assert str(gate(*qubits)) == "ITOFFOLI(0, 1, 2)"
-    assert str(gate(*qubits) ** 0.5) == "ITOFFOLI**0.5(0, 1, 2)"
-    cirq.testing.assert_equivalent_repr(gate, setup_code="import cirq_superstaq")
-    cirq.testing.assert_equivalent_repr(gate**0.5, setup_code="import cirq_superstaq")
-    cirq.testing.assert_equivalent_repr(
-        cirq_superstaq.ICCXPowGate(global_shift=0.5), setup_code="import cirq_superstaq"
-    )
-
-    c = cirq.Circuit(cirq.H(qubits[0]), gate(*qubits))
-
-    cirq.testing.assert_has_diagram(
-        c,
-        textwrap.dedent(
-            """
-        0: ───H───@────
-                  │
-        1: ───────@────
-                  │
-        2: ───────iX───
-            """
-        ),
-    )
     assert np.allclose(
-        cirq.unitary(cirq_superstaq.ICCXPowGate().on(*qubits)),
+        cirq.unitary(gate(*qubits)),
         # yapf: disable
         np.array(
             [
@@ -524,9 +502,6 @@ def test_iccxpowgate() -> None:
         ),
         # yapf: enable
     )
-    cirq.testing.assert_has_consistent_apply_unitary(gate)
-    cirq.testing.assert_decompose_is_consistent_with_unitary(gate, ignoring_global_phase=True)
-    cirq.testing.assert_consistent_resolve_parameters(gate)
 
 
 def test_custom_resolver() -> None:
@@ -544,7 +519,7 @@ def test_custom_resolver() -> None:
     circuit += cirq_superstaq.custom_gates.MSGate(rads=0.5).on(qubits[0], qubits[1])
     circuit += cirq_superstaq.RGate(1.23, 4.56).on(qubits[0])
     circuit += cirq_superstaq.ParallelRGate(1.23, 4.56, len(qubits)).on(*qubits)
-    circuit += cirq_superstaq.ITOFFOLI(qubits[0], qubits[1], qubits[2])
+    circuit += cirq_superstaq.IITOFFOLI(qubits[0], qubits[1], qubits[2])
     circuit += cirq.CX(qubits[0], qubits[1])
 
     json_text = cirq.to_json(circuit)
