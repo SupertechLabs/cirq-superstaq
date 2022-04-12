@@ -480,7 +480,7 @@ def test_parallel_rgate() -> None:
     assert circuit.to_qasm(header="", qubit_order=qubits) == expected_qasm
 
 
-def test_icccxpowgate() -> None:
+def test_iitoffoli() -> None:
     qubits = cirq.LineQubit.range(3)
 
     gate = cirq_superstaq.IITOFFOLI
