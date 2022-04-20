@@ -296,6 +296,8 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         target: str = "keysight",
     ) -> "cirq_superstaq.compiler_output.CompilerOutput":
         """Compiles the given circuit to target AQT device with Equivalent Circuit Averaging (ECA).
+        
+        See arxiv.org/pdf/2111.04572.pdf for a description of ECA.
 
         Args:
             circuit: cirq Circuit to compile.
