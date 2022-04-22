@@ -515,7 +515,7 @@ class ParallelRGate(cirq.ParallelGate, cirq.InterchangeableQubitsGate):
 
 CR = ZX = ZXPowGate()  # standard CR is a full turn of ZX, i.e. exponent = 1
 
-# Inverted iToffoli gate
+# Open-control iToffoli gate
 AQTICCX = AQTITOFFOLI = cirq.XPowGate(global_shift=0.5).controlled(2, [0, 0])
 
 
