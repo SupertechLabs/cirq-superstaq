@@ -12,43 +12,48 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from cirq_superstaq import compiler_output, serialization
 from cirq_superstaq._init_vars import API_URL, API_VERSION
+from cirq_superstaq._version import __version__
 from cirq_superstaq.custom_gates import (
     AceCR,
     AceCRMinusPlus,
     AceCRPlusMinus,
     Barrier,
     CR,
-    FermionicSWAPGate,
+    IICCX,
+    IITOFFOLI,
     ParallelGates,
+    ParallelRGate,
+    RGate,
     ZX,
     ZXPowGate,
+    ZZSwapGate,
 )
 from cirq_superstaq.job import Job
+from cirq_superstaq.sampler import Sampler
 from cirq_superstaq.service import Service
-from cirq_superstaq.superstaq_exceptions import (
-    SuperstaQException,
-    SuperstaQModuleNotFoundException,
-    SuperstaQNotFoundException,
-    SuperstaQUnsuccessfulJobException,
-)
 
 __all__ = [
+    "__version__",
     "AceCR",
     "AceCRMinusPlus",
     "AceCRPlusMinus",
     "API_URL",
     "API_VERSION",
     "Barrier",
+    "compiler_output",
     "CR",
-    "FermionicSWAPGate",
+    "IICCX",
+    "IITOFFOLI",
     "Job",
     "ParallelGates",
+    "ParallelRGate",
+    "serialization",
+    "RGate",
+    "Sampler",
     "Service",
-    "SuperstaQException",
-    "SuperstaQModuleNotFoundException",
-    "SuperstaQNotFoundException",
-    "SuperstaQUnsuccessfulJobException",
     "ZX",
     "ZXPowGate",
+    "ZZSwapGate",
 ]
