@@ -315,7 +315,7 @@ class ParallelGates(cirq.Gate, cirq.InterchangeableQubitsGate):
 
             gate = ParallelGates(cirq.X, cirq.Y, cirq.X)
             gate.on(q0, q1, q2) == gate.on(q2, q1, q0)  # True for cirq < 0.14.0
-                                                        # False for 0.14 <= cirq < 0.15.0
+                                                        # False for 0.14.0 <= cirq < 0.15.0
                                                         # True for cirq >= 0.15.0
 
         This does not affect permutations of qubits between adjacent gates, or those within the

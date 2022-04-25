@@ -386,8 +386,9 @@ def test_parallel_gates_equivalence_groups() -> None:
 
 
 @pytest.mark.skipif(
-    packaging.version.parse(cirq.__version__) > packaging.version.parse("0.14.0.dev20220126174724")
-    and packaging.version.parse(cirq.__version__) < packaging.version.parse("0.15.0"),
+    packaging.version.parse("0.14.0.dev20220126174724")
+    < packaging.version.parse(cirq.__version__)
+    < packaging.version.parse("0.15.0.dev20220420201205"),
     reason="https://github.com/quantumlib/Cirq/issues/5148",
 )
 def test_parallel_gates_equivalence_groups_nonadjacent() -> None:  # pragma: no cover
