@@ -3,6 +3,7 @@ import textwrap
 
 import cirq
 import numpy as np
+import packaging
 import pytest
 import sympy
 
@@ -361,14 +362,15 @@ def test_parallel_gates_equivalence_groups() -> None:
         else:
             assert operation != gate(*permuted_qubits)
 
-    gate = cirq_superstaq.ParallelGates(cirq.X, cirq_superstaq.ZZSwapGate(1.23), cirq.X)
-    operation = gate(*qubits[:4])
-    assert [gate.qubit_index_to_equivalence_group_key(i) for i in range(4)] == [0, 1, 1, 0]
+    gate = cirq_superstaq.ParallelGates(cirq.X, cirq.X, cirq_superstaq.ZZSwapGate(1.23))
+    operation = gate(*qubits)
+    assert [gate.qubit_index_to_equivalence_group_key(i) for i in range(4)] == [0, 0, 2, 2]
+
     equivalent_targets = [
         (qubits[0], qubits[1], qubits[2], qubits[3]),
-        (qubits[0], qubits[2], qubits[1], qubits[3]),
-        (qubits[3], qubits[1], qubits[2], qubits[0]),
-        (qubits[3], qubits[2], qubits[1], qubits[0]),
+        (qubits[1], qubits[0], qubits[2], qubits[3]),
+        (qubits[0], qubits[1], qubits[3], qubits[2]),
+        (qubits[1], qubits[0], qubits[3], qubits[2]),
     ]
     for permuted_qubits in itertools.permutations(operation.qubits):
         if permuted_qubits in equivalent_targets:
@@ -381,6 +383,31 @@ def test_parallel_gates_equivalence_groups() -> None:
 
     with pytest.raises(ValueError, match="index out of range"):
         _ = gate.qubit_index_to_equivalence_group_key(-1)
+
+
+@pytest.mark.skipif(
+    packaging.version.parse(cirq.__version__) > packaging.version.parse("0.14.0.dev20220126174724")
+    and packaging.version.parse(cirq.__version__) < packaging.version.parse("0.15.0"),
+    reason="https://github.com/quantumlib/Cirq/issues/5148",
+)
+def test_parallel_gates_equivalence_groups_nonadjacent() -> None:  # pragma: no cover
+    """Fails in cirq version 0.14.x due to https://github.com/quantumlib/Cirq/issues/5148"""
+    qubits = cirq.LineQubit.range(4)
+    gate = cirq_superstaq.ParallelGates(cirq.X, cirq_superstaq.ZZSwapGate(1.23), cirq.X)
+    assert [gate.qubit_index_to_equivalence_group_key(i) for i in range(4)] == [0, 1, 1, 0]
+
+    operation = gate(*qubits)
+    equivalent_targets = [
+        (qubits[0], qubits[1], qubits[2], qubits[3]),
+        (qubits[0], qubits[2], qubits[1], qubits[3]),
+        (qubits[3], qubits[1], qubits[2], qubits[0]),
+        (qubits[3], qubits[2], qubits[1], qubits[0]),
+    ]
+    for permuted_qubits in itertools.permutations(operation.qubits):
+        if permuted_qubits in equivalent_targets:
+            assert operation == gate(*permuted_qubits)
+        else:
+            assert operation != gate(*permuted_qubits)
 
 
 def test_rgate() -> None:
@@ -488,7 +515,7 @@ def test_parallel_rgate() -> None:
 def test_iitoffoli() -> None:
     qubits = cirq.LineQubit.range(3)
 
-    gate = cirq_superstaq.IITOFFOLI
+    gate = cirq_superstaq.AQTITOFFOLI
 
     assert np.allclose(
         cirq.unitary(gate(*qubits)),
@@ -524,7 +551,7 @@ def test_custom_resolver() -> None:
     circuit += cirq_superstaq.custom_gates.MSGate(rads=0.5).on(qubits[0], qubits[1])
     circuit += cirq_superstaq.RGate(1.23, 4.56).on(qubits[0])
     circuit += cirq_superstaq.ParallelRGate(1.23, 4.56, len(qubits)).on(*qubits)
-    circuit += cirq_superstaq.IITOFFOLI(qubits[0], qubits[1], qubits[2])
+    circuit += cirq_superstaq.AQTITOFFOLI(qubits[0], qubits[1], qubits[2])
     circuit += cirq.CX(qubits[0], qubits[1])
 
     json_text = cirq.to_json(circuit)
