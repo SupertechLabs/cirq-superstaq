@@ -308,7 +308,24 @@ class Barrier(cirq.ops.IdentityGate):
 
 @cirq.value_equality(approximate=True)
 class ParallelGates(cirq.Gate, cirq.InterchangeableQubitsGate):
-    """A single Gate combining a collection of concurrent Gate(s) acting on different qubits"""
+    """A single Gate combining a collection of concurrent Gate(s) acting on different qubits.
+
+    WARNING: for cirq versions 0.14.*, equality check will return False after permutations of
+        qubits between identical but nonadjacent gates, e.g.:
+
+            gate = ParallelGates(cirq.X, cirq.Y, cirq.X)
+            gate.on(q0, q1, q2) == gate.on(q2, q1, q0)  # True for cirq < 0.14.0
+                                                        # False for 0.14.0 <= cirq < 0.15.0
+                                                        # True for cirq >= 0.15.0
+
+        This does not affect permutations of qubits between adjacent gates, or those within the
+        same InterchangeableQubitsGate:
+
+            gate = ParallelGates(cirq.X, cirq.X, cirq.CZ)
+            gate.on(q0, q1, q2, q3) == gate.on(q1, q0, q3, q2)  # always True
+
+        See https://github.com/quantumlib/Cirq/issues/5148 for more information.
+    """
 
     def __init__(self, *component_gates: cirq.Gate) -> None:
         """
@@ -515,8 +532,8 @@ class ParallelRGate(cirq.ParallelGate, cirq.InterchangeableQubitsGate):
 
 CR = ZX = ZXPowGate()  # standard CR is a full turn of ZX, i.e. exponent = 1
 
-# Inverted iToffoli gate
-IICCX = IITOFFOLI = cirq.XPowGate(global_shift=0.5).controlled(2, [0, 0])
+# Open-control iToffoli gate
+AQTICCX = AQTITOFFOLI = cirq.XPowGate(global_shift=0.5).controlled(2, [0, 0])
 
 
 def custom_resolver(cirq_type: str) -> Union[Callable[..., cirq.Gate], None]:
