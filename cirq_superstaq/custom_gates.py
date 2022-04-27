@@ -36,7 +36,7 @@ class ZZSwapGate(cirq.Gate, cirq.ops.gate_features.InterchangeableQubitsGate):
         Args:
             theta: ZZ-interaction angle in radians
         """
-        self.theta = cirq.ops.fsim_gate._canonicalize(theta)  # between -pi and +pi
+        self.theta = np.pi * cirq.chosen_angle_to_canonical_half_turns(rads=theta)
 
     def _num_qubits_(self) -> int:
         return 2
@@ -199,9 +199,6 @@ class ZXPowGate(cirq.EigenGate, cirq.Gate):
         )
 
 
-CR = ZX = ZXPowGate()  # standard CR is a full turn of ZX, i.e. exponent = 1
-
-
 @cirq.value_equality(approximate=True)
 class AceCR(cirq.Gate):
     """Active Cancellation Echoed Cross Resonance gate, supporting polarity switches and sandwiches.
@@ -218,7 +215,9 @@ class AceCR(cirq.Gate):
         if polarity not in ("+-", "-+"):
             raise ValueError("Polarity must be either '+-' or '-+'")
         self.polarity = polarity
-        self.sandwich_rx_rads = cirq.ops.fsim_gate._canonicalize(sandwich_rx_rads)
+        self.sandwich_rx_rads = np.pi * cirq.chosen_angle_to_canonical_half_turns(
+            rads=sandwich_rx_rads
+        )
 
     def _num_qubits_(self) -> int:
         return 2
@@ -255,7 +254,7 @@ class AceCR(cirq.Gate):
         return args.format("acecr_{}_rx({:half_turns}) {},{};\n", polarity_str, exponent, *qubits)
 
     def _value_equality_values_(self) -> Tuple[str, float]:
-        return (self.polarity, self.sandwich_rx_rads)
+        return self.polarity, self.sandwich_rx_rads
 
     def _value_equality_approximate_values_(self) -> Tuple[str, cirq.PeriodicValue]:
         return self.polarity, cirq.PeriodicValue(self.sandwich_rx_rads, 2 * np.pi)
@@ -286,6 +285,9 @@ class Barrier(cirq.ops.IdentityGate):
 
     def _decompose_(self, qubits: Sequence["cirq.Qid"]) -> cirq.type_workarounds.NotImplementedType:
         return NotImplemented
+
+    def _trace_distance_bound_(self) -> float:
+        return 1.0
 
     def _qasm_(self, args: cirq.QasmArgs, qubits: Tuple[cirq.Qid, ...]) -> str:
         indices_str = ",".join([f"{{{i}}}" for i in range(len(qubits))])
@@ -509,6 +511,12 @@ class ParallelRGate(cirq.ParallelGate, cirq.InterchangeableQubitsGate):
 
     def _json_dict_(self) -> Dict[str, Any]:
         return cirq.protocols.obj_to_dict_helper(self, ["theta", "phi", "num_copies"])
+
+
+CR = ZX = ZXPowGate()  # standard CR is a full turn of ZX, i.e. exponent = 1
+
+# Inverted iToffoli gate
+IICCX = IITOFFOLI = cirq.XPowGate(global_shift=0.5).controlled(2, [0, 0])
 
 
 def custom_resolver(cirq_type: str) -> Union[Callable[..., cirq.Gate], None]:
