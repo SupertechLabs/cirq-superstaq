@@ -1,7 +1,7 @@
+import json
 from typing import List, Sequence, Union
 
 import cirq
-import json
 
 import cirq_superstaq
 
@@ -20,11 +20,11 @@ def serialize_circuits(
     dt = json.loads(cirq.to_json(circuits))
     if isinstance(dt, list):
         for circuit_dt in dt:
-            if 'device' not in circuit_dt:
-                circuit_dt['device'] = {'cirq_type': '_UnconstrainedDevice'}
+            if "device" not in circuit_dt:
+                circuit_dt["device"] = {"cirq_type": "_UnconstrainedDevice"}
     else:
-        if 'device' not in dt:
-            dt['device'] = {'cirq_type': '_UnconstrainedDevice'}
+        if "device" not in dt:
+            dt["device"] = {"cirq_type": "_UnconstrainedDevice"}
 
     return json.dumps(dt)
 
