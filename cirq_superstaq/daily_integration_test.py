@@ -142,7 +142,7 @@ def test_cq_compile(service: cirq_superstaq.Service) -> None:
 
     out = service.cq_compile(circuit)
     cirq.testing.assert_circuits_with_terminal_measurements_are_equivalent(
-        out.circuit, compiled_circuit, atol=1e-08
+        out.circuit, circuit, atol=1e-08
     )
 
 
