@@ -46,31 +46,24 @@ def test_acer_non_neighbor_qubits_compile(service: cirq_superstaq.Service) -> No
 def test_aqt_compile(service: cirq_superstaq.Service) -> None:
     qubits = cirq.LineQubit.range(8)
     circuit = cirq.Circuit(cirq.H(qubits[4]))
-    expected = cirq.Circuit(
-        cirq.rz(np.pi / 2)(qubits[4]),
-        cirq.rx(np.pi / 2)(qubits[4]),
-        cirq.rz(np.pi / 2)(qubits[4]),
-    )
 
     cirq.testing.assert_circuits_with_terminal_measurements_are_equivalent(
-        service.aqt_compile(circuit).circuit, expected, atol=1e-08
+        service.aqt_compile(circuit).circuit, circuit, atol=1e-08
     )
 
     compiled_circuits = service.aqt_compile([circuit]).circuits
     assert isinstance(compiled_circuits, list)
     for compiled_circuit in compiled_circuits:
         cirq.testing.assert_circuits_with_terminal_measurements_are_equivalent(
-            compiled_circuit, expected, atol=1e-08
+            compiled_circuit, circuit, atol=1e-08
         )
     compiled_circuits = service.aqt_compile([circuit, circuit]).circuits
 
     assert isinstance(compiled_circuits, list)
     for compiled_circuit in compiled_circuits:
         cirq.testing.assert_circuits_with_terminal_measurements_are_equivalent(
-            compiled_circuit, expected, atol=1e-08
+            compiled_circuit, circuit, atol=1e-08
         )
-
-    assert service.aqt_compile([circuit, circuit]).circuits == [expected, expected]
 
 
 def test_get_balance(service: cirq_superstaq.Service) -> None:
