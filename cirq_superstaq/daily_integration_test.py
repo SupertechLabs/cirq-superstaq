@@ -51,8 +51,25 @@ def test_aqt_compile(service: cirq_superstaq.Service) -> None:
         cirq.rx(np.pi / 2)(qubits[4]),
         cirq.rz(np.pi / 2)(qubits[4]),
     )
-    assert service.aqt_compile(circuit).circuit == expected
-    assert service.aqt_compile([circuit]).circuits == [expected]
+
+    cirq.testing.assert_circuits_with_terminal_measurements_are_equivalent(
+        service.aqt_compile(circuit).circuit, expected, atol=1e-08
+    )
+
+    compiled_circuits = service.aqt_compile([circuit]).circuits
+    assert isinstance(compiled_circuits, list)
+    for compiled_circuit in compiled_circuits:
+        cirq.testing.assert_circuits_with_terminal_measurements_are_equivalent(
+            compiled_circuit, expected, atol=1e-08
+        )
+    compiled_circuits = service.aqt_compile([circuit, circuit]).circuits
+
+    assert isinstance(compiled_circuits, list)
+    for compiled_circuit in compiled_circuits:
+        cirq.testing.assert_circuits_with_terminal_measurements_are_equivalent(
+            compiled_circuit, expected, atol=1e-08
+        )
+
     assert service.aqt_compile([circuit, circuit]).circuits == [expected, expected]
 
 
@@ -107,7 +124,9 @@ def test_qscout_compile(service: cirq_superstaq.Service) -> None:
         """
     )
     out = service.qscout_compile(circuit)
-    assert out.circuit == compiled_circuit
+    cirq.testing.assert_circuits_with_terminal_measurements_are_equivalent(
+        out.circuit, compiled_circuit, atol=1e-08
+    )
     assert out.jaqal_program == jaqal_program
 
 
@@ -129,7 +148,9 @@ def test_cq_compile(service: cirq_superstaq.Service) -> None:
     )
 
     out = service.cq_compile(circuit)
-    assert out.circuit == compiled_circuit
+    cirq.testing.assert_circuits_with_terminal_measurements_are_equivalent(
+        out.circuit, compiled_circuit, atol=1e-08
+    )
 
 
 def test_get_aqt_configs(service: cirq_superstaq.Service) -> None:
