@@ -28,12 +28,12 @@ def test_zz_swap_gate() -> None:
     assert cirq.decompose_once(operation) == [
         cirq.CX(qubits[0], qubits[2]),
         cirq.CX(qubits[2], qubits[0]),
-        cirq.rz(theta).on(qubits[2]),
+        cirq.Z(qubits[2]) ** (theta / np.pi),
         cirq.CX(qubits[0], qubits[2]),
     ]
 
     cirq.testing.assert_has_consistent_apply_unitary(gate)
-    cirq.testing.assert_decompose_is_consistent_with_unitary(gate, ignoring_global_phase=True)
+    cirq.testing.assert_decompose_is_consistent_with_unitary(gate, ignoring_global_phase=False)
     cirq.testing.assert_consistent_resolve_parameters(gate)
     cirq.testing.assert_pauli_expansion_is_consistent_with_unitary(gate)
 
@@ -341,10 +341,18 @@ def test_parallel_gates() -> None:
         cirq.CZ(qubits[2], qubits[3]) ** 0.5,
         cirq.CZ(qubits[4], qubits[5]) ** -0.5,
     ]
-    cirq.testing.assert_decompose_is_consistent_with_unitary(gate, ignoring_global_phase=True)
+    cirq.testing.assert_decompose_is_consistent_with_unitary(gate, ignoring_global_phase=False)
 
     assert gate**0.5 == cirq_superstaq.ParallelGates(
         cirq.CZ**0.5, cirq.CZ**0.25, cirq.CZ**-0.25
+    )
+
+    assert cirq_superstaq.ParallelGates(cirq.X, cirq.Y, cirq.Z) == cirq_superstaq.ParallelGates(
+        cirq.X, cirq_superstaq.ParallelGates(cirq.Y, cirq.Z)
+    )
+
+    assert cirq_superstaq.ParallelGates(cirq.X, cirq.Y, cirq.Y) == cirq_superstaq.ParallelGates(
+        cirq.X, cirq.ParallelGate(cirq.Y, num_copies=2)
     )
 
     with pytest.raises(ValueError, match="ParallelGates cannot contain measurements"):
@@ -479,7 +487,7 @@ def test_parallel_rgate() -> None:
         qreg q[2];
 
 
-        GR(pi*1.23,pi*0.56) q[0],q[1];
+        gr(pi*1.23,pi*0.56) q[0],q[1];
         """
     )
     assert circuit.to_qasm(header="") == expected_qasm
@@ -505,7 +513,7 @@ def test_parallel_rgate() -> None:
         qreg q[2];
 
 
-        GR(pi*1.0,pi*0.5) q[0],q[1];
+        gr(pi*1.0,pi*0.5) q[0],q[1];
         """
     )
 
@@ -513,14 +521,59 @@ def test_parallel_rgate() -> None:
     assert circuit.to_qasm(header="", qubit_order=qubits) == expected_qasm
 
 
-def test_iitoffoli() -> None:
-    qubits = cirq.LineQubit.range(3)
+def test_ixgate() -> None:
+    gate = cirq_superstaq.custom_gates.IXGate()
 
-    gate = cirq_superstaq.AQTITOFFOLI
+    assert str(gate) == "IX"
+    assert repr(gate) == "cirq_superstaq.custom_gates.IX"
+    cirq.testing.assert_equivalent_repr(gate, setup_code="import cirq_superstaq")
+    cirq.testing.assert_consistent_resolve_parameters(gate)
+    cirq.testing.assert_has_diagram(
+        cirq.Circuit(gate(cirq.LineQubit(1))),
+        textwrap.dedent(
+            """
+            1: ───iX───
+            """
+        ),
+    )
+
+    assert isinstance(gate**1, cirq_superstaq.custom_gates.IXGate)
+    assert isinstance(gate**5, cirq_superstaq.custom_gates.IXGate)
+    assert isinstance(gate**1.5, cirq.XPowGate)
+    assert not isinstance(gate**1.5, cirq_superstaq.custom_gates.IXGate)
 
     assert np.allclose(
-        cirq.unitary(gate(*qubits)),
-        # yapf: disable
+        cirq.unitary(gate),
+        np.array(
+            [
+                [0, 1j],
+                [1j, 0],
+            ]
+        ),
+    )
+
+
+def test_itoffoli() -> None:
+    qubits = cirq.LineQubit.range(3)
+
+    assert np.allclose(
+        cirq.unitary(cirq_superstaq.custom_gates.ICCX(*qubits)),
+        np.array(
+            [
+                [1, 0, 0, 0, 0, 0, 0, 0],
+                [0, 1, 0, 0, 0, 0, 0, 0],
+                [0, 0, 1, 0, 0, 0, 0, 0],
+                [0, 0, 0, 1, 0, 0, 0, 0],
+                [0, 0, 0, 0, 1, 0, 0, 0],
+                [0, 0, 0, 0, 0, 1, 0, 0],
+                [0, 0, 0, 0, 0, 0, 0, 1j],
+                [0, 0, 0, 0, 0, 0, 1j, 0],
+            ]
+        ),
+    )
+
+    assert np.allclose(
+        cirq.unitary(cirq_superstaq.AQTITOFFOLI(*qubits)),
         np.array(
             [
                 [0, 1j, 0, 0, 0, 0, 0, 0],
@@ -533,7 +586,6 @@ def test_iitoffoli() -> None:
                 [0, 0, 0, 0, 0, 0, 0, 1],
             ]
         ),
-        # yapf: enable
     )
 
 
@@ -553,6 +605,8 @@ def test_custom_resolver() -> None:
     circuit += cirq_superstaq.RGate(1.23, 4.56).on(qubits[0])
     circuit += cirq_superstaq.ParallelRGate(1.23, 4.56, len(qubits)).on(*qubits)
     circuit += cirq_superstaq.AQTITOFFOLI(qubits[0], qubits[1], qubits[2])
+    circuit += cirq_superstaq.custom_gates.ICCX(qubits[0], qubits[1], qubits[2])
+    circuit += cirq_superstaq.custom_gates.IX(qubits[0])
     circuit += cirq.CX(qubits[0], qubits[1])
 
     json_text = cirq.to_json(circuit)
