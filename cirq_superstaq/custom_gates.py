@@ -72,7 +72,7 @@ class ZZSwapGate(cirq.Gate, cirq.ops.gate_features.InterchangeableQubitsGate):
     def _decompose_(self, qubits: Tuple[cirq.Qid, cirq.Qid]) -> cirq.OP_TREE:
         yield cirq.CX(qubits[0], qubits[1])
         yield cirq.CX(qubits[1], qubits[0])
-        yield cirq.rz(self.theta)(qubits[1])
+        yield cirq.Z(qubits[1]) ** (self.theta / np.pi)
         yield cirq.CX(qubits[0], qubits[1])
 
     def _circuit_diagram_info_(self, args: cirq.CircuitDiagramInfoArgs) -> cirq.CircuitDiagramInfo:
@@ -332,9 +332,19 @@ class ParallelGates(cirq.Gate, cirq.InterchangeableQubitsGate):
         Args:
             component_gates: Gate(s) to be collected into single gate
         """
-        if any(cirq.is_measurement(gate) for gate in component_gates):
-            raise ValueError("ParallelGates cannot contain measurements")
-        self.component_gates = component_gates
+
+        self.component_gates: List[cirq.Gate] = []
+
+        # unroll any ParallelGate(s) instances in component_gates
+        for gate in component_gates:
+            if cirq.is_measurement(gate):
+                raise ValueError("ParallelGates cannot contain measurements")
+            elif isinstance(gate, ParallelGates):
+                self.component_gates += gate.component_gates
+            elif isinstance(gate, cirq.ParallelGate):
+                self.component_gates += gate.num_copies * [gate.sub_gate]
+            else:
+                self.component_gates.append(gate)
 
     def qubit_index_to_gate_and_index(self, index: int) -> Tuple[cirq.Gate, int]:
         for gate in self.component_gates:
@@ -356,7 +366,7 @@ class ParallelGates(cirq.Gate, cirq.InterchangeableQubitsGate):
                     return index - index_in_gate + i
         return index
 
-    def _value_equality_values_(self) -> Tuple[cirq.Gate, ...]:
+    def _value_equality_values_(self) -> List[cirq.Gate]:
         return self.component_gates
 
     def _num_qubits_(self) -> int:
@@ -397,7 +407,7 @@ class ParallelGates(cirq.Gate, cirq.InterchangeableQubitsGate):
         return cirq.protocols.obj_to_dict_helper(self, ["component_gates"])
 
     @classmethod
-    def _from_json_dict_(cls, component_gates: List[cirq.Gate], **kwargs: Any) -> Any:
+    def _from_json_dict_(cls, component_gates: List[cirq.Gate], **kwargs: Any) -> "ParallelGates":
         return cls(*component_gates)
 
     def __pow__(self, exponent: float) -> "ParallelGates":
@@ -422,7 +432,7 @@ class MSGate(cirq.ion.ion_gates.MSGate):
         return cirq.protocols.obj_to_dict_helper(self, ["rads"])
 
     @classmethod
-    def _from_json_dict_(cls, rads: float, **kwargs: Any) -> Any:
+    def _from_json_dict_(cls, rads: float, **kwargs: Any) -> "MSGate":
         return cls(rads=rads)
 
 
@@ -513,8 +523,8 @@ class ParallelRGate(cirq.ParallelGate, cirq.InterchangeableQubitsGate):
         )
         return cirq.CircuitDiagramInfo(wire_symbols=wire_symbols)
 
-    def _qasm_(self, args: cirq.QasmArgs, qubits: Tuple[cirq.Qid, ...]) -> Optional[str]:
-        gate_str = "GR({0:half_turns},{1:half_turns})"
+    def _qasm_(self, args: cirq.QasmArgs, qubits: Tuple[cirq.Qid, ...]) -> str:
+        gate_str = "gr({0:half_turns},{1:half_turns})"
         qubits_str = ",".join([f"{{{idx+2}}}" for idx in range(len(qubits))])
         return args.format(
             f"{gate_str} {qubits_str};\n", self.exponent, self.phase_exponent, *qubits
@@ -530,10 +540,41 @@ class ParallelRGate(cirq.ParallelGate, cirq.InterchangeableQubitsGate):
         return cirq.protocols.obj_to_dict_helper(self, ["theta", "phi", "num_copies"])
 
 
+class IXGate(cirq.XPowGate):
+    """Thin wrapper of Rx(-pi) to improve iToffoli circuit diagrams"""
+
+    def __init__(self) -> None:
+        super().__init__(exponent=1, global_shift=0.5)
+
+    def _with_exponent(self, exponent: cirq.value.TParamVal) -> Union[cirq.Rx, "IXGate"]:
+        if np.isclose(exponent % 4, 1):
+            return IXGate()
+        return cirq.rx(-exponent * np.pi)
+
+    def _circuit_diagram_info_(self, args: cirq.CircuitDiagramInfoArgs) -> cirq.CircuitDiagramInfo:
+        return cirq.CircuitDiagramInfo(wire_symbols=("iX",))
+
+    def __str__(self) -> str:
+        return "IX"
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__module__}.{str(self)}"
+
+    @classmethod
+    def _from_json_dict_(cls, **kwargs: Any) -> "IXGate":
+        return IXGate()
+
+
 CR = ZX = ZXPowGate()  # standard CR is a full turn of ZX, i.e. exponent = 1
 
+
+IX = IXGate()
+
+# iToffoli gate
+ICCX = IX.controlled(2, [1, 1])
+
 # Open-control iToffoli gate
-AQTICCX = AQTITOFFOLI = cirq.XPowGate(global_shift=0.5).controlled(2, [0, 0])
+AQTICCX = AQTITOFFOLI = IX.controlled(2, [0, 0])
 
 
 def custom_resolver(cirq_type: str) -> Union[Callable[..., cirq.Gate], None]:
@@ -551,6 +592,8 @@ def custom_resolver(cirq_type: str) -> Union[Callable[..., cirq.Gate], None]:
         return MSGate
     if cirq_type == "RGate":
         return RGate
+    if cirq_type == "IXGate":
+        return IXGate
     if cirq_type == "ParallelRGate":
         return ParallelRGate
 
