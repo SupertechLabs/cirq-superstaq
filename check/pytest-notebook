@@ -12,4 +12,4 @@ cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$(git rev-parse --show-toplevel)"
 
 # Run pytest
-pytest "$@" examples --nb-test-files
+pytest "$@" examples --nb-test-files --ignore=examples/aqt_compile.ipynb
