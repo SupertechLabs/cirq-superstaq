@@ -366,8 +366,8 @@ class ParallelGates(cirq.Gate, cirq.InterchangeableQubitsGate):
                     return index - index_in_gate + i
         return index
 
-    def _value_equality_values_(self) -> List[cirq.Gate]:
-        return self.component_gates
+    def _value_equality_values_(self) -> Tuple[cirq.Gate, ...]:
+        return tuple(self.component_gates)
 
     def _num_qubits_(self) -> int:
         return sum(map(cirq.num_qubits, self.component_gates))
