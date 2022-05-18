@@ -187,6 +187,7 @@ jobs:
           if [ -f dev-requirements.txt ]; then pip install -r dev-requirements.txt; fi
       - name: Notebook check
         run: |
-          for file in examples/; do
+          for file in examples/*; do
             ext="${file##*.}"
             if [[$ext == ipynb]]; then jupyter execute file; fi
+          done
