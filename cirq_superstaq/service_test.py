@@ -223,9 +223,7 @@ def test_service_aqt_compile_single(mock_aqt_compile: mock.MagicMock) -> None:
 @mock.patch(
     "applications_superstaq.superstaq_client._SuperstaQClient.aqt_compile",
     return_value={
-        "cirq_circuits": css.serialization.serialize_circuits(
-            [cirq.Circuit(), cirq.Circuit()]
-        ),
+        "cirq_circuits": css.serialization.serialize_circuits([cirq.Circuit(), cirq.Circuit()]),
         "state_jp": applications_superstaq.converters.serialize({}),
         "pulse_lists_jp": applications_superstaq.converters.serialize([[[]], [[]]]),
     },

@@ -16,7 +16,8 @@ from typing import List
 
 import cirq
 
-import cirq_superstaq as css
+import cirq_superstaq
+from cirq_superstaq.service import counts_to_results
 
 
 class Sampler(cirq.Sampler):
@@ -41,7 +42,7 @@ class Sampler(cirq.Sampler):
 
     def __init__(
         self,
-        service: css.service.Service,
+        service: cirq_superstaq.service.Service,
         target: str,
     ):
         """Constructs the sampler. Uers should get a sampler from the `sampler` method on
@@ -86,5 +87,5 @@ class Sampler(cirq.Sampler):
         job_counters = [job.counts() for job in jobs]
         cirq_results = []
         for counts, resolver in zip(job_counters, resolvers):
-            cirq_results.append(css.service.countsto_results(counts, program, resolver))
+            cirq_results.append(counts_to_results(counts, program, resolver))
         return cirq_results

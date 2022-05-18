@@ -223,15 +223,11 @@ class AceCR(cirq.Gate):
         return 2
 
     def _decompose_(self, qubits: Tuple[cirq.LineQubit, cirq.LineQubit]) -> cirq.OP_TREE:
-        yield css.CR(*qubits) ** 0.25 if self.polarity == "+-" else css.CR(
-            *qubits
-        ) ** -0.25
+        yield css.CR(*qubits) ** 0.25 if self.polarity == "+-" else css.CR(*qubits) ** -0.25
         yield cirq.X(qubits[0])
         if self.sandwich_rx_rads:
             yield cirq.rx(self.sandwich_rx_rads)(qubits[1])
-        yield css.CR(*qubits) ** -0.25 if self.polarity == "+-" else css.CR(
-            *qubits
-        ) ** 0.25
+        yield css.CR(*qubits) ** -0.25 if self.polarity == "+-" else css.CR(*qubits) ** 0.25
 
     def _circuit_diagram_info_(
         self, args: cirq.CircuitDiagramInfoArgs

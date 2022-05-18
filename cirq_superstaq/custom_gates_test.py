@@ -114,9 +114,7 @@ def test_zx_repr() -> None:
         == "cirq_superstaq.ZXPowGate(exponent=0.5, global_shift=0.123)"
     )
 
-    cirq.testing.assert_equivalent_repr(
-        css.ZXPowGate(), setup_code="import cirq_superstaq"
-    )
+    cirq.testing.assert_equivalent_repr(css.ZXPowGate(), setup_code="import cirq_superstaq")
 
 
 def test_zx_circuit() -> None:
@@ -225,12 +223,8 @@ def test_acecr_eq() -> None:
 
 def test_acecr_repr_and_str() -> None:
     assert repr(css.AceCRMinusPlus) == "cirq_superstaq.AceCR('-+')"
-    assert (
-        repr(css.AceCR("+-", np.pi)) == "cirq_superstaq.AceCR('+-', 3.141592653589793)"
-    )
-    cirq.testing.assert_equivalent_repr(
-        css.AceCRMinusPlus, setup_code="import cirq_superstaq"
-    )
+    assert repr(css.AceCR("+-", np.pi)) == "cirq_superstaq.AceCR('+-', 3.141592653589793)"
+    cirq.testing.assert_equivalent_repr(css.AceCRMinusPlus, setup_code="import cirq_superstaq")
     cirq.testing.assert_equivalent_repr(
         css.AceCR("+-", np.pi), setup_code="import cirq; import cirq_superstaq"
     )
@@ -343,9 +337,7 @@ def test_parallel_gates() -> None:
     ]
     cirq.testing.assert_decompose_is_consistent_with_unitary(gate, ignoring_global_phase=True)
 
-    assert gate**0.5 == css.ParallelGates(
-        cirq.CZ**0.5, cirq.CZ**0.25, cirq.CZ**-0.25
-    )
+    assert gate**0.5 == css.ParallelGates(cirq.CZ**0.5, cirq.CZ**0.25, cirq.CZ**-0.25)
 
     with pytest.raises(ValueError, match="ParallelGates cannot contain measurements"):
         _ = css.ParallelGates(cirq.X, cirq.MeasurementGate(1, key="1"))
@@ -456,9 +448,7 @@ def test_parallel_rgate() -> None:
     cirq.testing.assert_equivalent_repr(rot_gate, setup_code="import cirq; import cirq_superstaq")
     text = f"RGate({rot_gate.phase_exponent}π, {rot_gate.exponent}π) x {len(qubits)}"
     assert str(rot_gate) == text
-    assert rot_gate**-1 == css.ParallelRGate(
-        -rot_gate.theta, rot_gate.phi, len(qubits)
-    )
+    assert rot_gate**-1 == css.ParallelRGate(-rot_gate.theta, rot_gate.phi, len(qubits))
 
     circuit = cirq.Circuit(rot_gate.on(*qubits))
 
@@ -484,9 +474,7 @@ def test_parallel_rgate() -> None:
     )
     assert circuit.to_qasm(header="") == expected_qasm
 
-    circuit = cirq.Circuit(
-        css.ParallelRGate(np.pi, 0.5 * np.pi, len(qubits)).on(*qubits)
-    )
+    circuit = cirq.Circuit(css.ParallelRGate(np.pi, 0.5 * np.pi, len(qubits)).on(*qubits))
     expected_diagram = textwrap.dedent(
         """
         0: ───RGate(π, 0.5π)───
@@ -546,9 +534,7 @@ def test_custom_resolver() -> None:
     circuit += css.CR(qubits[0], qubits[1])
     circuit += css.AceCRMinusPlus(qubits[0], qubits[1])
     circuit += css.AceCR("+-", -np.pi / 2)(qubits[0], qubits[1])
-    circuit += css.ParallelGates(cirq.X, css.ZX).on(
-        qubits[0], qubits[2], qubits[3]
-    )
+    circuit += css.ParallelGates(cirq.X, css.ZX).on(qubits[0], qubits[2], qubits[3])
     circuit += css.custom_gates.MSGate(rads=0.5).on(qubits[0], qubits[1])
     circuit += css.RGate(1.23, 4.56).on(qubits[0])
     circuit += css.ParallelRGate(1.23, 4.56, len(qubits)).on(*qubits)

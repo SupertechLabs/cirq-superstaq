@@ -117,9 +117,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
             EnvironmentError: if the `api_key` is None and has no corresponding environment
                 variable set.
         """
-        self.remote_host = (
-            remote_host or os.getenv("SUPERSTAQ_REMOTE_HOST") or css.API_URL
-        )
+        self.remote_host = remote_host or os.getenv("SUPERSTAQ_REMOTE_HOST") or css.API_URL
         self.api_key = api_key or os.getenv("SUPERSTAQ_API_KEY")
         if not self.api_key:
             raise EnvironmentError(
@@ -268,7 +266,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
 
     def aqt_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "keysight"
-    ) -> "cirq_superstaq.compiler_output.CompilerOutput":
+    ) -> "css.compiler_output.CompilerOutput":
         """Compiles the given circuit(s) to target AQT device, optimized to its native gate set.
 
         Args:
@@ -294,7 +292,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         num_equivalent_circuits: int,
         random_seed: Optional[int] = None,
         target: str = "keysight",
-    ) -> "cirq_superstaq.compiler_output.CompilerOutput":
+    ) -> "css.compiler_output.CompilerOutput":
         """Compiles the given circuit to target AQT device with Equivalent Circuit Averaging (ECA).
 
         See arxiv.org/pdf/2111.04572.pdf for a description of ECA.
@@ -326,7 +324,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
 
     def qscout_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "qscout"
-    ) -> "cirq_superstaq.compiler_output.CompilerOutput":
+    ) -> "css.compiler_output.CompilerOutput":
         """Compiles the given circuit(s) to target QSCOUT device, optimized to its native gate set.
 
         Args:
@@ -346,7 +344,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
 
     def cq_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "cq"
-    ) -> "cirq_superstaq.compiler_output.CompilerOutput":
+    ) -> "css.compiler_output.CompilerOutput":
         """Compiles the given circuit(s) to given target CQ device, optimized to its native gate
         set.
 
