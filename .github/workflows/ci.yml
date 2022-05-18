@@ -190,5 +190,5 @@ jobs:
         run: |
           for file in examples/*; do
             ext="${file##*.}"
-            if [[ $ext == ipynb ]]; then jupyter execute file; fi
+            if [[ $ext == ipynb ]]; then jupyter execute $file; fi
           done
