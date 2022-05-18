@@ -7,12 +7,12 @@ import packaging
 import pytest
 import sympy
 
-import cirq_superstaq
+import cirq_superstaq as css
 
 
 def test_zz_swap_gate() -> None:
     theta = 0.123
-    gate = cirq_superstaq.ZZSwapGate(theta)
+    gate = css.ZZSwapGate(theta)
 
     assert str(gate) == "ZZSwapGate(0.123)"
     assert repr(gate) == "cirq_superstaq.ZZSwapGate(0.123)"
@@ -38,8 +38,8 @@ def test_zz_swap_gate() -> None:
     cirq.testing.assert_pauli_expansion_is_consistent_with_unitary(gate)
 
     assert gate**1 == gate
-    assert gate**0 == cirq_superstaq.ZZSwapGate(0.0)
-    assert gate**-1 == cirq_superstaq.ZZSwapGate(-0.123)
+    assert gate**0 == css.ZZSwapGate(0.0)
+    assert gate**-1 == css.ZZSwapGate(-0.123)
 
     with pytest.raises(TypeError, match="unsupported operand type"):
         _ = gate**1.23
@@ -47,7 +47,7 @@ def test_zz_swap_gate() -> None:
 
 def test_zz_swap_circuit() -> None:
     qubits = cirq.LineQubit.range(3)
-    operation = cirq_superstaq.ZZSwapGate(0.456 * np.pi)(qubits[0], qubits[2])
+    operation = css.ZZSwapGate(0.456 * np.pi)(qubits[0], qubits[2])
     circuit = cirq.Circuit(operation)
 
     expected_diagram = textwrap.dedent(
@@ -75,12 +75,12 @@ def test_zz_swap_circuit() -> None:
     cirq.testing.assert_has_diagram(circuit, expected_diagram)
     assert circuit.to_qasm(header="", qubit_order=qubits) == expected_qasm
 
-    circuit = cirq.Circuit(cirq_superstaq.ZZSwapGate(0.0)(qubits[0], qubits[1]))
+    circuit = cirq.Circuit(css.ZZSwapGate(0.0)(qubits[0], qubits[1]))
     assert circuit.to_qasm() == cirq.Circuit(cirq.SWAP(qubits[0], qubits[1])).to_qasm()
 
 
 def test_zz_swap_parameterized() -> None:
-    gate = cirq_superstaq.ZZSwapGate(sympy.var("θ"))
+    gate = css.ZZSwapGate(sympy.var("θ"))
     cirq.testing.assert_consistent_resolve_parameters(gate)
 
     with pytest.raises(TypeError, match="cirq.unitary failed. Value doesn't have"):
@@ -92,37 +92,37 @@ def test_zz_swap_parameterized() -> None:
 
 def test_zx_matrix() -> None:
     np.testing.assert_allclose(
-        cirq.unitary(cirq_superstaq.ZX),
+        cirq.unitary(css.ZX),
         np.array([[0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 0, -1], [0, 0, -1, 0]]),
     )
 
 
 def test_zx_str() -> None:
-    assert str(cirq_superstaq.ZX) == "ZX"
-    assert str(cirq_superstaq.ZX**0.5) == "ZX**0.5"
-    assert str(cirq_superstaq.ZXPowGate(global_shift=0.1)) == "ZX"
+    assert str(css.ZX) == "ZX"
+    assert str(css.ZX**0.5) == "ZX**0.5"
+    assert str(css.ZXPowGate(global_shift=0.1)) == "ZX"
 
-    iZZ = cirq_superstaq.ZXPowGate(global_shift=0.5)
+    iZZ = css.ZXPowGate(global_shift=0.5)
     assert str(iZZ) == "ZX"
 
 
 def test_zx_repr() -> None:
-    assert repr(cirq_superstaq.ZXPowGate()) == "cirq_superstaq.ZX"
-    assert repr(cirq_superstaq.ZXPowGate(exponent=0.5)) == "(cirq_superstaq.ZX**0.5)"
+    assert repr(css.ZXPowGate()) == "cirq_superstaq.ZX"
+    assert repr(css.ZXPowGate(exponent=0.5)) == "(cirq_superstaq.ZX**0.5)"
     assert (
-        repr(cirq_superstaq.ZXPowGate(exponent=0.5, global_shift=0.123))
+        repr(css.ZXPowGate(exponent=0.5, global_shift=0.123))
         == "cirq_superstaq.ZXPowGate(exponent=0.5, global_shift=0.123)"
     )
 
     cirq.testing.assert_equivalent_repr(
-        cirq_superstaq.ZXPowGate(), setup_code="import cirq_superstaq"
+        css.ZXPowGate(), setup_code="import cirq_superstaq"
     )
 
 
 def test_zx_circuit() -> None:
     a, b = cirq.LineQubit.range(2)
 
-    op = cirq_superstaq.CR(a, b)
+    op = css.CR(a, b)
 
     cirq.testing.assert_has_diagram(
         cirq.Circuit(op),
@@ -152,15 +152,15 @@ def test_zx_circuit() -> None:
 
 
 def test_acecr_init() -> None:
-    cirq_superstaq.AceCR("+-")
-    cirq_superstaq.AceCR("-+", np.pi / 3)
+    css.AceCR("+-")
+    css.AceCR("-+", np.pi / 3)
     with pytest.raises(ValueError, match="Polarity must be"):
-        cirq_superstaq.AceCR("++")
+        css.AceCR("++")
 
 
 def test_acecr_circuit_diagram_info() -> None:
     qubits = cirq.LineQubit.range(2)
-    circuit = cirq.Circuit(cirq_superstaq.AceCRMinusPlus(*qubits))
+    circuit = cirq.Circuit(css.AceCRMinusPlus(*qubits))
     assert str(circuit) == textwrap.dedent(
         """\
         0: ───AceCR-+(Z side)───
@@ -168,7 +168,7 @@ def test_acecr_circuit_diagram_info() -> None:
         1: ───AceCR-+(X side)───"""
     )
 
-    circuit = cirq.Circuit(cirq_superstaq.AceCRPlusMinus(*reversed(qubits)))
+    circuit = cirq.Circuit(css.AceCRPlusMinus(*reversed(qubits)))
     assert str(circuit) == textwrap.dedent(
         """\
         0: ───AceCR+-(X side)───
@@ -176,7 +176,7 @@ def test_acecr_circuit_diagram_info() -> None:
         1: ───AceCR+-(Z side)───"""
     )
 
-    circuit = cirq.Circuit(cirq_superstaq.AceCR("+-", np.pi)(*qubits))
+    circuit = cirq.Circuit(css.AceCR("+-", np.pi)(*qubits))
     assert str(circuit) == textwrap.dedent(
         """\
         0: ───AceCR+-(Z side)──────────
@@ -188,9 +188,9 @@ def test_acecr_circuit_diagram_info() -> None:
 def test_acecr_qasm() -> None:
     qubits = cirq.LineQubit.range(2)
     circuit = cirq.Circuit(
-        cirq_superstaq.AceCR("+-").on(*qubits),
-        cirq_superstaq.AceCR("-+").on(*reversed(qubits)),
-        cirq_superstaq.AceCR("-+", np.pi / 2).on(*qubits),
+        css.AceCR("+-").on(*qubits),
+        css.AceCR("-+").on(*reversed(qubits)),
+        css.AceCR("-+", np.pi / 2).on(*qubits),
     )
 
     assert circuit.to_qasm(header="") == textwrap.dedent(
@@ -211,46 +211,46 @@ def test_acecr_qasm() -> None:
 
 
 def test_acecr_eq() -> None:
-    assert cirq_superstaq.AceCRPlusMinus == cirq_superstaq.AceCR("+-")
-    assert cirq_superstaq.AceCRPlusMinus != cirq_superstaq.AceCR("-+")
-    assert cirq_superstaq.AceCR("+-", np.pi) == cirq_superstaq.AceCR("+-", np.pi)
-    assert cirq_superstaq.AceCR("-+", np.pi) != cirq_superstaq.AceCR("+-", np.pi)
+    assert css.AceCRPlusMinus == css.AceCR("+-")
+    assert css.AceCRPlusMinus != css.AceCR("-+")
+    assert css.AceCR("+-", np.pi) == css.AceCR("+-", np.pi)
+    assert css.AceCR("-+", np.pi) != css.AceCR("+-", np.pi)
 
-    assert cirq_superstaq.AceCR("+-", np.pi) == cirq_superstaq.AceCR("+-", 5 * np.pi)
-    assert cirq_superstaq.AceCR("+-", np.pi) == cirq_superstaq.AceCR("+-", 3 * np.pi)
+    assert css.AceCR("+-", np.pi) == css.AceCR("+-", 5 * np.pi)
+    assert css.AceCR("+-", np.pi) == css.AceCR("+-", 3 * np.pi)
 
-    assert cirq.approx_eq(cirq_superstaq.AceCR("+-", np.pi), cirq_superstaq.AceCR("+-", -np.pi))
-    assert cirq.approx_eq(cirq_superstaq.AceCR("+-", np.pi), cirq_superstaq.AceCR("+-", 3 * np.pi))
+    assert cirq.approx_eq(css.AceCR("+-", np.pi), css.AceCR("+-", -np.pi))
+    assert cirq.approx_eq(css.AceCR("+-", np.pi), css.AceCR("+-", 3 * np.pi))
 
 
 def test_acecr_repr_and_str() -> None:
-    assert repr(cirq_superstaq.AceCRMinusPlus) == "cirq_superstaq.AceCR('-+')"
+    assert repr(css.AceCRMinusPlus) == "cirq_superstaq.AceCR('-+')"
     assert (
-        repr(cirq_superstaq.AceCR("+-", np.pi)) == "cirq_superstaq.AceCR('+-', 3.141592653589793)"
+        repr(css.AceCR("+-", np.pi)) == "cirq_superstaq.AceCR('+-', 3.141592653589793)"
     )
     cirq.testing.assert_equivalent_repr(
-        cirq_superstaq.AceCRMinusPlus, setup_code="import cirq_superstaq"
+        css.AceCRMinusPlus, setup_code="import cirq_superstaq"
     )
     cirq.testing.assert_equivalent_repr(
-        cirq_superstaq.AceCR("+-", np.pi), setup_code="import cirq; import cirq_superstaq"
+        css.AceCR("+-", np.pi), setup_code="import cirq; import cirq_superstaq"
     )
-    assert str(cirq_superstaq.AceCRMinusPlus) == "AceCR-+"
-    assert str(cirq_superstaq.AceCR("+-", np.pi)) == "AceCR+-|Rx(π)|"
+    assert str(css.AceCRMinusPlus) == "AceCR-+"
+    assert str(css.AceCR("+-", np.pi)) == "AceCR+-|Rx(π)|"
 
 
 def test_acecr_decompose() -> None:
     a = cirq.LineQubit(0)
     b = cirq.LineQubit(1)
-    circuit = cirq.Circuit(cirq.decompose_once(cirq_superstaq.AceCRMinusPlus(a, b)))
+    circuit = cirq.Circuit(cirq.decompose_once(css.AceCRMinusPlus(a, b)))
     assert len(circuit) == 3 and len(list(circuit.all_operations())) == 3
 
-    circuit = cirq.Circuit(cirq.decompose_once(cirq_superstaq.AceCR("+-", -np.pi / 2)(a, b)))
+    circuit = cirq.Circuit(cirq.decompose_once(css.AceCR("+-", -np.pi / 2)(a, b)))
     assert len(circuit) == 3 and len(list(circuit.all_operations())) == 4
 
 
 def test_barrier() -> None:
     n = 3
-    gate = cirq_superstaq.Barrier(n)
+    gate = css.Barrier(n)
 
     assert str(gate) == "Barrier(3)"
     assert repr(gate) == "cirq_superstaq.Barrier(3)"
@@ -311,7 +311,7 @@ def test_barrier() -> None:
 
 
 def test_parallel_gates() -> None:
-    gate = cirq_superstaq.ParallelGates(cirq.CZ, cirq.CZ**0.5, cirq.CZ**-0.5)
+    gate = css.ParallelGates(cirq.CZ, cirq.CZ**0.5, cirq.CZ**-0.5)
     qubits = cirq.LineQubit.range(6)
     operation = gate(*qubits)
     circuit = cirq.Circuit(operation)
@@ -343,17 +343,17 @@ def test_parallel_gates() -> None:
     ]
     cirq.testing.assert_decompose_is_consistent_with_unitary(gate, ignoring_global_phase=True)
 
-    assert gate**0.5 == cirq_superstaq.ParallelGates(
+    assert gate**0.5 == css.ParallelGates(
         cirq.CZ**0.5, cirq.CZ**0.25, cirq.CZ**-0.25
     )
 
     with pytest.raises(ValueError, match="ParallelGates cannot contain measurements"):
-        _ = cirq_superstaq.ParallelGates(cirq.X, cirq.MeasurementGate(1, key="1"))
+        _ = css.ParallelGates(cirq.X, cirq.MeasurementGate(1, key="1"))
 
 
 def test_parallel_gates_equivalence_groups() -> None:
     qubits = cirq.LineQubit.range(4)
-    gate = cirq_superstaq.ParallelGates(cirq.X, cirq_superstaq.ZX, cirq.Y)
+    gate = css.ParallelGates(cirq.X, css.ZX, cirq.Y)
     operation = gate(*qubits[:4])
     assert [gate.qubit_index_to_equivalence_group_key(i) for i in range(4)] == [0, 1, 2, 3]
     for permuted_qubits in itertools.permutations(operation.qubits):
@@ -362,7 +362,7 @@ def test_parallel_gates_equivalence_groups() -> None:
         else:
             assert operation != gate(*permuted_qubits)
 
-    gate = cirq_superstaq.ParallelGates(cirq.X, cirq.X, cirq_superstaq.ZZSwapGate(1.23))
+    gate = css.ParallelGates(cirq.X, cirq.X, css.ZZSwapGate(1.23))
     operation = gate(*qubits)
     assert [gate.qubit_index_to_equivalence_group_key(i) for i in range(4)] == [0, 0, 2, 2]
 
@@ -394,7 +394,7 @@ def test_parallel_gates_equivalence_groups() -> None:
 def test_parallel_gates_equivalence_groups_nonadjacent() -> None:  # pragma: no cover
     """Fails in cirq version 0.14.x due to https://github.com/quantumlib/Cirq/issues/5148"""
     qubits = cirq.LineQubit.range(4)
-    gate = cirq_superstaq.ParallelGates(cirq.X, cirq_superstaq.ZZSwapGate(1.23), cirq.X)
+    gate = css.ParallelGates(cirq.X, css.ZZSwapGate(1.23), cirq.X)
     assert [gate.qubit_index_to_equivalence_group_key(i) for i in range(4)] == [0, 1, 1, 0]
 
     operation = gate(*qubits)
@@ -414,10 +414,10 @@ def test_parallel_gates_equivalence_groups_nonadjacent() -> None:  # pragma: no 
 def test_rgate() -> None:
     qubit = cirq.LineQubit(0)
 
-    rot_gate = cirq_superstaq.RGate(4.56 * np.pi, 1.23 * np.pi)
+    rot_gate = css.RGate(4.56 * np.pi, 1.23 * np.pi)
     cirq.testing.assert_equivalent_repr(rot_gate, setup_code="import cirq_superstaq")
     assert str(rot_gate) == f"RGate({rot_gate.exponent}π, {rot_gate.phase_exponent}π)"
-    assert rot_gate**-1 == cirq_superstaq.RGate(-rot_gate.theta, rot_gate.phi)
+    assert rot_gate**-1 == css.RGate(-rot_gate.theta, rot_gate.phi)
 
     circuit = cirq.Circuit(rot_gate.on(qubit))
 
@@ -445,18 +445,18 @@ def test_rgate() -> None:
     )
     assert circuit.to_qasm(header="") == expected_qasm
 
-    circuit = cirq.Circuit(cirq_superstaq.RGate(np.pi, 0.5 * np.pi).on(qubit))
+    circuit = cirq.Circuit(css.RGate(np.pi, 0.5 * np.pi).on(qubit))
     cirq.testing.assert_has_diagram(circuit, "0: ───RGate(π, 0.5π)───")
 
 
 def test_parallel_rgate() -> None:
     qubits = cirq.LineQubit.range(2)
 
-    rot_gate = cirq_superstaq.ParallelRGate(1.23 * np.pi, 4.56 * np.pi, len(qubits))
+    rot_gate = css.ParallelRGate(1.23 * np.pi, 4.56 * np.pi, len(qubits))
     cirq.testing.assert_equivalent_repr(rot_gate, setup_code="import cirq; import cirq_superstaq")
     text = f"RGate({rot_gate.phase_exponent}π, {rot_gate.exponent}π) x {len(qubits)}"
     assert str(rot_gate) == text
-    assert rot_gate**-1 == cirq_superstaq.ParallelRGate(
+    assert rot_gate**-1 == css.ParallelRGate(
         -rot_gate.theta, rot_gate.phi, len(qubits)
     )
 
@@ -464,7 +464,7 @@ def test_parallel_rgate() -> None:
 
     # build ParallelRGate decomposition manually
     manual_circuit = cirq.Circuit(
-        [cirq_superstaq.RGate(rot_gate.theta, rot_gate.phi).on(qubit) for qubit in qubits]
+        [css.RGate(rot_gate.theta, rot_gate.phi).on(qubit) for qubit in qubits]
     )
 
     assert np.allclose(cirq.unitary(circuit), cirq.unitary(manual_circuit))
@@ -485,7 +485,7 @@ def test_parallel_rgate() -> None:
     assert circuit.to_qasm(header="") == expected_qasm
 
     circuit = cirq.Circuit(
-        cirq_superstaq.ParallelRGate(np.pi, 0.5 * np.pi, len(qubits)).on(*qubits)
+        css.ParallelRGate(np.pi, 0.5 * np.pi, len(qubits)).on(*qubits)
     )
     expected_diagram = textwrap.dedent(
         """
@@ -516,7 +516,7 @@ def test_parallel_rgate() -> None:
 def test_iitoffoli() -> None:
     qubits = cirq.LineQubit.range(3)
 
-    gate = cirq_superstaq.AQTITOFFOLI
+    gate = css.AQTITOFFOLI
 
     assert np.allclose(
         cirq.unitary(gate(*qubits)),
@@ -540,21 +540,21 @@ def test_iitoffoli() -> None:
 def test_custom_resolver() -> None:
     circuit = cirq.Circuit()
     qubits = cirq.LineQubit.range(4)
-    circuit += cirq_superstaq.ZZSwapGate(1.23).on(qubits[0], qubits[1])
-    circuit += cirq_superstaq.AceCRPlusMinus(qubits[0], qubits[1])
-    circuit += cirq_superstaq.Barrier(2).on(qubits[0], qubits[1])
-    circuit += cirq_superstaq.CR(qubits[0], qubits[1])
-    circuit += cirq_superstaq.AceCRMinusPlus(qubits[0], qubits[1])
-    circuit += cirq_superstaq.AceCR("+-", -np.pi / 2)(qubits[0], qubits[1])
-    circuit += cirq_superstaq.ParallelGates(cirq.X, cirq_superstaq.ZX).on(
+    circuit += css.ZZSwapGate(1.23).on(qubits[0], qubits[1])
+    circuit += css.AceCRPlusMinus(qubits[0], qubits[1])
+    circuit += css.Barrier(2).on(qubits[0], qubits[1])
+    circuit += css.CR(qubits[0], qubits[1])
+    circuit += css.AceCRMinusPlus(qubits[0], qubits[1])
+    circuit += css.AceCR("+-", -np.pi / 2)(qubits[0], qubits[1])
+    circuit += css.ParallelGates(cirq.X, css.ZX).on(
         qubits[0], qubits[2], qubits[3]
     )
-    circuit += cirq_superstaq.custom_gates.MSGate(rads=0.5).on(qubits[0], qubits[1])
-    circuit += cirq_superstaq.RGate(1.23, 4.56).on(qubits[0])
-    circuit += cirq_superstaq.ParallelRGate(1.23, 4.56, len(qubits)).on(*qubits)
-    circuit += cirq_superstaq.AQTITOFFOLI(qubits[0], qubits[1], qubits[2])
+    circuit += css.custom_gates.MSGate(rads=0.5).on(qubits[0], qubits[1])
+    circuit += css.RGate(1.23, 4.56).on(qubits[0])
+    circuit += css.ParallelRGate(1.23, 4.56, len(qubits)).on(*qubits)
+    circuit += css.AQTITOFFOLI(qubits[0], qubits[1], qubits[2])
     circuit += cirq.CX(qubits[0], qubits[1])
 
     json_text = cirq.to_json(circuit)
-    resolvers = [cirq_superstaq.custom_gates.custom_resolver, *cirq.DEFAULT_RESOLVERS]
+    resolvers = [css.custom_gates.custom_resolver, *cirq.DEFAULT_RESOLVERS]
     assert cirq.read_json(json_text=json_text, resolvers=resolvers) == circuit

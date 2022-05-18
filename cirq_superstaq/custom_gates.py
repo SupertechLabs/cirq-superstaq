@@ -5,7 +5,7 @@ from typing import AbstractSet, Any, Callable, Dict, List, Optional, Sequence, T
 import cirq
 import numpy as np
 
-import cirq_superstaq
+import cirq_superstaq as css
 
 
 @cirq.value_equality(approximate=True)
@@ -223,13 +223,13 @@ class AceCR(cirq.Gate):
         return 2
 
     def _decompose_(self, qubits: Tuple[cirq.LineQubit, cirq.LineQubit]) -> cirq.OP_TREE:
-        yield cirq_superstaq.CR(*qubits) ** 0.25 if self.polarity == "+-" else cirq_superstaq.CR(
+        yield css.CR(*qubits) ** 0.25 if self.polarity == "+-" else css.CR(
             *qubits
         ) ** -0.25
         yield cirq.X(qubits[0])
         if self.sandwich_rx_rads:
             yield cirq.rx(self.sandwich_rx_rads)(qubits[1])
-        yield cirq_superstaq.CR(*qubits) ** -0.25 if self.polarity == "+-" else cirq_superstaq.CR(
+        yield css.CR(*qubits) ** -0.25 if self.polarity == "+-" else css.CR(
             *qubits
         ) ** 0.25
 
@@ -480,7 +480,7 @@ class ParallelRGate(cirq.ParallelGate, cirq.InterchangeableQubitsGate):
     """Wrapper class to define a ParallelGate of identical RGate gates."""
 
     def __init__(self, theta: float, phi: float, num_copies: int) -> None:
-        super().__init__(cirq_superstaq.RGate(theta, phi), num_copies)
+        super().__init__(css.RGate(theta, phi), num_copies)
         self._sub_gate: RGate
 
     @property

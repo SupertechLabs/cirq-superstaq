@@ -5,7 +5,7 @@ from typing import Any, List, Optional, Union
 import applications_superstaq
 import cirq
 
-import cirq_superstaq
+import cirq_superstaq as css
 
 try:
     import qtrl.sequencer
@@ -66,7 +66,7 @@ def read_json_ibmq(json_dict: dict, circuits_is_list: bool) -> CompilerOutput:
         a CompilerOutput object with the compiled circuit(s). If qiskit is available locally,
         the returned object also stores the pulse sequences in the .pulse_sequence(s) attribute.
     """
-    compiled_circuits = cirq_superstaq.serialization.deserialize_circuits(
+    compiled_circuits = css.serialization.deserialize_circuits(
         json_dict["cirq_circuits"]
     )
     pulses = None
@@ -118,7 +118,7 @@ def read_json_aqt(json_dict: dict, circuits_is_list: bool) -> CompilerOutput:
 
         pulse_lists = applications_superstaq.converters.deserialize(json_dict["pulse_lists_jp"])
 
-    compiled_circuits = cirq_superstaq.serialization.deserialize_circuits(
+    compiled_circuits = css.serialization.deserialize_circuits(
         json_dict["cirq_circuits"]
     )
     if circuits_is_list:
@@ -140,7 +140,7 @@ def read_json_qscout(json_dict: dict, circuits_is_list: bool) -> CompilerOutput:
         represented as strings
     """
 
-    compiled_circuits = cirq_superstaq.serialization.deserialize_circuits(
+    compiled_circuits = css.serialization.deserialize_circuits(
         json_dict["cirq_circuits"]
     )
 
@@ -165,7 +165,7 @@ def read_json_only_circuits(json_dict: dict, circuits_is_list: bool) -> Compiler
         a CompilerOutput object with the compiled circuit(s)
     """
 
-    compiled_circuits = cirq_superstaq.serialization.deserialize_circuits(
+    compiled_circuits = css.serialization.deserialize_circuits(
         json_dict["cirq_circuits"]
     )
 
