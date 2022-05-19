@@ -333,7 +333,7 @@ class ParallelGates(cirq.Gate, cirq.InterchangeableQubitsGate):
             component_gates: Gate(s) to be collected into single gate
         """
 
-        self.component_gates: List[cirq.Gate] = []
+        self.component_gates: Tuple[cirq.Gate, ...] = ()
 
         # unroll any ParallelGate(s) instances in component_gates
         for gate in component_gates:
@@ -342,9 +342,9 @@ class ParallelGates(cirq.Gate, cirq.InterchangeableQubitsGate):
             elif isinstance(gate, ParallelGates):
                 self.component_gates += gate.component_gates
             elif isinstance(gate, cirq.ParallelGate):
-                self.component_gates += gate.num_copies * [gate.sub_gate]
+                self.component_gates += gate.num_copies * (gate.sub_gate,)
             else:
-                self.component_gates.append(gate)
+                self.component_gates += (gate,)
 
     def qubit_index_to_gate_and_index(self, index: int) -> Tuple[cirq.Gate, int]:
         for gate in self.component_gates:
@@ -367,7 +367,7 @@ class ParallelGates(cirq.Gate, cirq.InterchangeableQubitsGate):
         return index
 
     def _value_equality_values_(self) -> Tuple[cirq.Gate, ...]:
-        return tuple(self.component_gates)
+        return self.component_gates
 
     def _num_qubits_(self) -> int:
         return sum(map(cirq.num_qubits, self.component_gates))
