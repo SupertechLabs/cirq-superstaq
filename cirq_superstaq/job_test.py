@@ -68,7 +68,7 @@ def test_job_str_repr_eq() -> None:
     job = css.Job(client, {"job_id": "my_id"})
     assert str(job) == "Job with job_id=my_id"
     cirq.testing.assert_equivalent_repr(
-        job, setup_code="import cirq_superstaq\nimport applications_superstaq"
+        job, setup_code="import cirq_superstaq as css\nimport applications_superstaq"
     )
 
     assert not job == 1

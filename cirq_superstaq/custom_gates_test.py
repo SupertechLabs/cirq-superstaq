@@ -15,8 +15,8 @@ def test_zz_swap_gate() -> None:
     gate = css.ZZSwapGate(theta)
 
     assert str(gate) == "ZZSwapGate(0.123)"
-    assert repr(gate) == "cirq_superstaq.ZZSwapGate(0.123)"
-    cirq.testing.assert_equivalent_repr(gate, setup_code="import cirq_superstaq")
+    assert repr(gate) == "css.ZZSwapGate(0.123)"
+    cirq.testing.assert_equivalent_repr(gate, setup_code="import cirq_superstaq as css")
 
     expected = np.array(
         [[1, 0, 0, 0], [0, 0, np.exp(1j * theta), 0], [0, np.exp(1j * theta), 0, 0], [0, 0, 0, 1]]
@@ -107,14 +107,14 @@ def test_zx_str() -> None:
 
 
 def test_zx_repr() -> None:
-    assert repr(css.ZXPowGate()) == "cirq_superstaq.ZX"
-    assert repr(css.ZXPowGate(exponent=0.5)) == "(cirq_superstaq.ZX**0.5)"
+    assert repr(css.ZXPowGate()) == "css.ZX"
+    assert repr(css.ZXPowGate(exponent=0.5)) == "(css.ZX**0.5)"
     assert (
         repr(css.ZXPowGate(exponent=0.5, global_shift=0.123))
-        == "cirq_superstaq.ZXPowGate(exponent=0.5, global_shift=0.123)"
+        == "css.ZXPowGate(exponent=0.5, global_shift=0.123)"
     )
 
-    cirq.testing.assert_equivalent_repr(css.ZXPowGate(), setup_code="import cirq_superstaq")
+    cirq.testing.assert_equivalent_repr(css.ZXPowGate(), setup_code="import cirq_superstaq as css")
 
 
 def test_zx_circuit() -> None:
@@ -222,11 +222,13 @@ def test_acecr_eq() -> None:
 
 
 def test_acecr_repr_and_str() -> None:
-    assert repr(css.AceCRMinusPlus) == "cirq_superstaq.AceCR('-+')"
-    assert repr(css.AceCR("+-", np.pi)) == "cirq_superstaq.AceCR('+-', 3.141592653589793)"
-    cirq.testing.assert_equivalent_repr(css.AceCRMinusPlus, setup_code="import cirq_superstaq")
+    assert repr(css.AceCRMinusPlus) == "css.AceCR('-+')"
+    assert repr(css.AceCR("+-", np.pi)) == "css.AceCR('+-', 3.141592653589793)"
     cirq.testing.assert_equivalent_repr(
-        css.AceCR("+-", np.pi), setup_code="import cirq; import cirq_superstaq"
+        css.AceCRMinusPlus, setup_code="import cirq_superstaq as css"
+    )
+    cirq.testing.assert_equivalent_repr(
+        css.AceCR("+-", np.pi), setup_code="import cirq; import cirq_superstaq as css"
     )
     assert str(css.AceCRMinusPlus) == "AceCR-+"
     assert str(css.AceCR("+-", np.pi)) == "AceCR+-|Rx(π)|"
@@ -247,9 +249,9 @@ def test_barrier() -> None:
     gate = css.Barrier(n)
 
     assert str(gate) == "Barrier(3)"
-    assert repr(gate) == "cirq_superstaq.Barrier(3)"
+    assert repr(gate) == "css.Barrier(3)"
 
-    cirq.testing.assert_equivalent_repr(gate, setup_code="import cirq_superstaq")
+    cirq.testing.assert_equivalent_repr(gate, setup_code="import cirq_superstaq as css")
 
     operation = gate.on(*cirq.LineQubit.range(3))
     assert cirq.decompose(operation) == [operation]
@@ -326,8 +328,8 @@ def test_parallel_gates() -> None:
         """
     )
     cirq.testing.assert_has_diagram(circuit, expected_diagram)
-    cirq.testing.assert_equivalent_repr(gate, setup_code="import cirq, cirq_superstaq")
-    assert repr(gate) == "cirq_superstaq.ParallelGates(cirq.CZ, (cirq.CZ**0.5), (cirq.CZ**-0.5))"
+    cirq.testing.assert_equivalent_repr(gate, setup_code="import cirq, cirq_superstaq as css")
+    assert repr(gate) == "css.ParallelGates(cirq.CZ, (cirq.CZ**0.5), (cirq.CZ**-0.5))"
     assert str(gate) == "ParallelGates(CZ, CZ**0.5, CZ**-0.5)"
 
     assert cirq.decompose(operation) == [
@@ -407,7 +409,7 @@ def test_rgate() -> None:
     qubit = cirq.LineQubit(0)
 
     rot_gate = css.RGate(4.56 * np.pi, 1.23 * np.pi)
-    cirq.testing.assert_equivalent_repr(rot_gate, setup_code="import cirq_superstaq")
+    cirq.testing.assert_equivalent_repr(rot_gate, setup_code="import cirq_superstaq as css")
     assert str(rot_gate) == f"RGate({rot_gate.exponent}π, {rot_gate.phase_exponent}π)"
     assert rot_gate**-1 == css.RGate(-rot_gate.theta, rot_gate.phi)
 
@@ -445,7 +447,9 @@ def test_parallel_rgate() -> None:
     qubits = cirq.LineQubit.range(2)
 
     rot_gate = css.ParallelRGate(1.23 * np.pi, 4.56 * np.pi, len(qubits))
-    cirq.testing.assert_equivalent_repr(rot_gate, setup_code="import cirq; import cirq_superstaq")
+    cirq.testing.assert_equivalent_repr(
+        rot_gate, setup_code="import cirq; import cirq_superstaq as css"
+    )
     text = f"RGate({rot_gate.phase_exponent}π, {rot_gate.exponent}π) x {len(qubits)}"
     assert str(rot_gate) == text
     assert rot_gate**-1 == css.ParallelRGate(-rot_gate.theta, rot_gate.phi, len(qubits))
