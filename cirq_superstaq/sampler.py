@@ -21,11 +21,11 @@ import cirq_superstaq as css
 
 class Sampler(cirq.Sampler):
     """A sampler that works against the SuperstaQ API. Users should get a sampler from the `sampler`
-    method on `cirq_superstaq.Service`.
+    method on `css.Service`.
 
     Example:
 
-        >> service = cirq_superstaq.Service(...)
+        >> service = css.Service(...)
         >> q0, q1 = cirq.LineQubit.range(2)
         >> sampler = service.sampler()
         >> circuit = cirq.Circuit(cirq.H(q0), cirq.CNOT(q0, q1), cirq.measure(q0))
@@ -45,7 +45,7 @@ class Sampler(cirq.Sampler):
         target: str,
     ):
         """Constructs the sampler. Uers should get a sampler from the `sampler` method on
-        `cirq_superstaq.Service`.
+        `css.Service`.
 
         Args:
             service: The service used to create this sample.

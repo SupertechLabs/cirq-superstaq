@@ -58,7 +58,7 @@ class Job:
         """Construct a Job.
 
         Users should not call this themselves. If you only know the `job_id`, use `get_job`
-        on `cirq_superstaq.Service`.
+        on `css.Service`.
 
         Args:
             client: The client used for calling the API.

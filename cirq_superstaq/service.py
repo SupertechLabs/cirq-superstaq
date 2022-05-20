@@ -211,7 +211,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
             ibmq_pulse: Specify whether to run the job using SuperstaQ's pulse-level optimizations.
 
         Returns:
-            A `cirq_superstaq.Job` which can be queried for status or results.
+            A `css.Job` which can be queried for status or results.
 
         Raises:
             SuperstaQException: If there was an error accessing the API.
@@ -235,7 +235,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
             creation of the job.
 
         Returns:
-            A `cirq_superstaq.Job` which can be queried for status or results.
+            A `css.Job` which can be queried for status or results.
 
         Raises:
             SuperstaQNotFoundException: If there was no job with the given `job_id`.
