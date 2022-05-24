@@ -26,3 +26,5 @@ echo "Running lint check"
 check/pylint
 echo "Running pytest and coverage checks"
 check/coverage
+echo "Running pytest notebook"
+check/pytest-notebook
