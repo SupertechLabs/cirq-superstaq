@@ -328,7 +328,7 @@ def test_parallel_gates() -> None:
         """
     )
     cirq.testing.assert_has_diagram(circuit, expected_diagram)
-    cirq.testing.assert_equivalent_repr(gate, setup_code="import cirq, css")
+    cirq.testing.assert_equivalent_repr(gate, setup_code="import cirq, cirq_superstaq as css")
     assert repr(gate) == "css.ParallelGates(cirq.CZ, (cirq.CZ**0.5), (cirq.CZ**-0.5))"
     assert str(gate) == "ParallelGates(CZ, CZ**0.5, CZ**-0.5)"
 
