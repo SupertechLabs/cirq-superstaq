@@ -31,7 +31,7 @@ class ZZSwapGate(cirq.Gate, cirq.ops.gate_features.InterchangeableQubitsGate):
     For :math:`\theta = 0`, the ZZ-SWAP gate is just an ordinary SWAP.
     """
 
-    def __init__(self, theta: float) -> None:
+    def __init__(self, theta: cirq.TParamVal) -> None:
         """
         Args:
             theta: ZZ-interaction angle in radians
@@ -53,7 +53,7 @@ class ZZSwapGate(cirq.Gate, cirq.ops.gate_features.InterchangeableQubitsGate):
             ]
         )
 
-    def _value_equality_values_(self) -> Any:
+    def _value_equality_values_(self) -> cirq.TParamVal:
         return self.theta
 
     def __pow__(
