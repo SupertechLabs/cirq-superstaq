@@ -206,6 +206,22 @@ def test_service_get_backends() -> None:
 
 
 @mock.patch(
+    "applications_superstaq.superstaq_client._SuperstaQClient.cirq_to_qiskit",
+)
+def test_service_cirq_to_qiskit(mock_cirq_to_qiskit: mock.MagicMock) -> None:
+    service = css.Service(remote_host="http://example.com", api_key="key")
+
+    q0 = cirq.LineQubit(0)
+    circuit = cirq.Circuit(cirq.H(q0), cirq.measure(q0))
+
+    mock_cirq_to_qiskit.return_value = {
+        "qiskit_circuits": "SerializedQuantumCircuit",
+    }
+
+    assert isinstance(service.cirq_to_qiskit(circuit), str)
+
+
+@mock.patch(
     "applications_superstaq.superstaq_client._SuperstaQClient.aqt_compile",
     return_value={
         "cirq_circuits": css.serialization.serialize_circuits(cirq.Circuit()),

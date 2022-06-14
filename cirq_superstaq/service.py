@@ -401,3 +401,14 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         if isinstance(circuits, cirq.Circuit):
             return pulses[0]
         return pulses
+
+    def cirq_to_qiskit(
+        self,
+        cirq_circuits: Union[cirq.Circuit, List[cirq.Circuit]],
+    ) -> str:
+        """Converts the given `cirq.Circuit`s to (serialized) `qiskit.QuantumCircuit`s."""
+        serialized_circuits = css.serialization.serialize_circuits(cirq_circuits)
+
+        json_dict = self._client.cirq_to_qiskit({"cirq_circuits": serialized_circuits})
+
+        return json_dict["qiskit_circuits"]
