@@ -4,6 +4,7 @@ from typing import Any, List, Optional, Union
 
 import applications_superstaq
 import cirq
+import packaging.version
 
 import cirq_superstaq as css
 
@@ -72,7 +73,7 @@ def read_json_ibmq(json_dict: dict, circuits_is_list: bool) -> CompilerOutput:
     if importlib.util.find_spec("qiskit"):
         import qiskit
 
-        if qiskit.__version__ >= "0.20":
+        if packaging.version.parse(qiskit.__version__) >= packaging.version.parse("0.20.0"):
             pulses = applications_superstaq.converters.deserialize(json_dict["pulses"])
         else:
             warnings.warn(
