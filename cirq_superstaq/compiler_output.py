@@ -1,6 +1,6 @@
 import importlib
 import warnings
-from typing import Any, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import applications_superstaq
 import cirq
