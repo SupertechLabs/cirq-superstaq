@@ -93,7 +93,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         api_version: str = css.API_VERSION,
         max_retry_seconds: int = 3600,
         verbose: bool = False,
-    ):
+    ) -> None:
         """Creates the Service to access SuperstaQ's API.
 
         Args:
