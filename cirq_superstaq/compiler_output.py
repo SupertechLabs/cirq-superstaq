@@ -4,7 +4,6 @@ from typing import Any, List, Optional, Union
 
 import applications_superstaq
 import cirq
-import packaging.version
 
 import cirq_superstaq as css
 
@@ -73,17 +72,17 @@ def read_json_ibmq(json_dict: dict, circuits_is_list: bool) -> CompilerOutput:
     if importlib.util.find_spec("qiskit"):
         import qiskit
 
-        if packaging.version.parse(qiskit.__version__) >= packaging.version.parse("0.20.0"):
+        if "0.20" < qiskit.__version__ < "0.21":
             pulses = applications_superstaq.converters.deserialize(json_dict["pulses"])
         else:
             warnings.warn(
-                "ibmq_compile requires Qiskit Terra version 0.20.0 or higher to deserialize"
-                f"compiled pulse sequences (you have {qiskit.__version__})."
+                "ibmq_compile requires Qiskit Terra version 0.20.* to deserialize compiled pulse "
+                f"sequences (you have {qiskit.__version__})."
             )
     else:
         warnings.warn(
-            "ibmq_compile requires Qiskit Terra version 0.20.0 or higher to deserialize"
-            "compiled pulse sequences."
+            "ibmq_compile requires Qiskit Terra version 0.20.* to deserialize compiled pulse "
+            "sequences."
         )
 
     if circuits_is_list:
