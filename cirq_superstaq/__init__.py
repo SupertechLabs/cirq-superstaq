@@ -42,7 +42,7 @@ __all__ = [
     "AceCRPlusMinus",
     "API_URL",
     "API_VERSION",
-    "barrier"
+    "barrier",
     "Barrier",
     "compiler_output",
     "CR",
@@ -53,8 +53,7 @@ __all__ = [
     "ParallelRGate",
     "serialization",
     "RGate",
-    "ops"
-    "Sampler",
+    "ops" "Sampler",
     "Service",
     "ZX",
     "ZXPowGate",
