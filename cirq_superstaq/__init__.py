@@ -22,6 +22,7 @@ from cirq_superstaq.custom_gates import (
     AQTICCX,
     AQTITOFFOLI,
     Barrier,
+    barrier,
     CR,
     ParallelGates,
     ParallelRGate,
@@ -31,7 +32,6 @@ from cirq_superstaq.custom_gates import (
     ZZSwapGate,
 )
 from cirq_superstaq.job import Job
-from cirq_superstaq.ops import barrier
 from cirq_superstaq.sampler import Sampler
 from cirq_superstaq.service import Service
 
