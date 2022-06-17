@@ -31,6 +31,7 @@ from cirq_superstaq.custom_gates import (
     ZZSwapGate,
 )
 from cirq_superstaq.job import Job
+from cirq_superstaq.ops import barrier
 from cirq_superstaq.sampler import Sampler
 from cirq_superstaq.service import Service
 
@@ -41,6 +42,7 @@ __all__ = [
     "AceCRPlusMinus",
     "API_URL",
     "API_VERSION",
+    "barrier"
     "Barrier",
     "compiler_output",
     "CR",
@@ -51,6 +53,7 @@ __all__ = [
     "ParallelRGate",
     "serialization",
     "RGate",
+    "ops"
     "Sampler",
     "Service",
     "ZX",
