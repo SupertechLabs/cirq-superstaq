@@ -250,6 +250,27 @@ def test_service_aqt_compile_eca(mock_aqt_compile: mock.MagicMock) -> None:
     assert not hasattr(out, "circuit") and not hasattr(out, "pulse_list")
 
 
+@mock.patch(
+    "applications_superstaq.superstaq_client._SuperstaQClient.resource_estimate",
+)
+def test_service_resource_estimate(mock_resource_estimate: mock.MagicMock) -> None:
+    service = css.Service(remote_host="http://example.com", api_key="key")
+
+    q0 = cirq.LineQubit(0)
+    circuit = cirq.Circuit(cirq.H(q0), cirq.measure(q0))
+
+    resource_estimate = 0.50
+
+    mock_resource_estimate.return_value = {
+        "resource_estimates": resource_estimate,
+    }
+
+    assert (
+        service.resource_estimate(circuit, "qasm_simulator")["resource_estimates"]
+        == resource_estimate
+    )
+
+
 @mock.patch("applications_superstaq.superstaq_client._SuperstaQClient.qscout_compile")
 def test_service_qscout_compile_single(mock_qscout_compile: mock.MagicMock) -> None:
 
