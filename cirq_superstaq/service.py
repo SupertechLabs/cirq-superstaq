@@ -264,6 +264,19 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         """Get list of available backends."""
         return self._client.get_backends()["superstaq_backends"]
 
+
+    def resource_estimate(self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "neutral_atom_qpu") -> dict:
+        serialized_circuit = css.serialization.serialize_circuits(circuits)
+
+        request_json = {
+            "cirq_circuits": serialized_circuit,
+            "backend": target,
+        }
+
+        json_dict = self._client.resource_estimate(request_json)
+        return json_dict["resource_estimates"]
+
+
     def aqt_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "keysight"
     ) -> "css.compiler_output.CompilerOutput":
