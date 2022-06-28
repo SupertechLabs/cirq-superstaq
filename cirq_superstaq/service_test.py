@@ -256,9 +256,6 @@ def test_service_aqt_compile_eca(mock_aqt_compile: mock.MagicMock) -> None:
 def test_service_resource_estimate(mock_resource_estimate: mock.MagicMock) -> None:
     service = css.Service(remote_host="http://example.com", api_key="key")
 
-    q0 = cirq.LineQubit(0)
-    circuit = cirq.Circuit(cirq.H(q0), cirq.measure(q0))
-
     resource_estimate = 0.50
 
     mock_resource_estimate.return_value = {
@@ -266,7 +263,7 @@ def test_service_resource_estimate(mock_resource_estimate: mock.MagicMock) -> No
     }
 
     assert (
-        service.resource_estimate(circuit, "qasm_simulator")["resource_estimates"]
+        service.resource_estimate(cirq.Circuit(), "qasm_simulator")["resource_estimates"]
         == resource_estimate
     )
 

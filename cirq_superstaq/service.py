@@ -21,6 +21,7 @@ import cirq
 import numpy as np
 from applications_superstaq import finance
 from applications_superstaq import logistics
+from applications_superstaq import ResourceEstimate
 from applications_superstaq import superstaq_client
 from applications_superstaq import user_config
 
@@ -266,7 +267,15 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
 
     def resource_estimate(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str
-    ) -> dict:
+    ) -> Union[ResourceEstimate, List[ResourceEstimate]]:
+        """Generates resource estimates for circuit(s).
+        
+        Args:
+            circuits: qiskit QuantumCircuit(s).
+            target: string of target representing backend device
+        Returns:
+            ResourceEstimate object containing gate count, critical path length, and error estimate.
+        """
         serialized_circuit = css.serialization.serialize_circuits(circuits)
 
         request_json = {
@@ -275,7 +284,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         }
 
         json_dict = self._client.resource_estimate(request_json)
-        return json_dict["resource_estimates"]
+        return [ResourceEstimate(json_data=resource) for resource in json_dict["resource_estimates"]]
 
     def aqt_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "keysight"
