@@ -276,7 +276,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         Returns:
             ResourceEstimate object containing gate count, critical path length, and error estimate.
         """
-        circuits_list = isinstance(circuits, List)
+        circuit_is_list = isinstance(circuits, List)
         serialized_circuit = css.serialization.serialize_circuits(circuits)
 
         request_json = {
@@ -289,7 +289,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         # Type must be specified due to mypy issue: https://github.com/python/mypy/issues/6898
         resource_estimates: Union[ResourceEstimate, List[ResourceEstimate]] = (
             [ResourceEstimate(json_data=resource) for resource in json_dict["resource_estimates"]]
-            if circuits_list
+            if circuit_is_list
             else ResourceEstimate(json_data=json_dict["resource_estimates"])
         )
         return resource_estimates
