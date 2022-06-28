@@ -327,13 +327,14 @@ class ParallelGates(cirq.Gate, cirq.InterchangeableQubitsGate):
         See https://github.com/quantumlib/Cirq/issues/5148 for more information.
     """
 
-    def __init__(self, *component_gates: cirq.Gate, metadata: Dict = {}) -> None:
+    def __init__(self, *component_gates: cirq.Gate, metadata: Optional[Dict] = None) -> None:
         """
         Args:
             component_gates: Gate(s) to be collected into single gate
         """
 
         self.component_gates: Tuple[cirq.Gate, ...] = ()
+        self.metadata = metadata
 
         # unroll any ParallelGate(s) instances in component_gates
         for gate in component_gates:
