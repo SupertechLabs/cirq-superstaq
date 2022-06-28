@@ -269,13 +269,14 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str
     ) -> Union[ResourceEstimate, List[ResourceEstimate]]:
         """Generates resource estimates for circuit(s).
-        
+
         Args:
             circuits: qiskit QuantumCircuit(s).
             target: string of target representing backend device
         Returns:
             ResourceEstimate object containing gate count, critical path length, and error estimate.
         """
+        circuits_list = isinstance(circuits, List)
         serialized_circuit = css.serialization.serialize_circuits(circuits)
 
         request_json = {
@@ -284,7 +285,14 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         }
 
         json_dict = self._client.resource_estimate(request_json)
-        return [ResourceEstimate(json_data=resource) for resource in json_dict["resource_estimates"]]
+
+        # Type must be specified due to mypy issue: https://github.com/python/mypy/issues/6898
+        resource_estimates: Union[ResourceEstimate, List[ResourceEstimate]] = (
+            [ResourceEstimate(json_data=resource) for resource in json_dict["resource_estimates"]]
+            if circuits_list
+            else ResourceEstimate(json_data=json_dict["resource_estimates"])
+        )
+        return resource_estimates
 
     def aqt_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "keysight"
