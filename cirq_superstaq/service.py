@@ -274,7 +274,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
             circuits: qiskit QuantumCircuit(s).
             target: string of target representing backend device
         Returns:
-            ResourceEstimate object containing gate count, critical path length, and error estimate.
+            ResourceEstimate(s) containing resource costs (after compilation)
         """
         circuit_is_list = isinstance(circuits, List)
         serialized_circuit = css.serialization.serialize_circuits(circuits)
