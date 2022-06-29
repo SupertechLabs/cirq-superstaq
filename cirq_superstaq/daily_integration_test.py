@@ -13,7 +13,7 @@ import cirq_superstaq as css
 @pytest.fixture
 def service() -> css.Service:
     token = os.getenv("TEST_USER_TOKEN")
-    service = css.Service(api_key=token)
+    service = css.Service(token)
     return service
 
 
@@ -22,6 +22,7 @@ def test_ibmq_compile(service: css.Service) -> None:
     circuit = cirq.Circuit(css.AceCRPlusMinus(qubits[0], qubits[1]))
     out = service.ibmq_compile(circuit, target="ibmq_jakarta_qpu")
     assert isinstance(out.circuit, cirq.Circuit)
+    assert out.pulse_sequence is not None
     assert 800 <= out.pulse_sequence.duration <= 1000  # 896 as of 12/27/2021
     assert out.pulse_sequence.start_time == 0
     assert len(out.pulse_sequence) == 5
@@ -37,6 +38,7 @@ def test_acer_non_neighbor_qubits_compile(service: css.Service) -> None:
 
     out = service.ibmq_compile(circuit, target="ibmq_bogota_qpu")
     assert isinstance(out.circuit, cirq.Circuit)
+    assert out.pulse_sequence is not None
     assert 5700 <= out.pulse_sequence.duration <= 7500  # 7424 as of 4/06/2022
     assert out.pulse_sequence.start_time == 0
     assert len(out.pulse_sequence) == 67
@@ -76,7 +78,7 @@ def test_get_balance(service: css.Service) -> None:
 def test_ibmq_set_token() -> None:
     api_token = os.environ["TEST_USER_TOKEN"]
     ibmq_token = os.environ["TEST_USER_IBMQ_TOKEN"]
-    service = css.Service(api_key=api_token)
+    service = css.Service(api_token)
     assert service.ibmq_set_token(ibmq_token) == "Your IBMQ account token has been updated"
 
     with pytest.raises(SuperstaQException, match="IBMQ token is invalid."):
@@ -129,9 +131,7 @@ def test_cq_compile(service: css.Service) -> None:
     )
 
     out = service.cq_compile(circuit)
-    cirq.testing.assert_circuits_with_terminal_measurements_are_equivalent(
-        out.circuit, circuit, atol=1e-08
-    )
+    assert isinstance(out.circuit, cirq.Circuit)
 
 
 def test_get_aqt_configs(service: css.Service) -> None:

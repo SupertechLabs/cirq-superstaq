@@ -53,7 +53,7 @@ def test_counts_to_results() -> None:
 
 
 def test_service_run_and_get_counts() -> None:
-    service = css.Service(remote_host="http://example.com", api_key="key")
+    service = css.Service(api_key="key", remote_host="http://example.com")
     mock_client = mock.MagicMock()
     mock_client.create_job.return_value = {
         "job_ids": ["job_id"],
@@ -100,7 +100,7 @@ def test_service_run_and_get_counts() -> None:
 
 
 def test_service_sampler() -> None:
-    service = css.Service(remote_host="http://example.com", api_key="key")
+    service = css.Service(api_key="key", remote_host="http://example.com")
     mock_client = mock.MagicMock()
     service._client = mock_client
     mock_client.create_job.return_value = {
@@ -133,7 +133,7 @@ def test_service_sampler() -> None:
 
 
 def test_service_get_job() -> None:
-    service = css.Service(remote_host="http://example.com", api_key="key")
+    service = css.Service(api_key="key", remote_host="http://example.com")
     mock_client = mock.MagicMock()
     job_dict = {"job_id": "job_id", "status": "ready"}
     mock_client.get_job.return_value = job_dict
@@ -145,7 +145,7 @@ def test_service_get_job() -> None:
 
 
 def test_service_create_job() -> None:
-    service = css.Service(remote_host="http://example.com", api_key="key")
+    service = css.Service(api_key="key", remote_host="http://example.com")
     mock_client = mock.MagicMock()
     mock_client.create_job.return_value = {"job_ids": ["job_id"], "status": "ready"}
     mock_client.get_job.return_value = {"job_id": "job_id", "status": "completed"}
@@ -161,7 +161,7 @@ def test_service_create_job() -> None:
 
 
 def test_service_get_balance() -> None:
-    service = css.Service(remote_host="http://example.com", api_key="key")
+    service = css.Service(api_key="key", remote_host="http://example.com")
     mock_client = mock.MagicMock()
     mock_client.get_balance.return_value = {"balance": 12345.6789}
     service._client = mock_client
@@ -171,7 +171,7 @@ def test_service_get_balance() -> None:
 
 
 def test_service_get_backends() -> None:
-    service = css.Service(remote_host="http://example.com", api_key="key")
+    service = css.Service(api_key="key", remote_host="http://example.com")
     mock_client = mock.MagicMock()
     backends = {
         "superstaq_backends": {
@@ -215,7 +215,7 @@ def test_service_get_backends() -> None:
     },
 )
 def test_service_aqt_compile_single(mock_aqt_compile: mock.MagicMock) -> None:
-    service = css.Service(remote_host="http://example.com", api_key="key")
+    service = css.Service(api_key="key", remote_host="http://example.com")
     out = service.aqt_compile(cirq.Circuit())
     assert out.circuit == cirq.Circuit()
     assert not hasattr(out, "circuits") and not hasattr(out, "pulse_lists")
@@ -230,7 +230,7 @@ def test_service_aqt_compile_single(mock_aqt_compile: mock.MagicMock) -> None:
     },
 )
 def test_service_aqt_compile_multiple(mock_aqt_compile: mock.MagicMock) -> None:
-    service = css.Service(remote_host="http://example.com", api_key="key")
+    service = css.Service(api_key="key", remote_host="http://example.com")
     out = service.aqt_compile([cirq.Circuit(), cirq.Circuit()])
     assert out.circuits == [cirq.Circuit(), cirq.Circuit()]
     assert not hasattr(out, "circuit") and not hasattr(out, "pulse_list")
@@ -245,7 +245,7 @@ def test_service_aqt_compile_multiple(mock_aqt_compile: mock.MagicMock) -> None:
     },
 )
 def test_service_aqt_compile_eca(mock_aqt_compile: mock.MagicMock) -> None:
-    service = css.Service(remote_host="http://example.com", api_key="key")
+    service = css.Service(api_key="key", remote_host="http://example.com")
     out = service.aqt_compile_eca(cirq.Circuit(), num_equivalent_circuits=1, random_seed=1234)
     assert out.circuits == [cirq.Circuit()]
     assert not hasattr(out, "circuit") and not hasattr(out, "pulse_list")
@@ -305,7 +305,7 @@ def test_service_qscout_compile_single(mock_qscout_compile: mock.MagicMock) -> N
         "jaqal_programs": [jaqal_program],
     }
 
-    service = css.Service(remote_host="http://example.com", api_key="key")
+    service = css.Service(api_key="key", remote_host="http://example.com")
     out = service.qscout_compile(circuit)
     assert out.circuit == circuit
     assert out.jaqal_program == jaqal_program
@@ -321,7 +321,7 @@ def test_service_cq_compile_single(mock_cq_compile: mock.MagicMock) -> None:
         "cirq_circuits": css.serialization.serialize_circuits(circuit),
     }
 
-    service = css.Service(remote_host="http://example.com", api_key="key")
+    service = css.Service(api_key="key", remote_host="http://example.com")
     out = service.cq_compile(circuit)
     assert out.circuit == circuit
 
@@ -330,7 +330,7 @@ def test_service_cq_compile_single(mock_cq_compile: mock.MagicMock) -> None:
     "applications_superstaq.superstaq_client._SuperstaQClient.ibmq_compile",
 )
 def test_service_ibmq_compile(mock_ibmq_compile: mock.MagicMock) -> None:
-    service = css.Service(remote_host="http://example.com", api_key="key")
+    service = css.Service(api_key="key", remote_host="http://example.com")
 
     q0 = cirq.LineQubit(0)
     circuit = cirq.Circuit(cirq.H(q0), cirq.measure(q0))
@@ -356,7 +356,7 @@ def test_service_ibmq_compile(mock_ibmq_compile: mock.MagicMock) -> None:
     return_value={"pulses": applications_superstaq.converters.serialize([mock.DEFAULT])},
 )
 def test_service_neutral_atom_compile(mock_neutral_atom_compile: mock.MagicMock) -> None:
-    service = css.Service(remote_host="http://example.com", api_key="key")
+    service = css.Service(api_key="key", remote_host="http://example.com")
     assert service.neutral_atom_compile(cirq.Circuit()) == mock.DEFAULT
     assert service.neutral_atom_compile([cirq.Circuit()]) == [mock.DEFAULT]
 
@@ -375,7 +375,7 @@ def test_service_api_key_via_env() -> None:
 
 @mock.patch.dict(os.environ, {"SUPERSTAQ_REMOTE_HOST": "http://example.com"})
 def test_service_remote_host_via_env() -> None:
-    service = css.Service(api_key="tomyheart")
+    service = css.Service("tomyheart")
     assert service.remote_host == "http://example.com"
 
 
@@ -386,5 +386,5 @@ def test_service_no_param_or_env_variable() -> None:
 
 
 def test_service_no_url_default() -> None:
-    service = css.Service(api_key="tomyheart")
+    service = css.Service("tomyheart")
     assert service.remote_host == css.API_URL

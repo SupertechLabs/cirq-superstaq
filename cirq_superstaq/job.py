@@ -14,7 +14,7 @@
 """Represents a job created via the SuperstaQ API."""
 import collections
 import time
-from typing import Any
+from typing import Any, Dict
 
 import applications_superstaq
 from applications_superstaq import superstaq_client
@@ -54,7 +54,7 @@ class Job:
         "data associated with it beyond an id and a status.",
     )
 
-    def __init__(self, client: superstaq_client._SuperstaQClient, job_dict: dict):
+    def __init__(self, client: superstaq_client._SuperstaQClient, job_dict: Dict[str, Any]) -> None:
         """Construct a Job.
 
         Users should not call this themselves. If you only know the `job_id`, use `get_job`
@@ -133,7 +133,7 @@ class Job:
             SuperstaQException: If unable to get the status of the job from the API.
         """
         self._check_if_unsuccessful()
-        return int(self._job["shots"][0]["shots"])
+        return self._job["shots"]
 
     def counts(
         self, timeout_seconds: int = 7200, polling_seconds: float = 1.0
