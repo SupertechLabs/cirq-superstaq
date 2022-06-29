@@ -286,13 +286,13 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
 
         json_dict = self._client.resource_estimate(request_json)
 
-        # Type must be specified due to mypy issue: https://github.com/python/mypy/issues/6898
-        resource_estimates: Union[ResourceEstimate, List[ResourceEstimate]] = (
-            [ResourceEstimate(json_data=resource) for resource in json_dict["resource_estimates"]]
-            if circuit_is_list
-            else ResourceEstimate(json_data=json_dict["resource_estimates"])
-        )
-        return resource_estimates
+        resource_estimates = [
+            ResourceEstimate(json_data=resource_estimate)
+            for resource_estimate in json_dict["resource_estimates"]
+        ]
+        if circuit_is_list:
+            return resource_estimates
+        return resource_estimates[0]
 
     def aqt_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "keysight"
