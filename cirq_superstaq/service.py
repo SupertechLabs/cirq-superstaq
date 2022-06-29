@@ -286,8 +286,6 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
 
         json_dict = self._client.resource_estimate(request_json)
 
-        print(json_dict["resource_estimates"])
-
         resource_estimates = [
             ResourceEstimate(json_data=resource_estimate)
             for resource_estimate in json_dict["resource_estimates"]
