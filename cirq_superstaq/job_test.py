@@ -22,15 +22,17 @@ import pytest
 import cirq_superstaq as css
 
 
-client = applications_superstaq.superstaq_client._SuperstaQClient(
-    client_name="cirq-superstaq",
-    remote_host="http://example.com",
-    api_key="to_my_heart",
-)
+def new_job() -> css.Job:
+    client = applications_superstaq.superstaq_client._SuperstaQClient(
+        client_name="cirq-superstaq",
+        remote_host="http://example.com",
+        api_key="to_my_heart",
+    )
+    return css.Job(client, "my_id")
 
 
 def mocked_get_job_requests(*job_dicts: Dict[str, Any]) -> mock._patch:
-    """Mock the server's responses to `get_job` requests using the given job_dict(s)."""
+    """Mocks the server's response to `get_job` requests using the given sequence of job_dicts."""
     return mock.patch(
         "applications_superstaq.superstaq_client._SuperstaQClient.get_job", side_effect=job_dicts
     )
@@ -48,7 +50,7 @@ def test_job_fields() -> None:
     }
 
     with mocked_get_job_requests(job_dict):
-        job = css.Job(client, "my_id")
+        job = new_job()
         assert job.job_id() == "my_id"
         assert job.target() == "simulator"
         assert job.num_qubits() == 2
@@ -56,21 +58,30 @@ def test_job_fields() -> None:
 
 
 def test_job_status_refresh() -> None:
+    completed_job_dict = {"job_id": "my_id", "status": "completed"}
+
     for status in css.Job.NON_TERMINAL_STATES:
-        with mocked_get_job_requests({"job_id": "my_id", "status": "completed"}) as mocked_request:
-            job = css.Job(client, "my_id")
+        job_dict = {"job_id": "my_id", "status": status}
+
+        with mocked_get_job_requests(job_dict, completed_job_dict) as mocked_request:
+            job = new_job()
+            assert job.status() == status
             assert job.status() == "completed"
-            mocked_request.assert_called_once_with("my_id")
+            assert mocked_request.call_count == 2
+            mocked_request.assert_called_with("my_id")
 
     for status in css.Job.TERMINAL_STATES:
-        with mocked_get_job_requests({"job_id": "my_id", "status": status}) as mocked_request:
-            job = css.Job(client, "my_id")
+        job_dict = {"job_id": "my_id", "status": status}
+
+        with mocked_get_job_requests(job_dict, completed_job_dict) as mocked_request:
+            job = new_job()
+            assert job.status() == status
             assert job.status() == status
             mocked_request.assert_called_once_with("my_id")
 
 
 def test_job_str_repr_eq() -> None:
-    job = css.Job(client, "my_id")
+    job = new_job()
     assert str(job) == "Job with job_id=my_id"
     cirq.testing.assert_equivalent_repr(
         job, setup_code="import cirq_superstaq as css\nimport applications_superstaq"
@@ -90,7 +101,7 @@ def test_job_counts() -> None:
         "target": "simulator",
     }
     with mocked_get_job_requests(job_dict):
-        job = css.Job(client, "my_id")
+        job = new_job()
         assert job.counts() == {"11": 1}
 
 
@@ -106,7 +117,7 @@ def test_job_counts_failed() -> None:
         "target": "simulator",
     }
     with mocked_get_job_requests(job_dict):
-        job = css.Job(client, "my_id")
+        job = new_job()
         with pytest.raises(RuntimeError, match="too many qubits"):
             _ = job.counts()
         assert job.status() == "Failed"
@@ -129,7 +140,7 @@ def test_job_counts_poll(mock_sleep: mock.MagicMock) -> None:
     }
 
     with mocked_get_job_requests(ready_job, completed_job) as mocked_requests:
-        job = css.Job(client, "my_id")
+        job = new_job()
         results = job.counts(polling_seconds=0)
         assert results == {"11": 1}
         assert mocked_requests.call_count == 2
@@ -142,8 +153,8 @@ def test_job_counts_poll_timeout(mock_sleep: mock.MagicMock) -> None:
         "job_id": "my_id",
         "status": "ready",
     }
-    with mocked_get_job_requests(ready_job):
-        job = css.Job(client, "my_id")
+    with mocked_get_job_requests(*[ready_job] * 20):
+        job = new_job()
         with pytest.raises(RuntimeError, match="ready"):
             _ = job.counts(timeout_seconds=1, polling_seconds=0.1)
     assert mock_sleep.call_count == 11
@@ -152,8 +163,8 @@ def test_job_counts_poll_timeout(mock_sleep: mock.MagicMock) -> None:
 @mock.patch("time.sleep", return_value=None)
 def test_job_results_poll_timeout_with_error_message(mock_sleep: mock.MagicMock) -> None:
     ready_job = {"job_id": "my_id", "status": "failure", "failure": {"error": "too many qubits"}}
-    with mocked_get_job_requests(ready_job):
-        job = css.Job(client, "my_id")
+    with mocked_get_job_requests(*[ready_job] * 20):
+        job = new_job()
         with pytest.raises(RuntimeError, match="too many qubits"):
             _ = job.counts(timeout_seconds=1, polling_seconds=0.1)
     assert mock_sleep.call_count == 11
@@ -170,7 +181,7 @@ def test_job_fields_unsuccessful() -> None:
         "target": "simulator",
     }
     with mocked_get_job_requests(job_dict):
-        job = css.Job(client, "my_id")
+        job = new_job()
 
         with pytest.raises(
             applications_superstaq.SuperstaQUnsuccessfulJobException, match="Deleted"
