@@ -42,13 +42,14 @@ def test_counts_to_results() -> None:
     circuit = cirq.Circuit(
         cirq.H(qubits[0]),
         cirq.CNOT(qubits[0], qubits[1]),
-        cirq.measure(qubits[0]),
-        cirq.measure(qubits[1]),
+        cirq.measure(qubits[0], key="0"),
+        cirq.measure(qubits[1], key="1"),
     )
     result = css.service.counts_to_results(
         collections.Counter({"00": 50, "11": 50}), circuit, cirq.ParamResolver({})
     )
-    assert result.histogram(key="q(0)q(1)") == collections.Counter({0: 50, 3: 50})
+    print(result)
+    assert result.histogram(key="01)") == collections.Counter({0: 50, 3: 50})
 
 
 def test_service_run_and_get_counts() -> None:
