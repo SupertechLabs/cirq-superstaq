@@ -49,7 +49,7 @@ def test_counts_to_results() -> None:
         collections.Counter({"00": 50, "11": 50}), circuit, cirq.ParamResolver({})
     )
     print(result)
-    assert result.histogram(key="01)") == collections.Counter({0: 50, 3: 50})
+    assert result.histogram(key="01") == collections.Counter({0: 50, 3: 50})
 
 
 def test_service_run_and_get_counts() -> None:
