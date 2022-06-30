@@ -27,7 +27,8 @@ jobs:
           pip install .[dev]
       - name: Format
         run: |
-          check/format
+          check/format_.py
+
   lint:
     name: Lint check
     runs-on: ubuntu-latest
@@ -45,7 +46,7 @@ jobs:
           pip install .[dev]
       - name: Pylint
         run: |
-          check/pylint
+          check/pylint_.py
 
   flake8:
     name: Flake8 check
@@ -64,7 +65,7 @@ jobs:
           pip install .[dev]
       - name: Flake8
         run: |
-          check/flake8
+          check/flake8_.py
 
   mypy:
     name: Type check
@@ -83,7 +84,7 @@ jobs:
           pip install .[dev]
       - name: Type check
         run: |
-          check/mypy
+          check/mypy_.py
 
   coverage:
     name: Pytest and Coverage check
@@ -102,7 +103,7 @@ jobs:
           pip install .[dev]
       - name: Coverage check
         run: |
-          check/coverage
+          check/coverage_.py
 
   pytest-mac:
     name: Pytest macOS
@@ -121,7 +122,7 @@ jobs:
           pip install .[dev]
       - name: Pytest-mac check
         run: |
-          check/pytest
+          check/pytest_.py
 
   pytest-win:
     name: Pytest Windows
@@ -140,5 +141,5 @@ jobs:
           pip install .[dev]
       - name: Pytest-win check
         run: |
-          check/pytest
+          check/pytest_.py
         shell: bash
