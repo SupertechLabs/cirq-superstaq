@@ -5,5 +5,4 @@ import sys
 import applications_superstaq.check
 
 if __name__ == "__main__":
-    # TEST
     exit(applications_superstaq.check.all_.run(*sys.argv[1:]))
