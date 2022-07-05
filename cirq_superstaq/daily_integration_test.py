@@ -5,7 +5,6 @@ import textwrap
 
 import cirq
 import pytest
-from applications_superstaq import SuperstaQException
 
 import cirq_superstaq as css
 
