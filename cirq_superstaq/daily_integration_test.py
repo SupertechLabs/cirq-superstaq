@@ -13,7 +13,7 @@ import cirq_superstaq as css
 @pytest.fixture
 def service() -> css.Service:
     token = os.getenv("TEST_USER_TOKEN")
-    service = css.Service(token)
+    service = css.Service(token, remote_host="https://127.0.0.1:5000")
     return service
 
 
@@ -23,7 +23,7 @@ def test_ibmq_compile(service: css.Service) -> None:
     out = service.ibmq_compile(circuit, target="ibmq_jakarta_qpu")
     assert isinstance(out.circuit, cirq.Circuit)
     assert out.pulse_sequence is not None
-    assert 800 <= out.pulse_sequence.duration <= 1000  # 3616 as of 6/30/2022
+    assert 800 <= out.pulse_sequence.duration <= 1000  # 896 as of 12/27/2021
     assert out.pulse_sequence.start_time == 0
     assert len(out.pulse_sequence) == 5
 
