@@ -12,7 +12,7 @@ import cirq_superstaq as css
 @pytest.fixture
 def service() -> css.Service:
     token = os.getenv("TEST_USER_TOKEN")
-    service = css.Service(token, remote_host="https://127.0.0.1:5000")
+    service = css.Service(token)
     return service
 
 
