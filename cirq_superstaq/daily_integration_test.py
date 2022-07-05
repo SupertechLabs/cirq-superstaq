@@ -74,14 +74,14 @@ def test_get_balance(service: css.Service) -> None:
     assert isinstance(service.get_balance(pretty_output=False), float)
 
 
-# def test_ibmq_set_token() -> None:
-#     api_token = os.environ["TEST_USER_TOKEN"]
-#     ibmq_token = os.environ["TEST_USER_IBMQ_TOKEN"]
-#     service = css.Service(api_token)
-#     assert service.ibmq_set_token(ibmq_token) == "Your IBMQ account token has been updated"
-#
-#     with pytest.raises(SuperstaQException, match="IBMQ token is invalid."):
-#         assert service.ibmq_set_token("INVALID_TOKEN")
+def test_ibmq_set_token() -> None:
+    api_token = os.environ["TEST_USER_TOKEN"]
+    ibmq_token = os.environ["TEST_USER_IBMQ_TOKEN"]
+    service = css.Service(api_token)
+    assert service.ibmq_set_token(ibmq_token) == "Your IBMQ account token has been updated"
+
+    with pytest.raises(SuperstaQException, match="IBMQ token is invalid."):
+        assert service.ibmq_set_token("INVALID_TOKEN")
 
 
 def test_tsp(service: css.Service) -> None:
