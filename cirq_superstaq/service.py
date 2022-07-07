@@ -271,7 +271,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         """Generates resource estimates for circuit(s).
 
         Args:
-            circuits: qiskit QuantumCircuit(s).
+            circuits: cirq Circuit(s).
             target: string of target representing backend device
         Returns:
             ResourceEstimate object containing gate count, critical path length, and error estimate.
