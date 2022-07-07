@@ -62,7 +62,7 @@ class Job:
 
         Args:
             client: The client used for calling the API.
-            job_dict: A dict representing the response from a call to get_job on the client.
+            job_id: unique identifier for the job.
         """
         self._client = client
         self._job: Dict[str, Any] = {"job_id": job_id, "status": "Submitted"}
