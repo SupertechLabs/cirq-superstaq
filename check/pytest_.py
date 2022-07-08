@@ -37,6 +37,6 @@ if __name__ == "__main__":
 
     exit(
         applications_superstaq.check.pytest_.run(
-            *sys.argv[1:], integration_setup=set_env_vars, exclide=NOTEBOOKS_TO_TENTATIVELY_EXCLUDE
+            *sys.argv[1:], integration_setup=set_env_vars, exclude=NOTEBOOKS_TO_TENTATIVELY_EXCLUDE
         )
     )
