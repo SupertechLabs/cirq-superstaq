@@ -33,7 +33,12 @@ def set_env_vars() -> None:
 
 
 if __name__ == "__main__":
-    NOTEBOOKS_TO_TENTATIVELY_EXCLUDE = ["examples/aqt_compile.ipynb"]
+    NOTEBOOKS_TO_TENTATIVELY_EXCLUDE = [
+        "examples/aqt_compile.ipynb",
+        "examples/finance.ipynb",
+        "docs/getting_started_cirq_superstaq.ipynb",
+        "docs/ibm_cirq_superstaq.ipynb",
+    ]
 
     exit(
         applications_superstaq.check.pytest_.run(
