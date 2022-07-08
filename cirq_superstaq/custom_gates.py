@@ -302,6 +302,10 @@ class Barrier(cirq.ops.IdentityGate):
         return ("|",) * self.num_qubits()
 
 
+def barrier(qubits: Sequence[cirq.Qid]) -> cirq.Operation:
+    return css.Barrier(len(qubits)).on(*qubits)
+
+
 @cirq.value_equality(approximate=True)
 class ParallelGates(cirq.Gate, cirq.InterchangeableQubitsGate):
     """A single Gate combining a collection of concurrent Gate(s) acting on different qubits.
@@ -417,19 +421,6 @@ class ParallelGates(cirq.Gate, cirq.InterchangeableQubitsGate):
     def __repr__(self) -> str:
         component_gates_repr = ", ".join(repr(gate) for gate in self.component_gates)
         return f"css.ParallelGates({component_gates_repr})"
-
-
-class MSGate(cirq.ion.ion_gates.MSGate):
-    def __init__(self, *, rads: float):  # Forces keyword args.
-        super().__init__(rads=rads)
-        self.rads = rads
-
-    def _json_dict_(self) -> Dict[str, Any]:
-        return cirq.protocols.obj_to_dict_helper(self, ["rads"])
-
-    @classmethod
-    def _from_json_dict_(cls, rads: float, **kwargs: Any) -> "MSGate":
-        return cls(rads=rads)
 
 
 @cirq.value_equality(approximate=True)
@@ -585,7 +576,7 @@ def custom_resolver(cirq_type: str) -> Union[Callable[..., cirq.Gate], None]:
     if cirq_type == "ParallelGates":
         return ParallelGates
     if cirq_type == "MSGate":
-        return MSGate
+        return cirq.ops.MSGate
     if cirq_type == "RGate":
         return RGate
     if cirq_type == "IXGate":

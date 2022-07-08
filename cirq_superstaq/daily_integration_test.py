@@ -22,6 +22,7 @@ def test_ibmq_compile(service: css.Service) -> None:
     circuit = cirq.Circuit(css.AceCRPlusMinus(qubits[0], qubits[1]))
     out = service.ibmq_compile(circuit, target="ibmq_jakarta_qpu")
     assert isinstance(out.circuit, cirq.Circuit)
+    assert out.pulse_sequence is not None
     assert 800 <= out.pulse_sequence.duration <= 1000  # 896 as of 12/27/2021
     assert out.pulse_sequence.start_time == 0
     assert len(out.pulse_sequence) == 5
@@ -35,11 +36,12 @@ def test_acer_non_neighbor_qubits_compile(service: css.Service) -> None:
         css.AceCRMinusPlus(qubits[2], qubits[3]),
     )
 
-    out = service.ibmq_compile(circuit, target="ibmq_bogota_qpu")
+    out = service.ibmq_compile(circuit, target="ibmq_jakarta_qpu")
     assert isinstance(out.circuit, cirq.Circuit)
-    assert 5700 <= out.pulse_sequence.duration <= 7500  # 7424 as of 4/06/2022
+    assert out.pulse_sequence is not None
+    assert 3000 <= out.pulse_sequence.duration <= 4000  # 3616 as of 6/30/2022
     assert out.pulse_sequence.start_time == 0
-    assert len(out.pulse_sequence) == 67
+    assert len(out.pulse_sequence) == 15
 
 
 def test_aqt_compile(service: css.Service) -> None:
@@ -97,7 +99,7 @@ def test_get_backends(service: css.Service) -> None:
 
 
 def test_qscout_compile(service: css.Service) -> None:
-    q0 = cirq.LineQubit(0)
+    q0, q1 = cirq.LineQubit.range(2)
     circuit = cirq.Circuit(cirq.H(q0), cirq.measure(q0))
     compiled_circuit = cirq.Circuit(
         cirq.PhasedXPowGate(phase_exponent=-0.5, exponent=0.5).on(q0),
@@ -121,6 +123,15 @@ def test_qscout_compile(service: css.Service) -> None:
     )
     assert out.jaqal_program == jaqal_program
 
+    cx_circuit = cirq.Circuit(cirq.H(q0), cirq.CX(q0, q1), cirq.measure(q0, q1))
+    out = service.qscout_compile([cx_circuit])
+    cirq.testing.assert_circuits_with_terminal_measurements_are_equivalent(
+        out.circuits[0], cx_circuit, atol=1e-08
+    )
+    assert isinstance(out.jaqal_programs, list)
+    assert isinstance(out.jaqal_programs[0], str)
+    assert "MS allqubits[0] allqubits[1]" in out.jaqal_programs[0]
+
 
 def test_cq_compile(service: css.Service) -> None:
     qubits = cirq.LineQubit.range(2)
@@ -129,9 +140,7 @@ def test_cq_compile(service: css.Service) -> None:
     )
 
     out = service.cq_compile(circuit)
-    cirq.testing.assert_circuits_with_terminal_measurements_are_equivalent(
-        out.circuit, circuit, atol=1e-08
-    )
+    assert isinstance(out.circuit, cirq.Circuit)
 
 
 def test_get_aqt_configs(service: css.Service) -> None:

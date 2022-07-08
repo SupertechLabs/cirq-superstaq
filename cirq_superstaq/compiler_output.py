@@ -1,6 +1,6 @@
 import importlib
 import warnings
-from typing import Any, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import applications_superstaq
 import cirq
@@ -17,7 +17,7 @@ class CompilerOutput:
     def __init__(
         self,
         circuits: Union[cirq.Circuit, List[cirq.Circuit]],
-        pulse_sequences: Any = None,
+        pulse_sequences: Optional[Any] = None,
         seq: Optional["qtrl.sequencer.Sequence"] = None,
         jaqal_programs: Optional[Union[List[str], str]] = None,
         pulse_lists: Optional[Union[List[List], List[List[List]]]] = None,
@@ -55,7 +55,7 @@ class CompilerOutput:
         )
 
 
-def read_json_ibmq(json_dict: dict, circuits_is_list: bool) -> CompilerOutput:
+def read_json_ibmq(json_dict: Dict[str, Any], circuits_is_list: bool) -> CompilerOutput:
     """Reads out returned JSON from SuperstaQ API's IBMQ compilation endpoint.
 
     Args:
@@ -72,17 +72,17 @@ def read_json_ibmq(json_dict: dict, circuits_is_list: bool) -> CompilerOutput:
     if importlib.util.find_spec("qiskit"):
         import qiskit
 
-        if qiskit.__version__ >= "0.18":
+        if "0.20" < qiskit.__version__ < "0.21":
             pulses = applications_superstaq.converters.deserialize(json_dict["pulses"])
         else:
             warnings.warn(
-                "ibmq_compile requires Qiskit Terra version 0.18.0 or higher to deserialize"
-                f"compiled pulse sequences (you have {qiskit.__version__})."
+                "ibmq_compile requires Qiskit Terra version 0.20.* to deserialize compiled pulse "
+                f"sequences (you have {qiskit.__version__})."
             )
     else:
         warnings.warn(
-            "ibmq_compile requires Qiskit Terra version 0.18.0 or higher to deserialize"
-            "compiled pulse sequences."
+            "ibmq_compile requires Qiskit Terra version 0.20.* to deserialize compiled pulse "
+            "sequences."
         )
 
     if circuits_is_list:
@@ -90,7 +90,7 @@ def read_json_ibmq(json_dict: dict, circuits_is_list: bool) -> CompilerOutput:
     return CompilerOutput(circuits=compiled_circuits[0], pulse_sequences=pulses and pulses[0])
 
 
-def read_json_aqt(json_dict: dict, circuits_is_list: bool) -> CompilerOutput:
+def read_json_aqt(json_dict: Dict[str, Any], circuits_is_list: bool) -> CompilerOutput:
     """Reads out returned JSON from SuperstaQ API's AQT compilation endpoint.
 
     Args:
@@ -124,7 +124,7 @@ def read_json_aqt(json_dict: dict, circuits_is_list: bool) -> CompilerOutput:
     return CompilerOutput(circuits=compiled_circuits[0], seq=seq, pulse_lists=pulse_list)
 
 
-def read_json_qscout(json_dict: dict, circuits_is_list: bool) -> CompilerOutput:
+def read_json_qscout(json_dict: Dict[str, Any], circuits_is_list: bool) -> CompilerOutput:
     """Reads out returned JSON from SuperstaQ API's QSCOUT compilation endpoint.
 
     Args:
@@ -148,7 +148,7 @@ def read_json_qscout(json_dict: dict, circuits_is_list: bool) -> CompilerOutput:
     )
 
 
-def read_json_only_circuits(json_dict: dict, circuits_is_list: bool) -> CompilerOutput:
+def read_json_only_circuits(json_dict: Dict[str, Any], circuits_is_list: bool) -> CompilerOutput:
     """Reads out returned JSON from SuperstaQ API's CQ compilation endpoint.
 
     Args:

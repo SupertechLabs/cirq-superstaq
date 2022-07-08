@@ -21,6 +21,7 @@ import cirq
 import numpy as np
 from applications_superstaq import finance
 from applications_superstaq import logistics
+from applications_superstaq import ResourceEstimate
 from applications_superstaq import superstaq_client
 from applications_superstaq import user_config
 
@@ -93,7 +94,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         api_version: str = css.API_VERSION,
         max_retry_seconds: int = 3600,
         verbose: bool = False,
-    ):
+    ) -> None:
         """Creates the Service to access SuperstaQ's API.
 
         Args:
@@ -206,7 +207,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
 
         Args:
             circuit: The circuit to run.
-            repetitions: The number of times to repeat the circuit. Defaults to 100.
+            repetitions: The number of times to repeat the circuit. Defaults to 1000.
             target: Where to run the job. Can be 'qpu' or 'simulator'.
             ibmq_pulse: Specify whether to run the job using SuperstaQ's pulse-level optimizations.
 
@@ -264,9 +265,39 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         """Get list of available backends."""
         return self._client.get_backends()["superstaq_backends"]
 
+    def resource_estimate(
+        self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str
+    ) -> Union[ResourceEstimate, List[ResourceEstimate]]:
+        """Generates resource estimates for circuit(s).
+
+        Args:
+            circuits: cirq Circuit(s).
+            target: string of target representing backend device
+        Returns:
+            ResourceEstimate(s) containing resource costs (after compilation)
+        """
+        circuit_is_list = isinstance(circuits, List)
+        serialized_circuit = css.serialization.serialize_circuits(circuits)
+
+        request_json = {
+            "cirq_circuits": serialized_circuit,
+            "backend": target,
+        }
+
+        json_dict = self._client.resource_estimate(request_json)
+
+        resource_estimates = [
+            ResourceEstimate(json_data=resource_estimate)
+            for resource_estimate in json_dict["resource_estimates"]
+        ]
+
+        if circuit_is_list:
+            return resource_estimates
+        return resource_estimates[0]
+
     def aqt_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "keysight"
-    ) -> "css.compiler_output.CompilerOutput":
+    ) -> css.compiler_output.CompilerOutput:
         """Compiles the given circuit(s) to target AQT device, optimized to its native gate set.
 
         Args:
@@ -292,7 +323,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
         num_equivalent_circuits: int,
         random_seed: Optional[int] = None,
         target: str = "keysight",
-    ) -> "css.compiler_output.CompilerOutput":
+    ) -> css.compiler_output.CompilerOutput:
         """Compiles the given circuit to target AQT device with Equivalent Circuit Averaging (ECA).
 
         See arxiv.org/pdf/2111.04572.pdf for a description of ECA.
@@ -324,7 +355,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
 
     def qscout_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "qscout"
-    ) -> "css.compiler_output.CompilerOutput":
+    ) -> css.compiler_output.CompilerOutput:
         """Compiles the given circuit(s) to target QSCOUT device, optimized to its native gate set.
 
         Args:
@@ -344,7 +375,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
 
     def cq_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "cq"
-    ) -> "css.compiler_output.CompilerOutput":
+    ) -> css.compiler_output.CompilerOutput:
         """Compiles the given circuit(s) to given target CQ device, optimized to its native gate
         set.
 
@@ -365,7 +396,7 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
 
     def ibmq_compile(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str = "ibmq_qasm_simulator"
-    ) -> Any:
+    ) -> css.compiler_output.CompilerOutput:
         """Returns pulse schedule for the given circuit and target.
 
         Qiskit Terra must be installed to correctly deserialize the returned pulse schedule.
