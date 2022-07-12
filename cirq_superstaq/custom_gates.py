@@ -1,6 +1,16 @@
 """Miscellaneous custom gates that we encounter and want to explicitly define."""
 
-from typing import AbstractSet, Any, Callable, Dict, List, Optional, Sequence, Tuple, Union
+from typing import (
+    AbstractSet,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
 
 import cirq
 import numpy as np
@@ -302,7 +312,7 @@ class Barrier(cirq.ops.IdentityGate):
         return ("|",) * self.num_qubits()
 
 
-def barrier(qubits: Sequence[cirq.Qid]) -> cirq.Operation:
+def barrier(*qubits: cirq.Qid) -> cirq.Operation:
     return css.Barrier(len(qubits)).on(*qubits)
 
 
