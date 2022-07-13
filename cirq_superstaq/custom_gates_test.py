@@ -258,7 +258,7 @@ def test_barrier() -> None:
     assert cirq.decompose(operation) == [operation]
 
     # confirm Barrier is as an InterchangeableQubitsGate
-    for permuted_qubits = itertools.permutations(qubits):
+    for permuted_qubits in itertools.permutations(qubits):
         assert operation == gate.on(*permuted_qubits)
 
     circuit = cirq.Circuit(operation)
