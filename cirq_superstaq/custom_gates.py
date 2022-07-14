@@ -274,7 +274,7 @@ AceCRMinusPlus = AceCR("-+")
 AceCRPlusMinus = AceCR("+-")
 
 
-class Barrier(cirq.ops.IdentityGate):
+class Barrier(cirq.ops.IdentityGate, cirq.InterchangeableQubitsGate):
     """Barrier: temporal boundary restricting circuit compilation and pulse scheduling.
     Otherwise equivalent to the identity gate.
     """
@@ -302,7 +302,7 @@ class Barrier(cirq.ops.IdentityGate):
         return ("|",) * self.num_qubits()
 
 
-def barrier(qubits: Sequence[cirq.Qid]) -> cirq.Operation:
+def barrier(*qubits: cirq.Qid) -> cirq.Operation:
     return css.Barrier(len(qubits)).on(*qubits)
 
 
