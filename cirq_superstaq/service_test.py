@@ -16,8 +16,9 @@ import os
 import textwrap
 from unittest import mock
 
-import general_superstaq as gss
+
 import cirq
+import general_superstaq as gss
 import pandas as pd
 import pytest
 import sympy

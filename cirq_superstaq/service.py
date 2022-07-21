@@ -16,8 +16,9 @@ import collections
 import os
 from typing import Any, List, Optional, Union
 
-import general_superstaq as gss
+
 import cirq
+import general_superstaq as gss
 import numpy as np
 from general_superstaq import finance
 from general_superstaq import logistics

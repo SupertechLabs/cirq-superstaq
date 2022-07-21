@@ -17,8 +17,8 @@ import time
 from typing import Any, Dict
 
 import general_superstaq as gss
-from general_superstaq import superstaq_client
 from cirq._doc import document
+from general_superstaq import superstaq_client
 
 
 class Job:

@@ -2,8 +2,9 @@ import importlib
 import warnings
 from typing import Any, Dict, List, Optional, Union
 
-import general_superstaq as gss
+
 import cirq
+import general_superstaq as gss
 
 import cirq_superstaq as css
 

@@ -2,8 +2,9 @@ import importlib
 import textwrap
 from unittest import mock
 
-import general_superstaq as gss
+
 import cirq
+import general_superstaq as gss
 import pytest
 
 import cirq_superstaq as css

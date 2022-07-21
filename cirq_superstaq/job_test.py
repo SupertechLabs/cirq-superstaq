@@ -15,8 +15,8 @@
 from typing import Any, Dict
 from unittest import mock
 
-import general_superstaq as gss
 import cirq
+import general_superstaq as gss
 import pytest
 
 import cirq_superstaq as css
@@ -183,15 +183,9 @@ def test_job_fields_unsuccessful() -> None:
     with mocked_get_job_requests(job_dict):
         job = new_job()
 
-        with pytest.raises(
-            gss.SuperstaQUnsuccessfulJobException, match="Deleted"
-        ):
+        with pytest.raises(gss.SuperstaQUnsuccessfulJobException, match="Deleted"):
             _ = job.target()
-        with pytest.raises(
-            gss.SuperstaQUnsuccessfulJobException, match="Deleted"
-        ):
+        with pytest.raises(gss.SuperstaQUnsuccessfulJobException, match="Deleted"):
             _ = job.num_qubits()
-        with pytest.raises(
-            gss.SuperstaQUnsuccessfulJobException, match="Deleted"
-        ):
+        with pytest.raises(gss.SuperstaQUnsuccessfulJobException, match="Deleted"):
             _ = job.repetitions()
