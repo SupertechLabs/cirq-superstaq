@@ -5,8 +5,7 @@ import textwrap
 
 import cirq
 import pytest
-from applications_superstaq import SuperstaQException
-from applications_superstaq import ResourceEstimate
+from applications_superstaq import ResourceEstimate, SuperstaQException
 
 import cirq_superstaq as css
 
@@ -80,15 +79,13 @@ def test_get_resource_estimate(service: css.Service) -> None:
     q0 = cirq.LineQubit(0)
     q1 = cirq.LineQubit(1)
 
-    circuit1 = cirq.Circuit(cirq.H(q0), cirq.CNOT(q0, q1), cirq.measure(q0))
+    circuit1 = cirq.Circuit(cirq.CNOT(q0, q1), cirq.H(q0), cirq.measure(q0))
 
     resource_estimate = service.resource_estimate(circuit1, "neutral_atom_qpu")
 
     assert resource_estimate == ResourceEstimate(2, 1, 3)
 
-    q2 = cirq.LineQubit(0)
-    q3 = cirq.LineQubit(1)
-    circuit2 = cirq.Circuit(cirq.H(q2), cirq.CZ(q2, q3), cirq.CNOT(q2, q3), cirq.measure(q3))
+    circuit2 = cirq.Circuit(cirq.H(q1), cirq.CNOT(q0, q1), cirq.CZ(q0, q1), cirq.measure(q1))
 
     circuits = [circuit1, circuit2]
 
