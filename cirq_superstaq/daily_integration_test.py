@@ -136,7 +136,8 @@ def test_qscout_compile(service: css.Service) -> None:
 
 
 def test_cq_compile(service: css.Service) -> None:
-    qubits = cirq.LineQubit.range(2)
+    # We use GridQubits cause CQ's qubits are laid in a grid
+    qubits = cirq.GridQubit.rect(2, 2)
     circuit = cirq.Circuit(
         cirq.H(qubits[0]), cirq.CNOT(qubits[0], qubits[1]), cirq.measure(qubits[0])
     )
