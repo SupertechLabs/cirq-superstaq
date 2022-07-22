@@ -6,6 +6,7 @@ import textwrap
 import cirq
 import pytest
 from applications_superstaq import SuperstaQException
+from thefuzz import fuzz
 
 import cirq_superstaq as css
 
