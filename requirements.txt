@@ -2,4 +2,3 @@ applications-superstaq==0.1.15
 cirq>=0.14.0
 qubovert>=1.2.3
 sympy<1.10
-thefuzz[speedup]~=0.19.0
