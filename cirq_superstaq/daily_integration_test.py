@@ -1,7 +1,6 @@
 """Integration checks that run daily (via Github action) between client and prod server."""
 
 import os
-import textwrap
 
 import cirq
 import pytest
