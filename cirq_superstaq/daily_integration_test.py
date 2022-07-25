@@ -110,6 +110,7 @@ def test_qscout_compile(service: css.Service) -> None:
     cirq.testing.assert_circuits_with_terminal_measurements_are_equivalent(
         out.circuit, compiled_circuit, atol=1e-08
     )
+    assert isinstance(out.jaqal_program, str)
     assert "measure_all" in out.jaqal_program
 
     cx_circuit = cirq.Circuit(cirq.H(q0), cirq.CX(q0, q1), cirq.measure(q0, q1))
