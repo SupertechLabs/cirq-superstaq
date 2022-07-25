@@ -6,7 +6,6 @@ import textwrap
 import cirq
 import pytest
 from applications_superstaq import SuperstaQException
-from thefuzz import fuzz
 
 import cirq_superstaq as css
 
@@ -122,8 +121,7 @@ def test_qscout_compile(service: css.Service) -> None:
     cirq.testing.assert_circuits_with_terminal_measurements_are_equivalent(
         out.circuit, compiled_circuit, atol=1e-08
     )
-    ratio = fuzz.ratio(out.jaqal_program, jaqal_program)
-    assert ratio >= 85
+    assert "measure_all" in out.jaqal_program
 
     cx_circuit = cirq.Circuit(cirq.H(q0), cirq.CX(q0, q1), cirq.measure(q0, q1))
     out = service.qscout_compile([cx_circuit])

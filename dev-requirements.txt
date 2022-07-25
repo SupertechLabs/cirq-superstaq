@@ -1,3 +1,2 @@
 applications-superstaq[dev]==0.1.15
 qiskit-terra~=0.20.2
-thefuzz[speedup]~=0.19.0
