@@ -19,6 +19,7 @@ from typing import Any, List, Optional, Union
 import applications_superstaq
 import cirq
 import numpy as np
+import requests
 from applications_superstaq import finance
 from applications_superstaq import logistics
 from applications_superstaq import ResourceEstimate
@@ -262,6 +263,22 @@ class Service(finance.Finance, logistics.Logistics, user_config.UserConfig):
     def get_backends(self) -> dict:
         """Get list of available backends."""
         return self._client.get_backends()["superstaq_backends"]
+
+    def simulate(
+        self, circuit: cirq.Circuit, target: str, gpu: bool
+    ) -> str:
+        serialized_circuit = css.serialization.serialize_circuits(circuit)
+
+        request_json =  {
+            "cirq_circuits": serialized_circuit,
+            "backend": target,
+            "gpu": gpu,
+        }
+
+        amplitudes = self._client.simulate(request_json)
+
+        return amplitudes
+
 
     def resource_estimate(
         self, circuits: Union[cirq.Circuit, List[cirq.Circuit]], target: str
