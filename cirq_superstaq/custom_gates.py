@@ -91,6 +91,7 @@ class ZZSwapGate(cirq.Gate, cirq.ops.gate_features.InterchangeableQubitsGate):
         )
 
     def _has_unitary_(self) -> bool:
+        print('yes')
         return not self._is_parameterized_()
 
     def _apply_unitary_(self, args: cirq.protocols.ApplyUnitaryArgs) -> Optional[np.ndarray]:
@@ -289,6 +290,9 @@ class Barrier(cirq.ops.IdentityGate, cirq.InterchangeableQubitsGate):
         indices_str = ",".join([f"{{{i}}}" for i in range(len(qubits))])
         format_str = f"barrier {indices_str};\n"
         return args.format(format_str, *qubits)
+
+    def _has_unitary_(self):
+        return False
 
     def __str__(self) -> str:
         return f"Barrier({self.num_qubits()})"
